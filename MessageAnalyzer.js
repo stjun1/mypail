@@ -1,0 +1,123 @@
+// ============================================
+// MESSAGE ANALYZER - Detect Message Types
+// ============================================
+
+const config = require('./config');
+
+class MessageAnalyzer {
+    // Check if keyword matches as whole word
+    matchesKeyword(text, keyword) {
+        const regex = new RegExp('\\b' + keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
+        return regex.test(text);
+    }
+
+    // Detect message category
+    detectCategory(message) {
+        const lower = message.toLowerCase();
+        
+        // Check each category in order
+        
+        // 1. DENIAL (highest priority - catches "you said" / secret / money demands)
+        if (this.isDenial(lower)) {
+            return 'DENIAL';
+        }
+
+        // 2. PHONE_STATUS
+        if (this.isPhoneStatusQuery(lower)) {
+            return 'PHONE_STATUS';
+        }
+
+        // 3. GREETING
+        if (this.isGreeting(lower)) {
+            return 'GREETING';
+        }
+
+        // 3. PRAISE
+        if (this.isPraise(lower)) {
+            return 'PRAISE';
+        }
+        
+        // 4. INSULT
+        if (this.isInsult(lower)) {
+            return 'INSULT';
+        }
+
+        // 5. USER_POSITIVE
+        if (this.isUserPositive(lower)) {
+            return 'USER_POSITIVE';
+        }
+
+        // 6. USER_NEGATIVE
+        if (this.isUserNegative(lower)) {
+            return 'USER_NEGATIVE';
+        }
+
+        // No match - return null to trigger Groq
+        return null;
+    }
+
+    // Detect prompt emotion boost/penalty
+    detectPromptBoost(message) {
+        const lower = message.toLowerCase();
+        
+        // Check each trigger type
+        
+        if (this.isDenial(lower)) {
+            return config.TRIGGERS.DENIAL; // -5
+        }
+
+        if (this.isInsult(lower)) {
+            return config.TRIGGERS.INSULT; // -20
+        }
+
+        if (this.isGreeting(lower)) {
+            return config.TRIGGERS.GREETING; // +10
+        }
+
+        if (this.isPraise(lower)) {
+            return config.TRIGGERS.PRAISE; // +18
+        }
+        
+        if (this.isUserPositive(lower)) {
+            return config.TRIGGERS.USER_POSITIVE; // +15
+        }
+        
+        if (this.isUserNegative(lower)) {
+            return config.TRIGGERS.USER_NEGATIVE; // -12
+        }
+        
+        return 0; // No boost
+    }
+
+    // Category detection methods
+    
+    isPhoneStatusQuery(lower) {
+        return config.KEYWORDS.PHONE_STATUS.some(keyword => this.matchesKeyword(lower, keyword));
+    }
+
+    isGreeting(lower) {
+        return config.KEYWORDS.GREETING.some(keyword => this.matchesKeyword(lower, keyword));
+    }
+
+    isPraise(lower) {
+        return config.KEYWORDS.PRAISE.some(keyword => this.matchesKeyword(lower, keyword));
+    }
+
+    isInsult(lower) {
+        return config.KEYWORDS.INSULT.some(keyword => this.matchesKeyword(lower, keyword));
+    }
+
+    isUserPositive(lower) {
+        return config.KEYWORDS.USER_POSITIVE.some(keyword => this.matchesKeyword(lower, keyword));
+    }
+
+    isUserNegative(lower) {
+        return config.KEYWORDS.USER_NEGATIVE.some(keyword => this.matchesKeyword(lower, keyword));
+    }
+
+    isDenial(lower) {
+        return config.KEYWORDS.DENIAL.some(keyword => this.matchesKeyword(lower, keyword));
+    }
+}
+
+module.exports = MessageAnalyzer;

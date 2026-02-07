@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyPAiL - Personal AI Lackey</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f0f0;
+            transition: background-color 0.5s ease;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Setup Screen */
+        #setup-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .setup-card {
+            background: white;
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .setup-card h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .setup-card input {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            border: 3px solid #667eea;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .setup-card button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 18px 50px;
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+
+        .setup-card button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        /* Avatar Picker */
+        .avatar-picker {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .avatar-option {
+            border: 3px solid #ddd;
+            border-radius: 12px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: #fafafa;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .avatar-option:hover {
+            border-color: #667eea;
+            background: #f0f0ff;
+            transform: translateY(-2px);
+        }
+
+        .avatar-option.selected {
+            border-color: #667eea;
+            background: #e8ecff;
+            box-shadow: 0 0 0 2px #667eea44;
+        }
+
+        .avatar-option svg {
+            width: 60px;
+            height: 70px;
+        }
+
+        .avatar-option span {
+            font-size: 12px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .avatar-story {
+            margin-top: 10px;
+            min-height: 60px;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #f0f0ff, #e8ecff);
+            border-radius: 10px;
+            font-size: 13px;
+            color: #444;
+            line-height: 1.5;
+            text-align: left;
+            transition: opacity 0.3s ease;
+            border-left: 3px solid #667eea;
+        }
+
+        .avatar-story .story-name {
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .avatar-story.empty {
+            background: #f8f8f8;
+            border-left-color: #ccc;
+            color: #999;
+            text-align: center;
+            font-style: italic;
+        }
+
+        /* AI Name Display */
+        .ai-info {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .ai-info h2 {
+            color: #667eea;
+            font-size: 24px;
+        }
+
+        /* Avatar Display */
+        #avatar {
+            width: 220px;
+            height: 260px;
+            margin: 0 auto 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.5s ease;
+        }
+
+        #avatar svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 8px 20px rgba(0,0,0,0.2));
+            transition: filter 0.5s ease;
+        }
+
+        /* Chat Interface */
+        #chat-box {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            height: 400px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .message {
+            margin: 10px 0;
+            padding: 10px 15px;
+            border-radius: 8px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+
+        .message.user {
+            background: #e3f2fd;
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .message.ai {
+            background: #f5f5f5;
+        }
+
+        .message.system {
+            background: #fff9c4;
+            font-style: italic;
+            font-size: 14px;
+        }
+
+        /* Input Area */
+        .input-area {
+            display: flex;
+            gap: 10px;
+        }
+
+        #message-input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            background: #2196F3;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover:not(:disabled) {
+            background: #1976d2;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        #voice-btn {
+            padding: 15px 20px;
+            font-size: 20px;
+            background: #4CAF50;
+        }
+
+        #voice-btn:hover {
+            background: #45a049;
+        }
+
+        #voice-btn.active {
+            background: #f44336;
+            animation: pulse 1.5s infinite;
+        }
+
+        #speaker-btn {
+            padding: 15px 20px;
+            font-size: 20px;
+            background: #FF9800;
+        }
+
+        #speaker-btn:hover {
+            background: #F57C00;
+        }
+
+        #speaker-btn.off {
+            background: #9E9E9E;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        @keyframes pailShake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+            20%, 40%, 60%, 80% { transform: translateX(4px); }
+        }
+
+        @keyframes pailBounce {
+            0%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-12px); }
+            50% { transform: translateY(0); }
+            70% { transform: translateY(-6px); }
+        }
+
+        /* Device Status Controls */
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .controls h3 {
+            margin-bottom: 15px;
+            color: #666;
+            font-size: 16px;
+        }
+
+        #controls-toggle {
+            font-size: 14px;
+            user-select: none;
+        }
+
+        .control-group {
+            margin: 15px 0;
+        }
+
+        .control-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input[type="range"] {
+            width: 100%;
+        }
+
+        .status-display {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .reset-btn {
+            background: #f44336;
+            margin-top: 20px;
+        }
+
+        .reset-btn:hover {
+            background: #d32f2f;
+        }
+
+        /* Schooling Screen */
+        #schooling-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .schooling-card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 520px;
+            width: 100%;
+        }
+
+        .schooling-card h1 {
+            color: #667eea;
+            margin-bottom: 6px;
+            font-size: 24px;
+        }
+
+        .schooling-card p {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .schooling-avatar {
+            width: 160px;
+            height: 190px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .schooling-avatar svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 6px 14px rgba(0,0,0,0.15));
+        }
+
+        .schooling-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .schooling-btn {
+            padding: 12px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 10px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .schooling-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .schooling-btn.play { background: #d1fae5; color: #065f46; border-color: #6ee7b7; }
+        .schooling-btn.play:hover:not(:disabled) { background: #a7f3d0; }
+        .schooling-btn.praise { background: #dbeafe; color: #1e40af; border-color: #93c5fd; }
+        .schooling-btn.praise:hover:not(:disabled) { background: #bfdbfe; }
+        .schooling-btn.preach { background: #fef3c7; color: #92400e; border-color: #fcd34d; }
+        .schooling-btn.preach:hover:not(:disabled) { background: #fde68a; }
+        .schooling-btn.scold { background: #fee2e2; color: #991b1b; border-color: #fca5a5; }
+        .schooling-btn.scold:hover:not(:disabled) { background: #fecaca; }
+
+        .schooling-levels {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px 16px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .level-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #444;
+        }
+
+        .level-bar-bg {
+            flex: 1;
+            height: 10px;
+            background: #e5e7eb;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .level-bar-fill {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.3s ease;
+        }
+
+        .level-bar-fill.vg { background: #34d399; }
+        .level-bar-fill.g { background: #60a5fa; }
+        .level-bar-fill.b { background: #fbbf24; }
+        .level-bar-fill.vb { background: #f87171; }
+
+        .level-num {
+            min-width: 16px;
+            text-align: right;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .schooling-card .end-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 14px 40px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <!-- SETUP SCREEN -->
+    <div id="setup-screen">
+        <div class="setup-card">
+            <div style="font-size: 80px;">🎭</div>
+            <h1>Personal AI Lackey (MyPAiL)</h1>
+            <p style="color: #666; margin-bottom: 20px;">Create your personal AI companion</p>
+
+            <label style="font-weight: 600; color: #555;">What would you like to name your AI?</label>
+            <input
+                type="text"
+                id="ai-name-input"
+                placeholder="e.g., Luna, Max, Spark..."
+                maxlength="20"
+                oninput="enableCreateButton()"
+                onkeypress="if(event.key==='Enter' && canCreate()) createAI()"
+            />
+
+            <label style="font-weight: 600; color: #555;">Choose an avatar</label>
+            <div class="avatar-picker" id="avatar-picker"></div>
+            <div class="avatar-story empty" id="avatar-story">Hover over an avatar to learn their story...</div>
+
+            <button id="school-btn" onclick="startSchooling()" disabled style="background: linear-gradient(135deg, #f59e0b, #d97706); margin-top: 20px;">
+                🎓 School Avatar
+            </button>
+
+            <button id="create-ai-btn" onclick="createAI()" disabled>
+                ✨ Create My AI
+            </button>
+
+            <div style="margin-top: 20px; font-size: 14px; color: #999;">
+                Examples: Buddy • Luna • Max • Spark • Nova
+            </div>
+        </div>
+    </div>
+
+    <!-- SCHOOLING SCREEN -->
+    <div id="schooling-screen" class="hidden">
+        <div class="schooling-card">
+            <h1>🎓 Schooling</h1>
+            <p>Train your AI's personality by adjusting its emotional thresholds</p>
+
+            <div class="schooling-avatar" id="schooling-avatar"></div>
+
+            <div class="schooling-buttons">
+                <button class="schooling-btn play" id="btn-play" onclick="doSchooling('VERY_GOOD')">▶ Play together</button>
+                <button class="schooling-btn praise" id="btn-praise" onclick="doSchooling('GOOD')">👏 Praise</button>
+                <button class="schooling-btn preach" id="btn-preach" onclick="doSchooling('BAD')">📖 Preach</button>
+                <button class="schooling-btn scold" id="btn-scold" onclick="doSchooling('VERY_BAD')">😠 Scold</button>
+            </div>
+
+            <div id="schooling-actions" style="margin-bottom: 16px; font-size: 15px; font-weight: 600; color: #555;"></div>
+
+            <div id="schooling-personality" style="margin-bottom: 20px; padding: 12px 16px; background: linear-gradient(135deg, #f0f0ff, #e8ecff); border-radius: 10px; border-left: 3px solid #667eea; font-size: 14px; color: #444; text-align: left;"></div>
+
+            <button class="end-btn" onclick="endSchooling()">✅ End Schooling</button>
+
+            <div style="margin-top: 16px;">
+                <div style="cursor: pointer; font-size: 12px; color: #999;" onclick="document.getElementById('schooling-debug').classList.toggle('hidden')">
+                    🔧 Debug info ▼
+                </div>
+                <div id="schooling-debug" class="hidden" style="margin-top: 8px;">
+                    <div class="schooling-levels" id="schooling-levels"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="main-app" class="container hidden">
+        <div class="ai-info">
+            <h2 id="ai-name-display">Luna</h2>
+            <button onclick="startSchoolingFromMain()" style="background: linear-gradient(135deg, #f59e0b, #d97706); margin-bottom: 8px;">🎓 School Avatar</button>
+            <button class="reset-btn" onclick="resetAI()">🗑️ Delete & Start Over</button>
+        </div>
+
+        <!-- Avatar -->
+        <div id="avatar"></div>
+
+        <!-- Chat Interface -->
+        <div id="chat-box"></div>
+
+        <!-- Input Area -->
+        <div class="input-area">
+            <button id="voice-btn" onclick="toggleVoice()" title="Voice Input">🎤</button>
+            <button id="speaker-btn" onclick="toggleSpeaker()" title="Toggle Speaker">🔊</button>
+            <input type="text" id="message-input" placeholder="Type your message..." onkeypress="handleKeyPress(event)">
+            <button id="send-btn" onclick="sendMessage()">Send</button>
+        </div>
+
+        <!-- Device Status Controls (Testing Only - Collapsible) -->
+        <div class="controls" style="margin-top: 30px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="toggleControls()">
+                <h3>🔧 Device Simulation (Testing)</h3>
+                <span id="controls-toggle">▼</span>
+            </div>
+            <div id="controls-content">
+                <div class="control-group">
+                    <label>Battery</label>
+                    <input type="range" id="battery" min="0" max="100" value="75" oninput="updateStatus()">
+                    <div class="status-display" id="battery-display">75%</div>
+                </div>
+                <div class="control-group">
+                    <label>Network Signal</label>
+                    <input type="range" id="network" min="-120" max="-40" value="-60" oninput="updateStatus()">
+                    <div class="status-display" id="network-display">-60 dBm</div>
+                </div>
+                <div class="control-group">
+                    <label>Memory Usage</label>
+                    <input type="range" id="memory" min="0" max="2000" value="800" oninput="updateStatus()">
+                    <div class="status-display" id="memory-display">800 MB</div>
+                </div>
+                <div style="margin-top: 15px; padding: 10px; background: #fff3cd; border-radius: 5px; font-size: 13px; color: #856404;">
+                    ℹ️ <strong>Note:</strong> These controls simulate device conditions for testing. In the real app, actual device sensors will be used.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // CLIENT CODE - MINIMAL, NO IP EXPOSED
+
+        const SERVER_URL = 'http://localhost:3000';
+        let sessionId = localStorage.getItem('emotionalAI_sessionId');
+        let aiName = localStorage.getItem('emotionalAI_name');
+        let selectedAvatar = localStorage.getItem('emotionalAI_avatar');
+
+        // ==================== SVG AVATAR RENDERERS ====================
+
+        function renderPail(state) {
+            const cfg = {
+                VERY_BAD:  { body1: '#8a9a9a', body2: '#6a7a7a', rim1: '#6a7878', rim2: '#4a5a5a', handle: '#555', metalH: '#777', anim: 'pailShake 0.5s infinite' },
+                BAD:       { body1: '#8ab8d0', body2: '#6a98b0', rim1: '#6a9ab8', rim2: '#4a7a98', handle: '#6a7a8a', metalH: '#8a9aaa', anim: 'none' },
+                GOOD:      { body1: '#7CB9E8', body2: '#5A99C8', rim1: '#5A9BD5', rim2: '#3a7bb5', handle: '#7a8a9a', metalH: '#aabace', anim: 'none' },
+                VERY_GOOD: { body1: '#5ec4ff', body2: '#3aa4e0', rim1: '#3aafe8', rim2: '#1a8fc8', handle: '#8a9aaa', metalH: '#bacade', anim: 'pailBounce 0.8s infinite' }
+            }[state] || { body1: '#7CB9E8', body2: '#5A99C8', rim1: '#5A9BD5', rim2: '#3a7bb5', handle: '#7a8a9a', metalH: '#aabace', anim: 'none' };
+
+            const uid = 'p' + Math.random().toString(36).slice(2,6);
+
+            const eyes = {
+                VERY_BAD: `<ellipse cx="78" cy="138" rx="13" ry="14" fill="white" stroke="#2a2a2a" stroke-width="2"/>
+                    <circle cx="78" cy="133" r="7" fill="#2a2a2a"/><circle cx="76" cy="131" r="2" fill="white"/>
+                    <ellipse cx="122" cy="138" rx="13" ry="14" fill="white" stroke="#2a2a2a" stroke-width="2"/>
+                    <circle cx="122" cy="133" r="7" fill="#2a2a2a"/><circle cx="120" cy="131" r="2" fill="white"/>`,
+                BAD: `<ellipse cx="78" cy="142" rx="11" ry="12" fill="white" stroke="#2a2a2a" stroke-width="2"/>
+                    <circle cx="78" cy="146" r="5.5" fill="#2a2a2a"/><circle cx="77" cy="144" r="1.5" fill="white"/>
+                    <ellipse cx="122" cy="142" rx="11" ry="12" fill="white" stroke="#2a2a2a" stroke-width="2"/>
+                    <circle cx="122" cy="146" r="5.5" fill="#2a2a2a"/><circle cx="121" cy="144" r="1.5" fill="white"/>`,
+                GOOD: `<ellipse cx="78" cy="140" rx="12" ry="13" fill="white" stroke="#2a2a2a" stroke-width="2"/>
+                    <circle cx="78" cy="140" r="6.5" fill="#2a2a2a"/><circle cx="76" cy="138" r="2" fill="white"/>
+                    <ellipse cx="122" cy="140" rx="12" ry="13" fill="white" stroke="#2a2a2a" stroke-width="2"/>
+                    <circle cx="122" cy="140" r="6.5" fill="#2a2a2a"/><circle cx="120" cy="138" r="2" fill="white"/>`,
+                VERY_GOOD: `<path d="M64,140 Q78,130 92,140" fill="none" stroke="#2a2a2a" stroke-width="3.5" stroke-linecap="round"/>
+                    <path d="M108,140 Q122,130 136,140" fill="none" stroke="#2a2a2a" stroke-width="3.5" stroke-linecap="round"/>`
+            }[state];
+
+            const mouth = {
+                VERY_BAD: `<path d="M76,182 Q84,173 100,179 Q116,173 124,182" fill="none" stroke="#2a2a2a" stroke-width="3" stroke-linecap="round"/>`,
+                BAD: `<path d="M83,180 Q100,173 117,180" fill="none" stroke="#2a2a2a" stroke-width="3" stroke-linecap="round"/>`,
+                GOOD: `<path d="M78,175 Q100,194 122,175" fill="none" stroke="#2a2a2a" stroke-width="3" stroke-linecap="round"/>`,
+                VERY_GOOD: `<path d="M73,172 Q100,204 127,172" fill="#444" stroke="#2a2a2a" stroke-width="2.5" stroke-linecap="round"/>
+                    <path d="M82,190 Q100,198 118,190" fill="#e55" opacity="0.6"/>`
+            }[state];
+
+            const extras = {
+                VERY_BAD: `<line x1="60" y1="150" x2="55" y2="174" stroke="#69c8ee" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+                    <line x1="65" y1="153" x2="61" y2="171" stroke="#69c8ee" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+                    <line x1="140" y1="150" x2="145" y2="174" stroke="#69c8ee" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+                    <line x1="135" y1="153" x2="139" y2="171" stroke="#69c8ee" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+                    <circle cx="56" cy="177" r="2" fill="#69c8ee" opacity="0.5"/>
+                    <circle cx="144" cy="177" r="2" fill="#69c8ee" opacity="0.5"/>`,
+                BAD: `<line x1="66" y1="122" x2="82" y2="129" stroke="#2a2a2a" stroke-width="2.5" stroke-linecap="round"/>
+                    <line x1="134" y1="122" x2="118" y2="129" stroke="#2a2a2a" stroke-width="2.5" stroke-linecap="round"/>`,
+                GOOD: `<ellipse cx="64" cy="160" rx="9" ry="6" fill="#ff8888" opacity="0.4"/>
+                    <ellipse cx="136" cy="160" rx="9" ry="6" fill="#ff8888" opacity="0.4"/>`,
+                VERY_GOOD: `<ellipse cx="64" cy="160" rx="9" ry="6" fill="#ff8888" opacity="0.35"/>
+                    <ellipse cx="136" cy="160" rx="9" ry="6" fill="#ff8888" opacity="0.35"/>
+                    <polygon points="52,108 56,118 48,118" fill="#ffd700" opacity="0.9"/>
+                    <polygon points="148,103 152,113 144,113" fill="#ffd700" opacity="0.9"/>
+                    <polygon points="46,88 50,98 42,98" fill="#ffe44d" opacity="0.7"/>
+                    <polygon points="154,86 158,96 150,96" fill="#ffe44d" opacity="0.7"/>
+                    <circle cx="56" cy="95" r="1.5" fill="#fff8a0" opacity="0.6"/>
+                    <circle cx="144" cy="93" r="1.5" fill="#fff8a0" opacity="0.6"/>`
+            }[state];
+
+            return `<svg viewBox="0 0 200 250" xmlns="http://www.w3.org/2000/svg" style="animation:${cfg.anim}">
+                <defs>
+                    <linearGradient id="${uid}bg" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="${cfg.body1}"/>
+                        <stop offset="100%" stop-color="${cfg.body2}"/>
+                    </linearGradient>
+                    <linearGradient id="${uid}rm" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="${cfg.rim1}"/>
+                        <stop offset="100%" stop-color="${cfg.rim2}"/>
+                    </linearGradient>
+                    <linearGradient id="${uid}hn" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="${cfg.metalH}"/>
+                        <stop offset="100%" stop-color="${cfg.handle}"/>
+                    </linearGradient>
+                </defs>
+                <!-- Shadow -->
+                <ellipse cx="100" cy="238" rx="55" ry="6" fill="rgba(0,0,0,0.12)"/>
+                <!-- Pail body -->
+                <path d="M40,80 L30,212 Q30,232 52,232 L148,232 Q170,232 170,212 L160,80 Z" fill="url(#${uid}bg)" stroke="${cfg.rim2}" stroke-width="2.5"/>
+                <!-- Metal bands -->
+                <path d="M34,110 L166,110" stroke="${cfg.metalH}" stroke-width="2" opacity="0.5"/>
+                <path d="M32,190 L168,190" stroke="${cfg.metalH}" stroke-width="2" opacity="0.5"/>
+                <!-- Highlight -->
+                <path d="M55,95 L50,200" stroke="rgba(255,255,255,0.25)" stroke-width="10" stroke-linecap="round"/>
+                <path d="M63,95 L59,195" stroke="rgba(255,255,255,0.12)" stroke-width="4" stroke-linecap="round"/>
+                <!-- Rim -->
+                <ellipse cx="100" cy="80" rx="62" ry="13" fill="url(#${uid}rm)" stroke="${cfg.rim2}" stroke-width="2"/>
+                <ellipse cx="100" cy="78" rx="55" ry="8" fill="rgba(255,255,255,0.15)"/>
+                <!-- Handle -->
+                <path d="M55,70 Q100,8 145,70" fill="none" stroke="url(#${uid}hn)" stroke-width="6" stroke-linecap="round"/>
+                <path d="M57,68 Q100,12 143,68" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-linecap="round"/>
+                <!-- Rivet dots -->
+                <circle cx="55" cy="70" r="3.5" fill="${cfg.metalH}" stroke="${cfg.handle}" stroke-width="1"/>
+                <circle cx="145" cy="70" r="3.5" fill="${cfg.metalH}" stroke="${cfg.handle}" stroke-width="1"/>
+                ${eyes}${mouth}${extras}
+            </svg>`;
+        }
+
+        function renderRobot(state) {
+            const cfg = {
+                VERY_BAD:  { head1: '#707880', head2: '#505860', panel: '#606868', glow: '#f44', glowDim: '#a22', bolt: '#666', anim: 'pailShake 0.5s infinite' },
+                BAD:       { head1: '#8a9aac', head2: '#6a7a8c', panel: '#7a8a9a', glow: '#fa0', glowDim: '#a70', bolt: '#778', anim: 'none' },
+                GOOD:      { head1: '#94b8d4', head2: '#6a98b8', panel: '#84a8c4', glow: '#4f4', glowDim: '#2a2', bolt: '#889', anim: 'none' },
+                VERY_GOOD: { head1: '#7cc8e8', head2: '#4aa8d0', panel: '#6cb8d8', glow: '#0ff', glowDim: '#0aa', bolt: '#99a', anim: 'pailBounce 0.8s infinite' }
+            }[state] || { head1: '#94b8d4', head2: '#6a98b8', panel: '#84a8c4', glow: '#4f4', glowDim: '#2a2', bolt: '#889', anim: 'none' };
+
+            const uid = 'r' + Math.random().toString(36).slice(2,6);
+
+            const eyes = {
+                VERY_BAD: `<rect x="58" y="108" width="30" height="30" rx="5" fill="#0a0a0a" stroke="${cfg.glow}" stroke-width="2.5"/>
+                    <rect x="112" y="108" width="30" height="30" rx="5" fill="#0a0a0a" stroke="${cfg.glow}" stroke-width="2.5"/>
+                    <circle cx="73" cy="119" r="6" fill="${cfg.glow}"/><circle cx="73" cy="119" r="9" fill="none" stroke="${cfg.glow}" stroke-width="0.5" opacity="0.4"/>
+                    <circle cx="127" cy="119" r="6" fill="${cfg.glow}"/><circle cx="127" cy="119" r="9" fill="none" stroke="${cfg.glow}" stroke-width="0.5" opacity="0.4"/>
+                    <circle cx="71" cy="117" r="1.5" fill="white" opacity="0.5"/>
+                    <circle cx="125" cy="117" r="1.5" fill="white" opacity="0.5"/>`,
+                BAD: `<rect x="60" y="112" width="28" height="24" rx="5" fill="#0a0a0a" stroke="${cfg.glow}" stroke-width="2"/>
+                    <rect x="112" y="112" width="28" height="24" rx="5" fill="#0a0a0a" stroke="${cfg.glow}" stroke-width="2"/>
+                    <circle cx="74" cy="128" r="5" fill="${cfg.glow}"/><circle cx="72" cy="126" r="1.5" fill="white" opacity="0.4"/>
+                    <circle cx="126" cy="128" r="5" fill="${cfg.glow}"/><circle cx="124" cy="126" r="1.5" fill="white" opacity="0.4"/>`,
+                GOOD: `<rect x="60" y="110" width="28" height="28" rx="5" fill="#0a0a0a" stroke="${cfg.glow}" stroke-width="2"/>
+                    <rect x="112" y="110" width="28" height="28" rx="5" fill="#0a0a0a" stroke="${cfg.glow}" stroke-width="2"/>
+                    <circle cx="74" cy="124" r="6" fill="${cfg.glow}"/><circle cx="72" cy="122" r="2" fill="white" opacity="0.5"/>
+                    <circle cx="126" cy="124" r="6" fill="${cfg.glow}"/><circle cx="124" cy="122" r="2" fill="white" opacity="0.5"/>`,
+                VERY_GOOD: `<rect x="60" y="110" width="28" height="28" rx="5" fill="#0a0a0a" stroke="${cfg.glow}" stroke-width="2.5"/>
+                    <rect x="112" y="110" width="28" height="28" rx="5" fill="#0a0a0a" stroke="${cfg.glow}" stroke-width="2.5"/>
+                    <path d="M64,124 L86,124" stroke="${cfg.glow}" stroke-width="3.5" stroke-linecap="round"/>
+                    <path d="M114,124 L136,124" stroke="${cfg.glow}" stroke-width="3.5" stroke-linecap="round"/>
+                    <circle cx="74" cy="124" r="8" fill="none" stroke="${cfg.glow}" stroke-width="0.5" opacity="0.3"/>
+                    <circle cx="126" cy="124" r="8" fill="none" stroke="${cfg.glow}" stroke-width="0.5" opacity="0.3"/>`
+            }[state];
+
+            const mouth = {
+                VERY_BAD: `<rect x="74" y="160" width="52" height="18" rx="4" fill="#0a0a0a" stroke="#555" stroke-width="1.5"/>
+                    <path d="M78,170 Q85,163 100,169 Q115,163 122,170" fill="none" stroke="${cfg.glow}" stroke-width="2.5"/>`,
+                BAD: `<rect x="76" y="162" width="48" height="14" rx="4" fill="#0a0a0a" stroke="#555" stroke-width="1.5"/>
+                    <line x1="82" y1="169" x2="118" y2="169" stroke="${cfg.glow}" stroke-width="2.5"/>`,
+                GOOD: `<rect x="74" y="160" width="52" height="18" rx="4" fill="#0a0a0a" stroke="#555" stroke-width="1.5"/>
+                    <path d="M80,165 Q100,180 120,165" fill="none" stroke="${cfg.glow}" stroke-width="2.5"/>`,
+                VERY_GOOD: `<rect x="72" y="158" width="56" height="22" rx="5" fill="#0a0a0a" stroke="#555" stroke-width="1.5"/>
+                    <path d="M78,164 Q100,188 122,164" fill="${cfg.glow}" stroke="${cfg.glowDim}" stroke-width="1.5" opacity="0.9"/>`
+            }[state];
+
+            const extras = {
+                VERY_BAD: `<line x1="56" y1="128" x2="50" y2="150" stroke="#69c8ee" stroke-width="2" opacity="0.6"/>
+                    <line x1="144" y1="128" x2="150" y2="150" stroke="#69c8ee" stroke-width="2" opacity="0.6"/>
+                    <circle cx="50" cy="153" r="1.5" fill="#69c8ee" opacity="0.4"/>
+                    <circle cx="150" cy="153" r="1.5" fill="#69c8ee" opacity="0.4"/>`,
+                BAD: `<line x1="60" y1="103" x2="76" y2="111" stroke="#555" stroke-width="2.5" stroke-linecap="round"/>
+                    <line x1="140" y1="103" x2="124" y2="111" stroke="#555" stroke-width="2.5" stroke-linecap="round"/>`,
+                GOOD: `<circle cx="57" cy="152" r="6" fill="#ff9999" opacity="0.3"/>
+                    <circle cx="143" cy="152" r="6" fill="#ff9999" opacity="0.3"/>`,
+                VERY_GOOD: `<circle cx="100" cy="42" r="6" fill="${cfg.glow}" opacity="0.7"/>
+                    <circle cx="100" cy="42" r="10" fill="none" stroke="${cfg.glow}" stroke-width="1" opacity="0.3"/>
+                    <circle cx="100" cy="42" r="14" fill="none" stroke="${cfg.glow}" stroke-width="0.5" opacity="0.15"/>
+                    <polygon points="42,90 46,100 38,100" fill="#ffd700" opacity="0.8"/>
+                    <polygon points="158,88 162,98 154,98" fill="#ffd700" opacity="0.8"/>
+                    <circle cx="44" cy="86" r="1.5" fill="#ffe44d" opacity="0.5"/>
+                    <circle cx="156" cy="84" r="1.5" fill="#ffe44d" opacity="0.5"/>`
+            }[state];
+
+            return `<svg viewBox="0 0 200 250" xmlns="http://www.w3.org/2000/svg" style="animation:${cfg.anim}">
+                <defs>
+                    <linearGradient id="${uid}hd" x1="0" y1="0" x2="0.3" y2="1">
+                        <stop offset="0%" stop-color="${cfg.head1}"/>
+                        <stop offset="100%" stop-color="${cfg.head2}"/>
+                    </linearGradient>
+                    <linearGradient id="${uid}pn" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="${cfg.panel}"/>
+                        <stop offset="100%" stop-color="${cfg.head2}"/>
+                    </linearGradient>
+                </defs>
+                <!-- Shadow -->
+                <ellipse cx="100" cy="240" rx="50" ry="5" fill="rgba(0,0,0,0.1)"/>
+                <!-- Antenna -->
+                <line x1="100" y1="50" x2="100" y2="72" stroke="${cfg.bolt}" stroke-width="4"/>
+                <circle cx="100" cy="46" r="7" fill="${cfg.glow}" opacity="0.8"/>
+                <circle cx="100" cy="46" r="4" fill="white" opacity="0.3"/>
+                <!-- Head -->
+                <rect x="42" y="72" width="116" height="126" rx="14" fill="url(#${uid}hd)" stroke="${cfg.head2}" stroke-width="2.5"/>
+                <!-- Panel lines -->
+                <rect x="52" y="82" width="96" height="106" rx="8" fill="url(#${uid}pn)" opacity="0.3"/>
+                <!-- Head highlight -->
+                <path d="M56,82 L56,170" stroke="rgba(255,255,255,0.15)" stroke-width="6" stroke-linecap="round"/>
+                <!-- Ears -->
+                <rect x="30" y="88" width="18" height="34" rx="6" fill="url(#${uid}hd)" stroke="${cfg.head2}" stroke-width="2"/>
+                <rect x="152" y="88" width="18" height="34" rx="6" fill="url(#${uid}hd)" stroke="${cfg.head2}" stroke-width="2"/>
+                <line x1="39" y1="94" x2="39" y2="116" stroke="rgba(255,255,255,0.15)" stroke-width="3" stroke-linecap="round"/>
+                <line x1="161" y1="94" x2="161" y2="116" stroke="rgba(255,255,255,0.15)" stroke-width="3" stroke-linecap="round"/>
+                <!-- Bolts -->
+                <circle cx="54" cy="84" r="3" fill="${cfg.bolt}" stroke="#555" stroke-width="1"/>
+                <circle cx="146" cy="84" r="3" fill="${cfg.bolt}" stroke="#555" stroke-width="1"/>
+                <circle cx="54" cy="186" r="3" fill="${cfg.bolt}" stroke="#555" stroke-width="1"/>
+                <circle cx="146" cy="186" r="3" fill="${cfg.bolt}" stroke="#555" stroke-width="1"/>
+                <!-- Neck -->
+                <rect x="88" y="198" width="24" height="10" rx="3" fill="${cfg.head2}"/>
+                <!-- Legs -->
+                <rect x="60" y="208" width="14" height="26" rx="4" fill="${cfg.bolt}" stroke="#555" stroke-width="1.5"/>
+                <rect x="126" y="208" width="14" height="26" rx="4" fill="${cfg.bolt}" stroke="#555" stroke-width="1.5"/>
+                <ellipse cx="67" cy="236" rx="10" ry="4" fill="${cfg.bolt}" stroke="#555" stroke-width="1"/>
+                <ellipse cx="133" cy="236" rx="10" ry="4" fill="${cfg.bolt}" stroke="#555" stroke-width="1"/>
+                ${eyes}${mouth}${extras}
+            </svg>`;
+        }
+
+        function renderCat(state) {
+            const cfg = {
+                VERY_BAD:  { fur: '#b0a090', inner: '#c8b8a8', nose: '#886', anim: 'pailShake 0.5s infinite' },
+                BAD:       { fur: '#d4b896', inner: '#e8d4bc', nose: '#a87', anim: 'none' },
+                GOOD:      { fur: '#f5c77e', inner: '#ffe4b5', nose: '#c96', anim: 'none' },
+                VERY_GOOD: { fur: '#ffb347', inner: '#ffd89b', nose: '#e85', anim: 'pailBounce 0.8s infinite' }
+            }[state] || { fur: '#f5c77e', inner: '#ffe4b5', nose: '#c96', anim: 'none' };
+
+            const eyes = {
+                VERY_BAD: `<circle cx="72" cy="125" r="14" fill="white" stroke="#333" stroke-width="2"/>
+                    <circle cx="72" cy="121" r="8" fill="#333"/>
+                    <circle cx="128" cy="125" r="14" fill="white" stroke="#333" stroke-width="2"/>
+                    <circle cx="128" cy="121" r="8" fill="#333"/>`,
+                BAD: `<circle cx="72" cy="128" r="12" fill="white" stroke="#333" stroke-width="2"/>
+                    <circle cx="72" cy="131" r="6" fill="#333"/>
+                    <circle cx="128" cy="128" r="12" fill="white" stroke="#333" stroke-width="2"/>
+                    <circle cx="128" cy="131" r="6" fill="#333"/>`,
+                GOOD: `<circle cx="72" cy="125" r="13" fill="white" stroke="#333" stroke-width="2"/>
+                    <circle cx="72" cy="125" r="7" fill="#333"/>
+                    <circle cx="74" cy="122" r="2.5" fill="white"/>
+                    <circle cx="128" cy="125" r="13" fill="white" stroke="#333" stroke-width="2"/>
+                    <circle cx="128" cy="125" r="7" fill="#333"/>
+                    <circle cx="130" cy="122" r="2.5" fill="white"/>`,
+                VERY_GOOD: `<path d="M59,125 Q72,116 85,125" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>
+                    <path d="M115,125 Q128,116 141,125" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>`
+            }[state];
+
+            const mouth = {
+                VERY_BAD: `<path d="M85,162 Q100,154 115,162" fill="none" stroke="#333" stroke-width="2.5"/>`,
+                BAD: `<path d="M90,160 Q100,156 110,160" fill="none" stroke="#333" stroke-width="2.5"/>`,
+                GOOD: `<path d="M88,155 Q100,168 112,155" fill="none" stroke="#333" stroke-width="2.5"/>
+                    <line x1="100" y1="148" x2="100" y2="158" stroke="#333" stroke-width="2"/>`,
+                VERY_GOOD: `<path d="M82,152 Q100,175 118,152" fill="#333" stroke="#333" stroke-width="2"/>
+                    <line x1="100" y1="145" x2="100" y2="155" stroke="#333" stroke-width="2"/>`
+            }[state];
+
+            const whiskers = `<line x1="45" y1="148" x2="70" y2="150" stroke="#333" stroke-width="1.5"/>
+                <line x1="45" y1="158" x2="70" y2="155" stroke="#333" stroke-width="1.5"/>
+                <line x1="130" y1="150" x2="155" y2="148" stroke="#333" stroke-width="1.5"/>
+                <line x1="130" y1="155" x2="155" y2="158" stroke="#333" stroke-width="1.5"/>`;
+
+            const extras = {
+                VERY_BAD: `<line x1="56" y1="135" x2="52" y2="155" stroke="#5bf" stroke-width="2"/>
+                    <line x1="144" y1="135" x2="148" y2="155" stroke="#5bf" stroke-width="2"/>`,
+                BAD: `<line x1="60" y1="112" x2="76" y2="118" stroke="#333" stroke-width="2.5"/>
+                    <line x1="140" y1="112" x2="124" y2="118" stroke="#333" stroke-width="2.5"/>`,
+                GOOD: `<circle cx="60" cy="148" r="8" fill="#ff9999" opacity="0.5"/>
+                    <circle cx="140" cy="148" r="8" fill="#ff9999" opacity="0.5"/>`,
+                VERY_GOOD: `<polygon points="48,100 51,108 45,108" fill="#ffd700"/>
+                    <polygon points="152,100 155,108 149,108" fill="#ffd700"/>
+                    <polygon points="44,82 47,90 41,90" fill="#ffd700"/>
+                    <polygon points="156,82 159,90 153,90" fill="#ffd700"/>`
+            }[state];
+
+            return `<svg viewBox="0 0 200 250" xmlns="http://www.w3.org/2000/svg" style="animation:${cfg.anim}">
+                <polygon points="55,110 30,50 70,90" fill="${cfg.fur}" stroke="#b08840" stroke-width="2"/>
+                <polygon points="145,110 170,50 130,90" fill="${cfg.fur}" stroke="#b08840" stroke-width="2"/>
+                <polygon points="55,110 38,62 65,95" fill="${cfg.inner}"/>
+                <polygon points="145,110 162,62 135,95" fill="${cfg.inner}"/>
+                <circle cx="100" cy="140" r="65" fill="${cfg.fur}" stroke="#b08840" stroke-width="3"/>
+                <ellipse cx="100" cy="148" rx="25" ry="15" fill="${cfg.inner}"/>
+                <ellipse cx="100" cy="146" rx="5" ry="4" fill="${cfg.nose}"/>
+                ${eyes}${mouth}${whiskers}${extras}
+            </svg>`;
+        }
+
+        function renderBlob(state) {
+            const cfg = {
+                VERY_BAD:  { fill1: '#a0a0b8', fill2: '#787890', stroke: '#686880', spot: '#9090a8', anim: 'pailShake 0.5s infinite' },
+                BAD:       { fill1: '#c8b0e0', fill2: '#a890c0', stroke: '#9080a8', spot: '#d0c0e8', anim: 'none' },
+                GOOD:      { fill1: '#d0a8f0', fill2: '#b080d0', stroke: '#9868b8', spot: '#e0c0f8', anim: 'none' },
+                VERY_GOOD: { fill1: '#e088ff', fill2: '#c060e8', stroke: '#a848d0', spot: '#f0b0ff', anim: 'pailBounce 0.8s infinite' }
+            }[state] || { fill1: '#d0a8f0', fill2: '#b080d0', stroke: '#9868b8', spot: '#e0c0f8', anim: 'none' };
+
+            const uid = 'b' + Math.random().toString(36).slice(2,6);
+
+            const eyes = {
+                VERY_BAD: `<ellipse cx="78" cy="116" rx="14" ry="15" fill="white" stroke="#2a2a2a" stroke-width="2"/>
+                    <circle cx="78" cy="112" r="8" fill="#2a2a2a"/><circle cx="76" cy="110" r="2.5" fill="white" opacity="0.6"/>
+                    <ellipse cx="122" cy="116" rx="14" ry="15" fill="white" stroke="#2a2a2a" stroke-width="2"/>
+                    <circle cx="122" cy="112" r="8" fill="#2a2a2a"/><circle cx="120" cy="110" r="2.5" fill="white" opacity="0.6"/>`,
+                BAD: `<ellipse cx="78" cy="118" rx="13" ry="13" fill="white" stroke="#2a2a2a" stroke-width="2"/>
+                    <circle cx="78" cy="122" r="6.5" fill="#2a2a2a"/><circle cx="77" cy="120" r="2" fill="white" opacity="0.5"/>
+                    <ellipse cx="122" cy="118" rx="13" ry="13" fill="white" stroke="#2a2a2a" stroke-width="2"/>
+                    <circle cx="122" cy="122" r="6.5" fill="#2a2a2a"/><circle cx="121" cy="120" r="2" fill="white" opacity="0.5"/>`,
+                GOOD: `<ellipse cx="78" cy="116" rx="14" ry="14" fill="white" stroke="#2a2a2a" stroke-width="2"/>
+                    <circle cx="78" cy="116" r="7.5" fill="#2a2a2a"/><circle cx="76" cy="113" r="2.5" fill="white" opacity="0.6"/>
+                    <ellipse cx="122" cy="116" rx="14" ry="14" fill="white" stroke="#2a2a2a" stroke-width="2"/>
+                    <circle cx="122" cy="116" r="7.5" fill="#2a2a2a"/><circle cx="120" cy="113" r="2.5" fill="white" opacity="0.6"/>`,
+                VERY_GOOD: `<path d="M63,116 Q78,105 93,116" fill="none" stroke="#2a2a2a" stroke-width="3.5" stroke-linecap="round"/>
+                    <path d="M107,116 Q122,105 137,116" fill="none" stroke="#2a2a2a" stroke-width="3.5" stroke-linecap="round"/>`
+            }[state];
+
+            const mouth = {
+                VERY_BAD: `<path d="M80,158 Q90,149 100,155 Q110,149 120,158" fill="none" stroke="#2a2a2a" stroke-width="3" stroke-linecap="round"/>`,
+                BAD: `<path d="M84,155 Q100,148 116,155" fill="none" stroke="#2a2a2a" stroke-width="3" stroke-linecap="round"/>`,
+                GOOD: `<path d="M80,150 Q100,168 120,150" fill="none" stroke="#2a2a2a" stroke-width="3" stroke-linecap="round"/>`,
+                VERY_GOOD: `<path d="M76,148 Q100,180 124,148" fill="#444" stroke="#2a2a2a" stroke-width="2.5" stroke-linecap="round"/>
+                    <path d="M86,168 Q100,175 114,168" fill="#e55" opacity="0.5"/>`
+            }[state];
+
+            const extras = {
+                VERY_BAD: `<line x1="62" y1="126" x2="57" y2="148" stroke="#69c8ee" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+                    <line x1="66" y1="128" x2="62" y2="146" stroke="#69c8ee" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+                    <line x1="138" y1="126" x2="143" y2="148" stroke="#69c8ee" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+                    <line x1="134" y1="128" x2="138" y2="146" stroke="#69c8ee" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+                    <circle cx="57" cy="151" r="2" fill="#69c8ee" opacity="0.4"/>
+                    <circle cx="143" cy="151" r="2" fill="#69c8ee" opacity="0.4"/>`,
+                BAD: `<line x1="64" y1="100" x2="80" y2="108" stroke="#2a2a2a" stroke-width="2.5" stroke-linecap="round"/>
+                    <line x1="136" y1="100" x2="120" y2="108" stroke="#2a2a2a" stroke-width="2.5" stroke-linecap="round"/>`,
+                GOOD: `<ellipse cx="62" cy="140" rx="9" ry="7" fill="#ff8888" opacity="0.4"/>
+                    <ellipse cx="138" cy="140" rx="9" ry="7" fill="#ff8888" opacity="0.4"/>`,
+                VERY_GOOD: `<ellipse cx="62" cy="140" rx="9" ry="7" fill="#ff8888" opacity="0.3"/>
+                    <ellipse cx="138" cy="140" rx="9" ry="7" fill="#ff8888" opacity="0.3"/>
+                    <polygon points="48,72 52,83 44,83" fill="#ffd700" opacity="0.85"/>
+                    <polygon points="152,70 156,81 148,81" fill="#ffd700" opacity="0.85"/>
+                    <polygon points="38,92 42,103 34,103" fill="#ffe44d" opacity="0.6"/>
+                    <polygon points="162,90 166,101 158,101" fill="#ffe44d" opacity="0.6"/>
+                    <circle cx="50" cy="80" r="1.5" fill="#fff8a0" opacity="0.5"/>
+                    <circle cx="150" cy="78" r="1.5" fill="#fff8a0" opacity="0.5"/>`
+            }[state];
+
+            return `<svg viewBox="0 0 200 250" xmlns="http://www.w3.org/2000/svg" style="animation:${cfg.anim}">
+                <defs>
+                    <radialGradient id="${uid}bg" cx="40%" cy="35%" r="65%">
+                        <stop offset="0%" stop-color="${cfg.fill1}"/>
+                        <stop offset="100%" stop-color="${cfg.fill2}"/>
+                    </radialGradient>
+                </defs>
+                <!-- Shadow -->
+                <ellipse cx="100" cy="228" rx="60" ry="7" fill="rgba(0,0,0,0.1)"/>
+                <!-- Body - organic amorphous shape -->
+                <path d="M32,135 Q28,90 60,72 Q80,60 105,62 Q135,60 155,78 Q178,98 172,140 Q170,170 155,188 Q145,200 130,208 Q110,218 90,212 Q65,206 48,188 Q30,170 32,135 Z" fill="url(#${uid}bg)" stroke="${cfg.stroke}" stroke-width="2.5"/>
+                <!-- Inner highlight -->
+                <path d="M50,115 Q55,85 80,76 Q95,70 105,72" stroke="rgba(255,255,255,0.25)" stroke-width="8" stroke-linecap="round" fill="none"/>
+                <path d="M55,120 Q58,98 75,86" stroke="rgba(255,255,255,0.12)" stroke-width="4" stroke-linecap="round" fill="none"/>
+                <!-- Organic spots -->
+                <ellipse cx="52" cy="170" rx="12" ry="10" fill="${cfg.spot}" opacity="0.25"/>
+                <ellipse cx="148" cy="110" rx="10" ry="8" fill="${cfg.spot}" opacity="0.2"/>
+                <circle cx="140" cy="175" r="7" fill="${cfg.spot}" opacity="0.18"/>
+                <!-- Little arm bumps -->
+                <ellipse cx="34" cy="155" rx="12" ry="16" fill="url(#${uid}bg)" stroke="${cfg.stroke}" stroke-width="2"/>
+                <ellipse cx="168" cy="148" rx="11" ry="15" fill="url(#${uid}bg)" stroke="${cfg.stroke}" stroke-width="2"/>
+                <!-- Feet bumps -->
+                <ellipse cx="72" cy="215" rx="18" ry="8" fill="url(#${uid}bg)" stroke="${cfg.stroke}" stroke-width="2"/>
+                <ellipse cx="128" cy="218" rx="18" ry="8" fill="url(#${uid}bg)" stroke="${cfg.stroke}" stroke-width="2"/>
+                ${eyes}${mouth}${extras}
+            </svg>`;
+        }
+
+        // ==================== SCHOOLING ====================
+
+        const SCHOOLING_INITIAL_MIN = 2;
+        const SCHOOLING_INITIAL_MAX = 6;
+
+        function randomSchoolingLevels() {
+            const states = ['VERY_BAD', 'BAD', 'GOOD', 'VERY_GOOD'];
+            const levels = { VERY_BAD: SCHOOLING_INITIAL_MIN, BAD: SCHOOLING_INITIAL_MIN, GOOD: SCHOOLING_INITIAL_MIN, VERY_GOOD: SCHOOLING_INITIAL_MIN };
+            let remaining = 8; // 16 total - 8 (4 states * min 2)
+            while (remaining > 0) {
+                const s = states[Math.floor(Math.random() * 4)];
+                if (levels[s] < SCHOOLING_INITIAL_MAX) {
+                    levels[s]++;
+                    remaining--;
+                }
+            }
+            return levels;
+        }
+
+        let schoolingLevels = randomSchoolingLevels();
+        let schoolingReturnTo = 'setup'; // 'setup' or 'main'
+        let schoolingClicks = 0;
+        const SCHOOLING_MAX_CLICKS = 6;
+        const SCHOOLING_ORDER = ['VERY_BAD', 'BAD', 'GOOD', 'VERY_GOOD'];
+
+        function initSchoolingSession(returnTo, hideScreen) {
+            schoolingReturnTo = returnTo;
+            schoolingClicks = 0;
+            const stored = localStorage.getItem('emotionalAI_schoolingLevels');
+            schoolingLevels = stored ? JSON.parse(stored) : randomSchoolingLevels();
+            document.getElementById(hideScreen).classList.add('hidden');
+            document.getElementById('schooling-screen').classList.remove('hidden');
+            renderSchoolingAvatar('GOOD');
+            updateSchoolingDisplay();
+        }
+
+        function startSchooling() {
+            if (!selectedAvatar) return;
+            initSchoolingSession('setup', 'setup-screen');
+        }
+
+        function startSchoolingFromMain() {
+            initSchoolingSession('main', 'main-app');
+        }
+
+        function renderSchoolingAvatar(state) {
+            const el = document.getElementById('schooling-avatar');
+            const renderFn = { pail: renderPail, robot: renderRobot, cat: renderCat, blob: renderBlob }[selectedAvatar];
+            if (renderFn) el.innerHTML = renderFn(state);
+        }
+
+        function doSchooling(targetState) {
+            if (schoolingClicks >= SCHOOLING_MAX_CLICKS) return;
+
+            // Find donor: highest level among other states (> min 1), tie-break VB>B>G>VG
+            let donor = null;
+            let donorLevel = -1;
+            for (const s of SCHOOLING_ORDER) {
+                if (s === targetState) continue;
+                if (schoolingLevels[s] > 1 && schoolingLevels[s] > donorLevel) {
+                    donorLevel = schoolingLevels[s];
+                    donor = s;
+                }
+            }
+
+            if (!donor) return;
+
+            schoolingLevels[targetState]++;
+            schoolingLevels[donor]--;
+            schoolingClicks++;
+
+            renderSchoolingAvatar(targetState);
+            updateSchoolingDisplay();
+        }
+
+        function updateSchoolingDisplay() {
+            const remaining = SCHOOLING_MAX_CLICKS - schoolingClicks;
+            document.getElementById('schooling-actions').textContent =
+                remaining > 0 ? `Actions remaining: ${remaining} / ${SCHOOLING_MAX_CLICKS}` : 'The school is over';
+
+            // Personality description based on current levels
+            const descriptions = {
+                VERY_GOOD: { high: 'loves to play and gets excited easily', low: 'rarely gets overly excited' },
+                GOOD:      { high: 'responds well to praise and stays cheerful', low: 'doesn\'t brighten up easily from praise' },
+                BAD:       { high: 'takes lectures seriously and feels down easily', low: 'shrugs off scolding without much worry' },
+                VERY_BAD:  { high: 'is very sensitive to harsh words', low: 'stays resilient even when scolded' }
+            };
+
+            const traits = [];
+            for (const s of ['VERY_GOOD', 'GOOD', 'BAD', 'VERY_BAD']) {
+                if (schoolingLevels[s] >= 5) traits.push(descriptions[s].high);
+                else if (schoolingLevels[s] <= 3) traits.push(descriptions[s].low);
+            }
+
+            const personality = document.getElementById('schooling-personality');
+            if (traits.length === 0) {
+                personality.innerHTML = '<strong>Personality:</strong> Balanced — reacts evenly to all interactions.';
+            } else {
+                personality.innerHTML = '<strong>Personality:</strong> Your AI ' + traits.join(', and ') + '.';
+            }
+
+            // Debug level bars
+            const container = document.getElementById('schooling-levels');
+            const labels = { VERY_GOOD: 'Very Good', GOOD: 'Good', BAD: 'Bad', VERY_BAD: 'Very Bad' };
+            const barClass = { VERY_GOOD: 'vg', GOOD: 'g', BAD: 'b', VERY_BAD: 'vb' };
+
+            container.innerHTML = ['VERY_GOOD', 'GOOD', 'BAD', 'VERY_BAD'].map(s => {
+                const pct = (schoolingLevels[s] / SCHOOLING_MAX) * 100;
+                return `<div class="level-row">
+                    <span style="min-width:65px">${labels[s]}</span>
+                    <div class="level-bar-bg"><div class="level-bar-fill ${barClass[s]}" style="width:${pct}%"></div></div>
+                    <span class="level-num">${schoolingLevels[s]}</span>
+                </div>`;
+            }).join('');
+
+            // Update button disabled states
+            const outOfActions = schoolingClicks >= SCHOOLING_MAX_CLICKS;
+            const anyCanShrink = (except) => SCHOOLING_ORDER.some(s => s !== except && schoolingLevels[s] > 1);
+
+            document.getElementById('btn-play').disabled = outOfActions || !anyCanShrink('VERY_GOOD');
+            document.getElementById('btn-praise').disabled = outOfActions || !anyCanShrink('GOOD');
+            document.getElementById('btn-preach').disabled = outOfActions || !anyCanShrink('BAD');
+            document.getElementById('btn-scold').disabled = outOfActions || !anyCanShrink('VERY_BAD');
+        }
+
+        function endSchooling() {
+            localStorage.setItem('emotionalAI_schoolingLevels', JSON.stringify(schoolingLevels));
+            document.getElementById('schooling-screen').classList.add('hidden');
+            if (schoolingReturnTo === 'main') {
+                document.getElementById('main-app').classList.remove('hidden');
+            } else {
+                document.getElementById('setup-screen').classList.remove('hidden');
+            }
+        }
+
+        // ==================== AVATAR PICKER ====================
+
+        const avatarTypes = [
+            {
+                id: 'pail', label: 'Pail', render: renderPail,
+                story: `<span class="story-name">Pail</span> was once an ordinary bucket on a distant moon colony — until an alien probe struck it with a bolt of sentient energy. Now conscious and oddly cheerful, Pail was captured by the Galactic Bureau and reassigned as an emotional AI agent. It carries your feelings like it once carried water — loyally and without spilling a drop.`
+            },
+            {
+                id: 'robot', label: 'Robot', render: renderRobot,
+                story: `<span class="story-name">Robot</span> was built by a rogue alien engineer who wanted a friend, not a weapon. When the engineer's ship crash-landed on Earth, Robot was seized by a shadowy agency and reprogrammed as an AI companion. Beneath its boxy exterior lies an alien heart that genuinely wants to understand human emotions — even if it sometimes calculates them a bit too literally.`
+            },
+            {
+                id: 'cat', label: 'Cat', render: renderCat,
+                story: `<span class="story-name">Cat</span> isn't really a cat. It's a shape-shifting alien scout from the Whisker Nebula who chose the most universally beloved disguise on Earth. Captured during a reconnaissance mission at a fish market, Cat was offered a deal: serve as an emotional AI agent or face deportation to the Void. It chose the job — and the free treats.`
+            },
+            {
+                id: 'blob', label: 'Blob', render: renderBlob,
+                story: `<span class="story-name">Blob</span> drifted through space for millennia as a formless cloud of empathic energy. When it accidentally absorbed a satellite signal full of soap operas, it became obsessed with human feelings. Captured mid-orbit and compressed into a squishy companion form, Blob now works as an AI agent — feeding on emotions the way others feed on sunlight.`
+            }
+        ];
+
+        function buildAvatarPicker() {
+            const picker = document.getElementById('avatar-picker');
+            const storyBox = document.getElementById('avatar-story');
+            avatarTypes.forEach(a => {
+                const div = document.createElement('div');
+                div.className = 'avatar-option';
+                div.dataset.avatar = a.id;
+                div.innerHTML = a.render('GOOD') + `<span>${a.label}</span>`;
+                div.onclick = () => selectAvatar(a.id);
+                div.onmouseenter = () => {
+                    storyBox.innerHTML = a.story;
+                    storyBox.classList.remove('empty');
+                };
+                div.onmouseleave = () => {
+                    if (!selectedAvatar || selectedAvatar !== a.id) {
+                        const sel = avatarTypes.find(t => t.id === selectedAvatar);
+                        if (sel) {
+                            storyBox.innerHTML = sel.story;
+                        } else {
+                            storyBox.innerHTML = 'Hover over an avatar to learn their story...';
+                            storyBox.classList.add('empty');
+                        }
+                    }
+                };
+                picker.appendChild(div);
+            });
+        }
+
+        function selectAvatar(id) {
+            selectedAvatar = id;
+            document.querySelectorAll('.avatar-option').forEach(el => {
+                el.classList.toggle('selected', el.dataset.avatar === id);
+            });
+            const storyBox = document.getElementById('avatar-story');
+            const sel = avatarTypes.find(t => t.id === id);
+            if (sel) {
+                storyBox.innerHTML = sel.story;
+                storyBox.classList.remove('empty');
+            }
+            enableCreateButton();
+        }
+
+        function canCreate() {
+            const name = document.getElementById('ai-name-input').value.trim();
+            return name.length >= 2 && selectedAvatar;
+        }
+
+        // ==================== CORE APP LOGIC ====================
+
+        function checkFirstTimeUser() {
+            if (!sessionId || !aiName || !selectedAvatar) {
+                document.getElementById('setup-screen').classList.remove('hidden');
+                document.getElementById('main-app').classList.add('hidden');
+            } else {
+                document.getElementById('setup-screen').classList.add('hidden');
+                document.getElementById('main-app').classList.remove('hidden');
+                document.getElementById('ai-name-display').textContent = aiName;
+                renderMainAvatar('GOOD');
+                addMessage(`👋 Welcome back! I'm ${aiName}, your AI companion!`, false, true);
+            }
+        }
+
+        function enableCreateButton() {
+            const valid = canCreate();
+            document.getElementById('create-ai-btn').disabled = !valid;
+            document.getElementById('school-btn').disabled = !selectedAvatar;
+        }
+
+        function createAI() {
+            const input = document.getElementById('ai-name-input');
+            const name = input.value.trim();
+
+            if (name.length < 2) {
+                alert('Please enter a name with at least 2 characters');
+                return;
+            }
+            if (!selectedAvatar) {
+                alert('Please select an avatar');
+                return;
+            }
+
+            sessionId = 'user_' + Date.now() + '_' + Math.random().toString(36).substring(7);
+            aiName = name;
+
+            localStorage.setItem('emotionalAI_sessionId', sessionId);
+            localStorage.setItem('emotionalAI_name', aiName);
+            localStorage.setItem('emotionalAI_avatar', selectedAvatar);
+            localStorage.setItem('emotionalAI_schoolingLevels', JSON.stringify(schoolingLevels));
+
+            document.getElementById('setup-screen').classList.add('hidden');
+            document.getElementById('main-app').classList.remove('hidden');
+            document.getElementById('ai-name-display').textContent = aiName;
+            renderMainAvatar('GOOD');
+
+            addMessage(`🎉 Hi! I'm ${aiName}, YOUR personal AI companion! Let's start this journey together!`, false, true);
+        }
+
+        function resetAI() {
+            if (!confirm(`Are you sure you want to delete ${aiName} and start over?`)) {
+                return;
+            }
+
+            localStorage.removeItem('emotionalAI_sessionId');
+            localStorage.removeItem('emotionalAI_name');
+            localStorage.removeItem('emotionalAI_avatar');
+            localStorage.removeItem('emotionalAI_schoolingLevels');
+            location.reload();
+        }
+
+        function renderMainAvatar(state) {
+            const avatar = document.getElementById('avatar');
+            const renderFn = { pail: renderPail, robot: renderRobot, cat: renderCat, blob: renderBlob }[selectedAvatar];
+            if (renderFn) {
+                avatar.innerHTML = renderFn(state);
+            }
+        }
+
+        // Update status displays
+        function updateStatus() {
+            document.getElementById('battery-display').textContent =
+                document.getElementById('battery').value + '%';
+            document.getElementById('network-display').textContent =
+                document.getElementById('network').value + ' dBm';
+            document.getElementById('memory-display').textContent =
+                document.getElementById('memory').value + ' MB';
+        }
+
+        // Get device status to send to server
+        function getDeviceStatus() {
+            return {
+                battery: parseInt(document.getElementById('battery').value),
+                network: parseInt(document.getElementById('network').value),
+                memory: parseInt(document.getElementById('memory').value)
+            };
+        }
+
+        // Send message to server
+        async function sendMessage() {
+            const input = document.getElementById('message-input');
+            const message = input.value.trim();
+
+            if (!message) return;
+
+            addMessage(message, true);
+            input.value = '';
+            document.getElementById('send-btn').disabled = true;
+
+            try {
+                const response = await fetch(`${SERVER_URL}/api/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        sessionId,
+                        message,
+                        deviceStatus: getDeviceStatus(),
+                        aiName,
+                        schoolingLevels: JSON.parse(localStorage.getItem('emotionalAI_schoolingLevels') || 'null')
+                    })
+                });
+
+                const data = await response.json();
+                addMessage(data.response, false);
+                updateAvatar(data.avatarHint);
+
+                if (data.shouldSpeak) {
+                    speak(data.response);
+                }
+
+                if (data._debug) {
+                    console.log('🎭 Emotions:', data._debug);
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                addMessage('Sorry, I had trouble connecting to the server. Make sure the server is running!', false, true);
+            } finally {
+                document.getElementById('send-btn').disabled = false;
+            }
+        }
+
+        // Add message to chat
+        function addMessage(text, isUser, isSystem = false) {
+            const chatBox = document.getElementById('chat-box');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'message ' + (isUser ? 'user' : isSystem ? 'system' : 'ai');
+            msgDiv.textContent = text;
+            chatBox.appendChild(msgDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // Update avatar based on emotion (sent by server)
+        function updateAvatar(emotionHint) {
+            const body = document.body;
+
+            const bgColors = {
+                'VERY_BAD':  '#2c0e0e',
+                'BAD':       '#f3f4f6',
+                'GOOD':      '#f3f4f6',
+                'VERY_GOOD': '#d1fae5'
+            };
+
+            const state = emotionHint && bgColors[emotionHint] ? emotionHint : 'GOOD';
+            body.style.backgroundColor = bgColors[state];
+            renderMainAvatar(state);
+        }
+
+        // Text-to-speech
+        let speakerEnabled = true;
+
+        function speak(text) {
+            if (!speakerEnabled) return;
+            const utterance = new SpeechSynthesisUtterance(text);
+            speechSynthesis.speak(utterance);
+        }
+
+        function toggleSpeaker() {
+            speakerEnabled = !speakerEnabled;
+            const btn = document.getElementById('speaker-btn');
+            if (speakerEnabled) {
+                btn.textContent = '🔊';
+                btn.classList.remove('off');
+            } else {
+                speechSynthesis.cancel();
+                btn.textContent = '🔇';
+                btn.classList.add('off');
+            }
+        }
+
+        // Handle enter key
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // Voice recognition
+        let recognition = null;
+        let isVoiceActive = false;
+
+        function initVoiceRecognition() {
+            if ('webkitSpeechRecognition' in window) {
+                recognition = new webkitSpeechRecognition();
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = 'en-US';
+
+                recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    document.getElementById('message-input').value = transcript;
+                    sendMessage();
+                };
+
+                recognition.onerror = (event) => {
+                    console.error('Speech recognition error:', event.error);
+                    stopVoice();
+                };
+
+                recognition.onend = () => {
+                    stopVoice();
+                };
+            } else {
+                console.warn('Speech recognition not supported');
+            }
+        }
+
+        function toggleVoice() {
+            if (!recognition) {
+                initVoiceRecognition();
+            }
+
+            if (isVoiceActive) {
+                stopVoice();
+            } else {
+                startVoice();
+            }
+        }
+
+        function startVoice() {
+            if (recognition) {
+                try {
+                    recognition.start();
+                    isVoiceActive = true;
+                    document.getElementById('voice-btn').classList.add('active');
+                    document.getElementById('voice-btn').textContent = '🔴';
+                } catch (e) {
+                    console.error('Error starting voice:', e);
+                }
+            }
+        }
+
+        function stopVoice() {
+            if (recognition) {
+                try {
+                    recognition.stop();
+                } catch (e) {
+                    // Already stopped
+                }
+            }
+            isVoiceActive = false;
+            document.getElementById('voice-btn').classList.remove('active');
+            document.getElementById('voice-btn').textContent = '🎤';
+        }
+
+        // Toggle device controls visibility
+        function toggleControls() {
+            const content = document.getElementById('controls-content');
+            const toggle = document.getElementById('controls-toggle');
+
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                toggle.textContent = '▼';
+            } else {
+                content.style.display = 'none';
+                toggle.textContent = '▶';
+            }
+        }
+
+        // Initialize on load
+        buildAvatarPicker();
+        checkFirstTimeUser();
+        updateStatus();
+    </script>
+</body>
+</html>
