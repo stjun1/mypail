@@ -470,11 +470,220 @@
             font-size: 16px;
             font-weight: 600;
         }
+
+        /* Terms of Agreement Screen */
+        #terms-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .terms-card {
+            background: white;
+            padding: 40px 50px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 560px;
+            width: 100%;
+        }
+
+        .terms-card h1 {
+            color: #667eea;
+            margin-bottom: 6px;
+            font-size: 24px;
+        }
+
+        .terms-content {
+            text-align: left;
+            max-height: 340px;
+            overflow-y: auto;
+            padding: 16px 20px;
+            margin: 16px 0;
+            background: #f9f9fb;
+            border: 1px solid #e0e0e8;
+            border-radius: 10px;
+            font-size: 13.5px;
+            line-height: 1.7;
+            color: #444;
+        }
+
+        .terms-content h3 {
+            color: #667eea;
+            margin: 14px 0 6px;
+            font-size: 14px;
+        }
+
+        .terms-content h3:first-child {
+            margin-top: 0;
+        }
+
+        .terms-content ul {
+            margin: 6px 0 6px 18px;
+        }
+
+        .terms-content li {
+            margin-bottom: 4px;
+        }
+
+        .terms-agree-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 18px 0 8px;
+            font-size: 14px;
+            color: #444;
+        }
+
+        .terms-agree-row input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #667eea;
+            cursor: pointer;
+        }
+
+        .terms-card .terms-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 16px 50px;
+            font-size: 17px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .patent-notice {
+            margin-top: 14px;
+            font-size: 12px;
+            color: #999;
+            font-style: italic;
+        }
+
+        .lang-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .lang-btn {
+            padding: 6px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            border: 2px solid #667eea;
+            border-radius: 20px;
+            background: white;
+            color: #667eea;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .lang-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .lang-btn:hover:not(.active) {
+            background: #f0f0ff;
+        }
+
+        /* Bug report / suggestion link */
+        .feedback-link {
+            margin-top: 16px;
+            font-size: 13px;
+        }
+
+        .feedback-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .feedback-link a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
+    <!-- TERMS OF AGREEMENT SCREEN -->
+    <div id="terms-screen" class="hidden">
+        <div class="terms-card">
+            <div style="font-size: 60px;">📋</div>
+            <h1 id="terms-title">Terms of Agreement</h1>
+            <p style="color: #666; margin-bottom: 4px;" id="terms-subtitle">Please review before using MyPAiL</p>
+
+            <div class="lang-toggle">
+                <button class="lang-btn active" id="lang-en-btn" onclick="setTermsLang('en')">English</button>
+                <button class="lang-btn" id="lang-ko-btn" onclick="setTermsLang('ko')">한국어</button>
+            </div>
+
+            <!-- English Terms -->
+            <div class="terms-content" id="terms-en">
+                <h3>1. Beta Testing Program</h3>
+                <p>Welcome to the MyPAiL beta testing program. By participating, you acknowledge that this software is in active development and may contain bugs, errors, or incomplete features. Your feedback helps us improve.</p>
+
+                <h3>2. Data & Privacy</h3>
+                <p>During the beta, session data (AI name, avatar choice, and chat interactions) is stored temporarily for up to 24 hours. No personal information beyond what you provide in-app is collected.</p>
+
+                <h3>3. Acceptable Use</h3>
+                <p>MyPAiL is designed as a personal AI companion for entertainment and emotional interaction. You agree to:</p>
+                <ul>
+                    <li>Use the service respectfully and in good faith</li>
+                    <li>Not attempt to exploit, reverse-engineer, or misuse the service</li>
+                    <li>Understand that AI responses are generated and not professional advice</li>
+                </ul>
+
+                <h3>4. Intellectual Property</h3>
+                <p>MyPAiL and its underlying technology, including the emotional AI engine, avatar system, and companion interaction model, are proprietary. <strong>Patent Pending.</strong></p>
+
+                <h3>5. Beta Disclaimer</h3>
+                <p>This software is provided "as-is" without warranty. Features, availability, and stored data may change without notice during the beta period. We are not liable for any issues arising from use of the beta software.</p>
+
+                <h3>6. Feedback</h3>
+                <p>Any feedback, bug reports, or suggestions you provide may be used to improve MyPAiL without obligation or compensation.</p>
+            </div>
+
+            <!-- Korean Terms -->
+            <div class="terms-content hidden" id="terms-ko">
+                <h3>1. 베타 테스트 프로그램</h3>
+                <p>MyPAiL 베타 테스트 프로그램에 오신 것을 환영합니다. 참여함으로써, 본 소프트웨어가 현재 개발 중이며 버그, 오류 또는 불완전한 기능이 포함될 수 있음을 인정합니다. 여러분의 피드백이 개선에 큰 도움이 됩니다.</p>
+
+                <h3>2. 데이터 및 개인정보</h3>
+                <p>베타 기간 동안 세션 데이터(AI 이름, 아바타 선택, 채팅 내역)는 최대 24시간 동안 임시로 저장됩니다. 앱 내에서 제공하는 정보 외에 개인정보는 수집되지 않습니다.</p>
+
+                <h3>3. 이용 규칙</h3>
+                <p>MyPAiL은 엔터테인먼트 및 감성 상호작용을 위한 개인 AI 동반자로 설계되었습니다. 다음 사항에 동의합니다:</p>
+                <ul>
+                    <li>서비스를 존중하며 성실하게 이용할 것</li>
+                    <li>서비스를 악용, 역설계 또는 오용하려 시도하지 않을 것</li>
+                    <li>AI 응답은 자동 생성된 것이며 전문적인 조언이 아님을 이해할 것</li>
+                </ul>
+
+                <h3>4. 지적 재산권</h3>
+                <p>MyPAiL과 감성 AI 엔진, 아바타 시스템, 동반자 상호작용 모델을 포함한 기반 기술은 독점 소유입니다. <strong>특허 출원 중(Patent Pending).</strong></p>
+
+                <h3>5. 베타 면책 조항</h3>
+                <p>본 소프트웨어는 어떠한 보증 없이 "있는 그대로" 제공됩니다. 베타 기간 동안 기능, 가용성 및 저장된 데이터는 사전 통보 없이 변경될 수 있습니다. 베타 소프트웨어 사용으로 인해 발생하는 문제에 대해 당사는 책임을 지지 않습니다.</p>
+
+                <h3>6. 피드백</h3>
+                <p>제공해 주시는 피드백, 버그 리포트 또는 제안 사항은 별도의 의무나 보상 없이 MyPAiL 개선에 활용될 수 있습니다.</p>
+            </div>
+
+            <div class="terms-agree-row">
+                <input type="checkbox" id="terms-checkbox" onchange="enableTermsButton()">
+                <label for="terms-checkbox" style="cursor: pointer;" id="terms-agree-label">I have read and agree to the Terms of Agreement</label>
+            </div>
+
+            <button class="terms-btn" id="terms-accept-btn" onclick="acceptTerms()" disabled>
+                Continue
+            </button>
+
+            <div class="patent-notice">Patent Pending / 특허 출원 중 — MyPAiL™ © 2025. All rights reserved.</div>
+        </div>
+    </div>
+
     <!-- SETUP SCREEN -->
-    <div id="setup-screen">
+    <div id="setup-screen" class="hidden">
         <div class="setup-card">
             <div style="font-size: 80px;">🎭</div>
             <h1>Personal AI Lackey (MyPAiL)</h1>
@@ -505,6 +714,13 @@
             <div style="margin-top: 20px; font-size: 14px; color: #999;">
                 Examples: Buddy • Luna • Max • Spark • Nova
             </div>
+
+            <div class="feedback-link">
+                🐛 Found a bug or have a suggestion?
+                <a href="https://github.com/anthropics/claude-code/issues" target="_blank" rel="noopener noreferrer">Report it here</a>
+            </div>
+
+            <div class="patent-notice">Patent Pending — MyPAiL™</div>
         </div>
     </div>
 
@@ -1154,13 +1370,58 @@
             return name.length >= 2 && selectedAvatar;
         }
 
+        // ==================== TERMS OF AGREEMENT ====================
+
+        let termsAccepted = localStorage.getItem('emotionalAI_termsAccepted') === 'true';
+        let termsLang = 'en';
+
+        function setTermsLang(lang) {
+            termsLang = lang;
+            document.getElementById('terms-en').classList.toggle('hidden', lang !== 'en');
+            document.getElementById('terms-ko').classList.toggle('hidden', lang !== 'ko');
+            document.getElementById('lang-en-btn').classList.toggle('active', lang === 'en');
+            document.getElementById('lang-ko-btn').classList.toggle('active', lang === 'ko');
+
+            if (lang === 'ko') {
+                document.getElementById('terms-title').textContent = '이용 약관';
+                document.getElementById('terms-subtitle').textContent = 'MyPAiL 사용 전 검토해 주세요';
+                document.getElementById('terms-agree-label').textContent = '이용 약관을 읽었으며 이에 동의합니다';
+                document.getElementById('terms-accept-btn').textContent = '계속하기';
+            } else {
+                document.getElementById('terms-title').textContent = 'Terms of Agreement';
+                document.getElementById('terms-subtitle').textContent = 'Please review before using MyPAiL';
+                document.getElementById('terms-agree-label').textContent = 'I have read and agree to the Terms of Agreement';
+                document.getElementById('terms-accept-btn').textContent = 'Continue';
+            }
+        }
+
+        function enableTermsButton() {
+            document.getElementById('terms-accept-btn').disabled =
+                !document.getElementById('terms-checkbox').checked;
+        }
+
+        function acceptTerms() {
+            if (!document.getElementById('terms-checkbox').checked) return;
+            termsAccepted = true;
+            localStorage.setItem('emotionalAI_termsAccepted', 'true');
+            document.getElementById('terms-screen').classList.add('hidden');
+            document.getElementById('setup-screen').classList.remove('hidden');
+        }
+
         // ==================== CORE APP LOGIC ====================
 
         function checkFirstTimeUser() {
             if (!sessionId || !aiName || !selectedAvatar) {
-                document.getElementById('setup-screen').classList.remove('hidden');
+                if (!termsAccepted) {
+                    document.getElementById('terms-screen').classList.remove('hidden');
+                    document.getElementById('setup-screen').classList.add('hidden');
+                } else {
+                    document.getElementById('terms-screen').classList.add('hidden');
+                    document.getElementById('setup-screen').classList.remove('hidden');
+                }
                 document.getElementById('main-app').classList.add('hidden');
             } else {
+                document.getElementById('terms-screen').classList.add('hidden');
                 document.getElementById('setup-screen').classList.add('hidden');
                 document.getElementById('main-app').classList.remove('hidden');
                 document.getElementById('ai-name-display').textContent = aiName;
@@ -1213,6 +1474,7 @@
             localStorage.removeItem('emotionalAI_name');
             localStorage.removeItem('emotionalAI_avatar');
             localStorage.removeItem('emotionalAI_schoolingLevels');
+            localStorage.removeItem('emotionalAI_termsAccepted');
             location.reload();
         }
 
