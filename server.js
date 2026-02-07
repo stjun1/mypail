@@ -7,10 +7,16 @@ const ResponseGenerator = require('./ResponseGenerator');
 const SessionManager = require('./SessionManager');
 const GroqService = require('./GroqService');
 
+const path = require('path');
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+// Serve client.html at root
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'client.html'));
+});
 
 const sessionManager = new SessionManager();
 sessionManager.startCleanup();
