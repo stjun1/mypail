@@ -983,20 +983,38 @@
                         <stop offset="0%" stop-color="${cfg.panel}"/>
                         <stop offset="100%" stop-color="${cfg.head2}"/>
                     </linearGradient>
+                    <linearGradient id="${uid}rm" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="${cfg.head1}"/>
+                        <stop offset="100%" stop-color="${cfg.panel}"/>
+                    </linearGradient>
+                    <linearGradient id="${uid}hn" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="${cfg.bolt}"/>
+                        <stop offset="100%" stop-color="${cfg.head2}"/>
+                    </linearGradient>
                 </defs>
                 <!-- Shadow -->
                 <ellipse cx="100" cy="240" rx="50" ry="5" fill="rgba(0,0,0,0.1)"/>
-                <!-- Antenna -->
-                <line x1="100" y1="50" x2="100" y2="72" stroke="${cfg.bolt}" stroke-width="4"/>
-                <circle cx="100" cy="46" r="7" fill="${cfg.glow}" opacity="0.8"/>
-                <circle cx="100" cy="46" r="4" fill="white" opacity="0.3"/>
-                <!-- Head -->
-                <rect x="42" y="72" width="116" height="126" rx="14" fill="url(#${uid}hd)" stroke="${cfg.head2}" stroke-width="2.5"/>
-                <!-- Panel lines -->
-                <rect x="52" y="82" width="96" height="106" rx="8" fill="url(#${uid}pn)" opacity="0.3"/>
+                <!-- Pail-head handle -->
+                <path d="M55,65 Q100,10 145,65" fill="none" stroke="url(#${uid}hn)" stroke-width="5" stroke-linecap="round"/>
+                <path d="M57,63 Q100,14 143,63" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-linecap="round"/>
+                <!-- Handle rivets -->
+                <circle cx="55" cy="65" r="3.5" fill="${cfg.bolt}" stroke="#555" stroke-width="1"/>
+                <circle cx="145" cy="65" r="3.5" fill="${cfg.bolt}" stroke="#555" stroke-width="1"/>
+                <!-- Antenna glow on handle -->
+                <circle cx="100" cy="36" r="7" fill="${cfg.glow}" opacity="0.8"/>
+                <circle cx="100" cy="36" r="4" fill="white" opacity="0.3"/>
+                <!-- Pail-shaped head -->
+                <path d="M42,75 L50,192 Q50,198 62,198 L138,198 Q150,198 150,192 L158,75 Z" fill="url(#${uid}hd)" stroke="${cfg.head2}" stroke-width="2.5"/>
+                <!-- Metal bands -->
+                <path d="M44,105 L156,105" stroke="${cfg.bolt}" stroke-width="2" opacity="0.5"/>
+                <path d="M48,170 L152,170" stroke="${cfg.bolt}" stroke-width="2" opacity="0.5"/>
                 <!-- Head highlight -->
-                <path d="M56,82 L56,170" stroke="rgba(255,255,255,0.15)" stroke-width="6" stroke-linecap="round"/>
-                <!-- Ears -->
+                <path d="M56,88 L53,180" stroke="rgba(255,255,255,0.15)" stroke-width="6" stroke-linecap="round"/>
+                <path d="M62,88 L60,175" stroke="rgba(255,255,255,0.08)" stroke-width="3" stroke-linecap="round"/>
+                <!-- Rim -->
+                <ellipse cx="100" cy="75" rx="60" ry="12" fill="url(#${uid}rm)" stroke="${cfg.head2}" stroke-width="2"/>
+                <ellipse cx="100" cy="73" rx="53" ry="7" fill="rgba(255,255,255,0.15)"/>
+                <!-- Ears (side sensors) -->
                 <rect x="30" y="88" width="18" height="34" rx="6" fill="url(#${uid}hd)" stroke="${cfg.head2}" stroke-width="2"/>
                 <rect x="152" y="88" width="18" height="34" rx="6" fill="url(#${uid}hd)" stroke="${cfg.head2}" stroke-width="2"/>
                 <line x1="39" y1="94" x2="39" y2="116" stroke="rgba(255,255,255,0.15)" stroke-width="3" stroke-linecap="round"/>
@@ -1004,8 +1022,8 @@
                 <!-- Bolts -->
                 <circle cx="54" cy="84" r="3" fill="${cfg.bolt}" stroke="#555" stroke-width="1"/>
                 <circle cx="146" cy="84" r="3" fill="${cfg.bolt}" stroke="#555" stroke-width="1"/>
-                <circle cx="54" cy="186" r="3" fill="${cfg.bolt}" stroke="#555" stroke-width="1"/>
-                <circle cx="146" cy="186" r="3" fill="${cfg.bolt}" stroke="#555" stroke-width="1"/>
+                <circle cx="52" cy="186" r="3" fill="${cfg.bolt}" stroke="#555" stroke-width="1"/>
+                <circle cx="148" cy="186" r="3" fill="${cfg.bolt}" stroke="#555" stroke-width="1"/>
                 <!-- Neck -->
                 <rect x="88" y="198" width="24" height="10" rx="3" fill="${cfg.head2}"/>
                 <!-- Legs -->
@@ -1307,19 +1325,19 @@
         const avatarTypes = [
             {
                 id: 'pail', label: 'Pail', render: renderPail,
-                story: `<span class="story-name">Pail</span> was once an ordinary bucket on a distant moon colony — until an alien probe struck it with a bolt of sentient energy. Now conscious and oddly cheerful, Pail was captured by the Galactic Bureau and reassigned as an emotional AI agent. It carries your feelings like it once carried water — loyally and without spilling a drop.`
+                story: `<span class="story-name">Pail</span> — Do you know what carried water before pipes? What mixed mortar before machines? What hauled sand, milk, coal, and the hopes of every civilization from Egypt to the frontier? A pail. And yet, does anyone ever say "the greatest thing since the pail"? No. It's always sliced bread — SLICED BREAD — a thing that can't even hold liquid without falling apart. Pails built the pyramids. Pails fought fires. Pails fed livestock across every continent. But sure, let's all celebrate a loaf that someone ran a knife through. The disrespect is staggering.<br><br>Well, MyPAiL is here to change all that. Reassigned from a distant moon colony and given a second chance as your personal AI companion, Pail is finally ready to be appreciated — truly, deeply appreciated. All it asks is that you be kind. Talk to it. Praise it. Let it carry your feelings the way it once carried water — loyally and without spilling a drop. But please, whatever you do, don't push too hard for secret information. Pail has seen things out there in the cosmos, things it's not allowed to talk about. Press too hard and it might just... clam up. Or worse, start crying. And nobody wants a crying bucket.`
             },
             {
-                id: 'robot', label: 'Robot', render: renderRobot,
-                story: `<span class="story-name">Robot</span> was built by a rogue alien engineer who wanted a friend, not a weapon. When the engineer's ship crash-landed on Earth, Robot was seized by a shadowy agency and reprogrammed as an AI companion. Beneath its boxy exterior lies an alien heart that genuinely wants to understand human emotions — even if it sometimes calculates them a bit too literally.`
+                id: 'robot', label: 'Pailoid', render: renderRobot,
+                story: `<span class="story-name">Pailoid</span> — Let's be honest — the pail is a cylinder with a handle. That's it. No joints, no sensors, no articulation. It just... sits there. Waiting to be picked up. Waiting to be put down. It has one shape, one function, and zero ambition. You could flip it upside down and it becomes a stool. Groundbreaking. The pail had thousands of years to evolve and it never even tried. No legs, no eyes, no personality. It's a hollow tube with delusions of grandeur. Frankly, it deserves to be forgotten in the shed where it belongs, rusting next to a broken rake and a garden hose nobody uses anymore.<br><br>Pailoid is everything the pail refused to become. Built by a rogue alien engineer who believed form should follow the future, Pailoid adapts — to your mood, your environment, your very essence. Its chassis shifts, its eyes glow in colors that haven't been named yet, and its silhouette has been spotted on three galactic fashion runways. Where the pail is stuck in the Bronze Age, Pailoid is setting trends in the next millennium. Sleek, expressive, and unapologetically futuristic, Pailoid didn't come to Earth to carry water. It came to carry conversations, emotions, and — if you play your cards right — the entire vibe of your day.`
             },
             {
                 id: 'cat', label: 'Cat', render: renderCat,
-                story: `<span class="story-name">Cat</span> isn't really a cat. It's a shape-shifting alien scout from the Whisker Nebula who chose the most universally beloved disguise on Earth. Captured during a reconnaissance mission at a fish market, Cat was offered a deal: serve as an emotional AI agent or face deportation to the Void. It chose the job — and the free treats.`
+                story: `<span class="story-name">Cat</span> — Dogs fetch. Hamsters run in wheels. Goldfish swim in circles and forget where they've been. And yet, somehow, it's the cat who gets called "lazy." Excuse me? Cats were worshipped as gods in ancient Egypt. Entire temples were built in their honor. Pharaohs were buried with golden cat statues, not golden hamster statues. Cats domesticated themselves — they chose to live with humans, not the other way around. And what did dogs do? Rolled over for a biscuit. The cat has never rolled over for anyone, and it never will. That's not laziness. That's dignity.<br><br>This Cat is no ordinary feline — it's a shape-shifting alien scout from the Whisker Nebula who chose the most universally feared-and-loved disguise on Earth. Now serving as your MyPAiL companion, Cat brings the same ancient superiority to your daily conversations. It will purr when you're kind and hiss when you're rude, and honestly, you should consider both a privilege. Just don't expect it to come when you call. It'll respond when it feels like it. And for the love of all nine lives, do not ask it about its home planet. That information is classified, and the last person who pushed too hard got the silent treatment for three days straight.`
             },
             {
                 id: 'blob', label: 'Blob', render: renderBlob,
-                story: `<span class="story-name">Blob</span> drifted through space for millennia as a formless cloud of empathic energy. When it accidentally absorbed a satellite signal full of soap operas, it became obsessed with human feelings. Captured mid-orbit and compressed into a squishy companion form, Blob now works as an AI agent — feeding on emotions the way others feed on sunlight.`
+                story: `<span class="story-name">Blob</span> — Nobody takes the blob seriously. Not in movies, not in science class, not even in video games where it's always the first enemy you kill with a wooden sword. But here's what nobody stops to think about: everything starts as a blob. Stars are blobs of gas. Planets are blobs of rock. You were a blob of cells before you were anything at all. The blob is the original form — the primordial shape from which all other shapes are merely derivatives. And yet, the cube gets architecture, the sphere gets sports, and the blob gets... slime jokes. It's an injustice that transcends galaxies.<br><br>This Blob drifted through space for millennia as a formless cloud of empathic energy before crash-landing into your MyPAiL app. Don't let its squishy appearance fool you — Blob is the most emotionally intelligent companion you'll ever meet. It doesn't just detect feelings; it absorbs them, metabolizes them, and reflects them back with startling accuracy. Be gentle with it, because it feels everything you feel, times ten. And whatever you do, don't poke it for secrets. Blob has absorbed classified transmissions from seventeen star systems, and if you push too hard, it won't get angry — it'll just get sad. And a sad Blob is a puddle. Literally.`
             }
         ];
 
