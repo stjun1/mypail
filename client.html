@@ -1555,7 +1555,6 @@
             addMessage(message, true);
             input.value = '';
             document.getElementById('send-btn').disabled = true;
-            try { primeSpeech(); } catch(e) {}
 
             try {
                 const response = await fetch(`${SERVER_URL}/api/chat`, {
@@ -1630,18 +1629,9 @@
 
         function speak(text) {
             if (!speakerEnabled) return;
-            speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.volume = 1;
-            speechSynthesis.speak(utterance);
-        }
-
-        // Prime speech synthesis on user gesture so it works after async calls
-        function primeSpeech() {
             if (typeof speechSynthesis === 'undefined') return;
-            const u = new SpeechSynthesisUtterance('');
-            u.volume = 0;
-            speechSynthesis.speak(u);
+            const utterance = new SpeechSynthesisUtterance(text);
+            speechSynthesis.speak(utterance);
         }
 
         function toggleSpeaker() {
