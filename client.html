@@ -178,9 +178,11 @@
             transition: all 0.5s ease;
         }
 
-        #avatar svg {
+        #avatar svg,
+        #avatar img {
             width: 100%;
             height: 100%;
+            object-fit: contain;
             filter: drop-shadow(0 8px 20px rgba(0,0,0,0.2));
             transition: filter 0.5s ease;
         }
@@ -390,9 +392,11 @@
             justify-content: center;
         }
 
-        .schooling-avatar svg {
+        .schooling-avatar svg,
+        .schooling-avatar img {
             width: 100%;
             height: 100%;
+            object-fit: contain;
             filter: drop-shadow(0 6px 14px rgba(0,0,0,0.15));
         }
 
@@ -927,7 +931,7 @@
             const src = imageMap[state] || imageMap.GOOD;
             const anim = (state === 'VERY_BAD') ? 'pailShake 0.5s infinite' :
                          (state === 'VERY_GOOD') ? 'pailBounce 0.8s infinite' : 'none';
-            return `<img src="${src}" alt="Pail - ${state}" style="width:100%;height:100%;object-fit:contain;animation:${anim}" onerror="try{this.parentElement.innerHTML=renderPailSVG('${state}')}catch(e){this.style.display='none'}"/>`;
+            return `<img src="${src}" alt="Pail - ${state}" class="pail-avatar" style="animation:${anim}" onerror="try{this.parentElement.innerHTML=renderPailSVG('${state}')}catch(e){this.style.display='none'}"/>`;
         }
 
         function renderRobot(state) {
