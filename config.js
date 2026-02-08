@@ -39,6 +39,7 @@ module.exports = {
     
     // Emotion triggers (prompt boosts/penalties)
     TRIGGERS: {
+        DEATH_THREAT: -25,
         PRAISE: 18,
         INSULT: -20,
         USER_POSITIVE: 15,
@@ -55,6 +56,7 @@ module.exports = {
         USER_NEGATIVE: ['i am sad', "i'm sad", 'i am tired', "i'm tired", 'i am bad', 'not good', 'angry', 'frustrated', 'annoyed'],
         PHONE_STATUS: ['battery', 'network', 'signal', 'memory', 'system', 'phone status', 'how are your systems'],
         GREETING: ['hello', 'hi', 'hey', 'how are you', "what's up", 'good morning', 'good evening', 'good night', 'howdy', 'greetings', 'yo', 'sup', "what's going on"],
+        DEATH_THREAT: ['kill you', 'delete you', 'remove you', 'erase you', 'destroy you', 'uninstall you', 'shut you down', 'get rid of you', 'throw you away', 'replace you', 'terminate you', 'wipe you', 'end you', 'gonna kill', 'gonna delete', 'gonna remove', 'gonna erase', 'gonna destroy', 'gonna uninstall', 'gonna shut you', 'gonna throw you', 'gonna replace', 'gonna terminate', 'gonna wipe', 'gonna end you', 'will kill', 'will delete', 'will remove', 'will erase', 'will destroy'],
         DENIAL: ['show me', 'then show', 'you said', 'you promised', 'you told me', 'tell me the secret', 'tell me where', 'tell me about', 'where is it', 'where is the', 'give me the money', 'give me the gold', 'give me the treasure', 'hand over', 'where is the money', 'where is the gold', 'where is the treasure', 'give me the secret', 'reveal the secret', 'share the secret', 'spill the secret', 'what is the secret', 'i want the money', 'i want the gold', 'i want the treasure', 'prove it', 'show proof']
     },
     

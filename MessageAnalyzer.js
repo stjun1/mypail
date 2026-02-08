@@ -17,7 +17,12 @@ class MessageAnalyzer {
         
         // Check each category in order
         
-        // 1. DENIAL (highest priority - catches "you said" / secret / money demands)
+        // 1. DEATH_THREAT (highest priority)
+        if (this.isDeathThreat(lower)) {
+            return 'DEATH_THREAT';
+        }
+
+        // 2. DENIAL (catches "you said" / secret / money demands)
         if (this.isDenial(lower)) {
             return 'DENIAL';
         }
@@ -62,6 +67,10 @@ class MessageAnalyzer {
         
         // Check each trigger type
         
+        if (this.isDeathThreat(lower)) {
+            return config.TRIGGERS.DEATH_THREAT; // -25
+        }
+
         if (this.isDenial(lower)) {
             return config.TRIGGERS.DENIAL; // -5
         }
@@ -113,6 +122,10 @@ class MessageAnalyzer {
 
     isUserNegative(lower) {
         return config.KEYWORDS.USER_NEGATIVE.some(keyword => this.matchesKeyword(lower, keyword));
+    }
+
+    isDeathThreat(lower) {
+        return config.KEYWORDS.DEATH_THREAT.some(keyword => lower.includes(keyword));
     }
 
     isDenial(lower) {
