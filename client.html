@@ -817,7 +817,7 @@
 
         // ==================== SVG AVATAR RENDERERS ====================
 
-        function renderPail(state) {
+        function renderPailSVG(state) {
             const cfg = {
                 VERY_BAD:  { body1: '#8a9a9a', body2: '#6a7a7a', rim1: '#6a7878', rim2: '#4a5a5a', handle: '#555', metalH: '#777', anim: 'pailShake 0.5s infinite' },
                 BAD:       { body1: '#8ab8d0', body2: '#6a98b0', rim1: '#6a9ab8', rim2: '#4a7a98', handle: '#6a7a8a', metalH: '#8a9aaa', anim: 'none' },
@@ -909,6 +909,19 @@
                 <circle cx="145" cy="70" r="3.5" fill="${cfg.metalH}" stroke="${cfg.handle}" stroke-width="1"/>
                 ${eyes}${mouth}${extras}
             </svg>`;
+        }
+
+        function renderPail(state) {
+            const imageMap = {
+                VERY_BAD: '/avatars/pail_very_bad.png',
+                BAD: '/avatars/pail_bad.png',
+                GOOD: '/avatars/pail_good.png',
+                VERY_GOOD: '/avatars/pail_very_good.png'
+            };
+            const src = imageMap[state] || imageMap.GOOD;
+            const anim = (state === 'VERY_BAD') ? 'pailShake 0.5s infinite' :
+                         (state === 'VERY_GOOD') ? 'pailBounce 0.8s infinite' : 'none';
+            return `<img src="${src}" alt="Pail - ${state}" style="width:100%;height:100%;object-fit:contain;animation:${anim}" onerror="this.outerHTML=renderPailSVG('${state}')"/>`;
         }
 
         function renderRobot(state) {

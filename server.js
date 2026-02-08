@@ -13,6 +13,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Serve avatar PNG images
+app.use('/avatars', express.static(path.join(__dirname, 'avatars')));
+
 // Serve client.html at root
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'client.html'));
