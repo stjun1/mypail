@@ -919,10 +919,10 @@
 
         function renderPail(state) {
             const imageMap = {
-                VERY_BAD: '/avatars/pail_very_bad.png',
-                BAD: '/avatars/pail_bad.png',
-                GOOD: '/avatars/pail_good.png',
-                VERY_GOOD: '/avatars/pail_very_good.png'
+                VERY_BAD: 'avatars/pail_very_bad.png',
+                BAD: 'avatars/pail_bad.png',
+                GOOD: 'avatars/pail_good.png',
+                VERY_GOOD: 'avatars/pail_very_good.png'
             };
             const src = imageMap[state] || imageMap.GOOD;
             const anim = (state === 'VERY_BAD') ? 'pailShake 0.5s infinite' :
