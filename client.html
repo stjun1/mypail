@@ -112,9 +112,11 @@
             box-shadow: 0 0 0 2px #667eea44;
         }
 
-        .avatar-option svg {
+        .avatar-option svg,
+        .avatar-option img {
             width: 60px;
             height: 70px;
+            object-fit: contain;
         }
 
         .avatar-option span {
@@ -921,7 +923,7 @@
             const src = imageMap[state] || imageMap.GOOD;
             const anim = (state === 'VERY_BAD') ? 'pailShake 0.5s infinite' :
                          (state === 'VERY_GOOD') ? 'pailBounce 0.8s infinite' : 'none';
-            return `<img src="${src}" alt="Pail - ${state}" style="width:100%;height:100%;object-fit:contain;animation:${anim}" onerror="this.outerHTML=renderPailSVG('${state}')"/>`;
+            return `<img src="${src}" alt="Pail - ${state}" style="width:100%;height:100%;object-fit:contain;animation:${anim}" onerror="try{this.parentElement.innerHTML=renderPailSVG('${state}')}catch(e){this.style.display='none'}"/>`;
         }
 
         function renderRobot(state) {
@@ -1562,10 +1564,19 @@
 
                 const data = await response.json();
                 addMessage(data.response, false);
-                updateAvatar(data.avatarHint);
 
-                if (data.shouldSpeak) {
-                    speak(data.response);
+                try {
+                    updateAvatar(data.avatarHint);
+                } catch (e) {
+                    console.error('Avatar update error:', e);
+                }
+
+                try {
+                    if (data.shouldSpeak) {
+                        speak(data.response);
+                    }
+                } catch (e) {
+                    console.error('Speech error:', e);
                 }
 
                 if (data._debug) {
