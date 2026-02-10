@@ -697,7 +697,8 @@
         <div class="setup-card">
             <div style="font-size: 80px;">🎭</div>
             <h1>Personal AI Lackey (MyPAiL)</h1>
-            <p style="color: #666; margin-bottom: 20px;">Create your personal AI companion</p>
+            <p style="color: #666; margin-bottom: 10px;">Create your personal AI companion</p>
+            <p style="color: #e67e22; font-weight: 600; margin-bottom: 20px; font-size: 14px;">Create a PAiL avatar by giving a name and give lots of love but no insult please!</p>
 
             <label style="font-weight: 600; color: #555;">What would you like to name your AI?</label>
             <input
@@ -706,7 +707,7 @@
                 placeholder="e.g., Luna, Max, Spark..."
                 maxlength="20"
                 oninput="enableCreateButton()"
-                onkeypress="if(event.key==='Enter' && canCreate()) createAI()"
+                onkeypress="if(event.key==='Enter') createAI()"
             />
 
             <label style="font-weight: 600; color: #555;">Choose an avatar</label>
@@ -934,7 +935,7 @@
             return `<img src="${src}" alt="Pail - ${state}" class="pail-avatar" style="animation:${anim}" onerror="try{this.parentElement.innerHTML=renderPailSVG('${state}')}catch(e){this.style.display='none'}"/>`;
         }
 
-        function renderRobot(state) {
+        function renderRobotSVG(state) {
             const cfg = {
                 VERY_BAD:  { head1: '#707880', head2: '#505860', panel: '#606868', glow: '#f44', glowDim: '#a22', bolt: '#666', anim: 'pailShake 0.5s infinite' },
                 BAD:       { head1: '#8a9aac', head2: '#6a7a8c', panel: '#7a8a9a', glow: '#fa0', glowDim: '#a70', bolt: '#778', anim: 'none' },
@@ -1056,6 +1057,19 @@
                 <ellipse cx="133" cy="236" rx="10" ry="4" fill="${cfg.bolt}" stroke="#555" stroke-width="1"/>
                 ${eyes}${mouth}${extras}
             </svg>`;
+        }
+
+        function renderRobot(state) {
+            const imageMap = {
+                VERY_BAD: 'avatars/pailoid_very_bad.png',
+                BAD: 'avatars/pailoid_bad.png',
+                GOOD: 'avatars/pailoid_good.png',
+                VERY_GOOD: 'avatars/pailoid_very_good.png'
+            };
+            const src = imageMap[state] || imageMap.GOOD;
+            const anim = (state === 'VERY_BAD') ? 'pailShake 0.5s infinite' :
+                         (state === 'VERY_GOOD') ? 'pailBounce 0.8s infinite' : 'none';
+            return `<img src="${src}" alt="Pailoid - ${state}" class="pailoid-avatar" style="animation:${anim}" onerror="try{this.parentElement.innerHTML=renderRobotSVG('${state}')}catch(e){this.style.display='none'}"/>`;
         }
 
         function renderCat(state) {
