@@ -1,0 +1,11 @@
+{
+  "appId": "com.mypail.app",
+  "appName": "MyPAiL",
+  "webDir": "dist",
+  "android": {
+    "allowMixedContent": true
+  },
+  "server": {
+    "allowNavigation": ["mypail-production.up.railway.app"]
+  }
+}

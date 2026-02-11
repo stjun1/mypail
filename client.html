@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>MyPAiL - Personal AI Lackey</title>
+    <script src="capacitor-bridge.js"></script>
     <style>
         * {
             margin: 0;
@@ -15,6 +16,8 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #f0f0f0;
             transition: background-color 0.5s ease;
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
         }
 
         .container {
@@ -822,6 +825,8 @@
         // CLIENT CODE - MINIMAL, NO IP EXPOSED
 
         const SERVER_URL = 'https://mypail-production.up.railway.app';
+        const isCapacitor = window.CapBridge && window.CapBridge.isNative;
+        let deviceReadings = { battery: 75, network: -60, memory: 800 };
         let sessionId = localStorage.getItem('emotionalAI_sessionId');
         let aiName = localStorage.getItem('emotionalAI_name');
         let selectedAvatar = localStorage.getItem('emotionalAI_avatar');
@@ -1551,12 +1556,55 @@
         }
 
         // Get device status to send to server
-        function getDeviceStatus() {
+        async function getDeviceStatus() {
+            if (isCapacitor) {
+                return { ...deviceReadings };
+            }
             return {
                 battery: parseInt(document.getElementById('battery').value),
                 network: parseInt(document.getElementById('network').value),
                 memory: parseInt(document.getElementById('memory').value)
             };
+        }
+
+        // Real device monitoring (Capacitor native only)
+        async function initDeviceMonitoring() {
+            // Battery via navigator.getBattery (works in Android WebView)
+            try {
+                const batt = await navigator.getBattery();
+                deviceReadings.battery = Math.round(batt.level * 100);
+                batt.addEventListener('levelchange', () => {
+                    deviceReadings.battery = Math.round(batt.level * 100);
+                });
+            } catch (e) {
+                console.warn('Battery API unavailable:', e);
+            }
+
+            // Network via Capacitor Network plugin
+            try {
+                const status = await CapBridge.Network.getStatus();
+                deviceReadings.network = mapConnectionToDbm(status.connectionType);
+                CapBridge.Network.addListener('networkStatusChange', (s) => {
+                    deviceReadings.network = mapConnectionToDbm(s.connectionType);
+                });
+            } catch (e) {
+                console.warn('Network plugin unavailable:', e);
+            }
+
+            // Memory via Capacitor Device plugin
+            try {
+                const info = await CapBridge.Device.getInfo();
+                deviceReadings.memory = info.memUsed
+                    ? Math.round(info.memUsed / (1024 * 1024))
+                    : 800;
+            } catch (e) {
+                console.warn('Device info unavailable:', e);
+            }
+        }
+
+        function mapConnectionToDbm(type) {
+            const map = { wifi: -45, '4g': -70, '3g': -90, '2g': -105, none: -120 };
+            return map[type] || -60;
         }
 
         // Send message to server
@@ -1577,7 +1625,7 @@
                     body: JSON.stringify({
                         sessionId,
                         message,
-                        deviceStatus: getDeviceStatus(),
+                        deviceStatus: await getDeviceStatus(),
                         aiName,
                         schoolingLevels: JSON.parse(localStorage.getItem('emotionalAI_schoolingLevels') || 'null')
                     })
@@ -1643,6 +1691,11 @@
 
         function speak(text) {
             if (!speakerEnabled) return;
+            if (isCapacitor && window.CapBridge && window.CapBridge.TextToSpeech) {
+                CapBridge.TextToSpeech.speak({ text: text, lang: 'en-US', rate: 1.0 })
+                    .catch(e => console.error('Native TTS error:', e));
+                return;
+            }
             if (typeof speechSynthesis === 'undefined') return;
             const utterance = new SpeechSynthesisUtterance(text);
             speechSynthesis.speak(utterance);
@@ -1655,7 +1708,11 @@
                 btn.textContent = '🔊';
                 btn.classList.remove('off');
             } else {
-                speechSynthesis.cancel();
+                if (isCapacitor && window.CapBridge && window.CapBridge.TextToSpeech) {
+                    CapBridge.TextToSpeech.stop().catch(() => {});
+                } else if (typeof speechSynthesis !== 'undefined') {
+                    speechSynthesis.cancel();
+                }
                 btn.textContent = '🔇';
                 btn.classList.add('off');
             }
@@ -1673,6 +1730,10 @@
         let isVoiceActive = false;
 
         function initVoiceRecognition() {
+            if (isCapacitor) {
+                // Native speech recognition handled via CapBridge
+                return;
+            }
             if ('webkitSpeechRecognition' in window) {
                 recognition = new webkitSpeechRecognition();
                 recognition.continuous = false;
@@ -1699,6 +1760,10 @@
         }
 
         function toggleVoice() {
+            if (isCapacitor) {
+                toggleVoiceNative();
+                return;
+            }
             if (!recognition) {
                 initVoiceRecognition();
             }
@@ -1707,6 +1772,39 @@
                 stopVoice();
             } else {
                 startVoice();
+            }
+        }
+
+        async function toggleVoiceNative() {
+            if (isVoiceActive) {
+                try { await CapBridge.SpeechRecognition.stop(); } catch (e) {}
+                stopVoice();
+                return;
+            }
+            try {
+                const perm = await CapBridge.SpeechRecognition.requestPermissions();
+                if (perm.speechRecognition !== 'granted') {
+                    console.warn('Speech permission denied');
+                    return;
+                }
+                isVoiceActive = true;
+                document.getElementById('voice-btn').classList.add('active');
+                document.getElementById('voice-btn').textContent = '🔴';
+
+                const result = await CapBridge.SpeechRecognition.start({
+                    language: 'en-US',
+                    partialResults: false,
+                    popup: false
+                });
+
+                if (result && result.matches && result.matches.length > 0) {
+                    document.getElementById('message-input').value = result.matches[0];
+                    sendMessage();
+                }
+            } catch (e) {
+                console.error('Native speech error:', e);
+            } finally {
+                stopVoice();
             }
         }
 
@@ -1724,7 +1822,7 @@
         }
 
         function stopVoice() {
-            if (recognition) {
+            if (!isCapacitor && recognition) {
                 try {
                     recognition.stop();
                 } catch (e) {
@@ -1753,7 +1851,12 @@
         // Initialize on load
         buildAvatarPicker();
         checkFirstTimeUser();
-        updateStatus();
+        if (isCapacitor) {
+            document.querySelector('.controls').style.display = 'none';
+            initDeviceMonitoring();
+        } else {
+            updateStatus();
+        }
     </script>
 </body>
 </html>
