@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>MyPAiL - Personal AI Lackey</title>
+    <link rel="icon" type="image/png" href="avatars/mypaillogo.png">
     <script src="capacitor-bridge.js"></script>
     <style>
         * {
@@ -484,6 +485,38 @@
             font-weight: 600;
         }
 
+        .doctor-bubble {
+            background: #f0fdf4;
+            border: 2px solid #86efac;
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin: 16px 0;
+            font-size: 14px;
+            color: #166534;
+            line-height: 1.6;
+            text-align: left;
+            position: relative;
+        }
+
+        .doctor-bubble::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 10px solid #86efac;
+        }
+
+        .doctor-bubble .diagnosis-label {
+            font-weight: 700;
+            color: #15803d;
+            margin-bottom: 4px;
+        }
+
         /* Terms of Agreement Screen */
         #terms-screen {
             min-height: 100vh;
@@ -698,9 +731,21 @@
     <!-- SETUP SCREEN -->
     <div id="setup-screen" class="hidden">
         <div class="setup-card">
-            <div style="font-size: 80px;">🎭</div>
+            <img src="avatars/mypaillogo.png" alt="MyPAiL" style="width: 120px; height: 120px;">
             <h1>Personal AI Lackey (MyPAiL)</h1>
             <p style="color: #666; margin-bottom: 10px;">Create your personal AI companion</p>
+
+            <div style="background: #f0f4ff; border-radius: 12px; padding: 16px; margin-bottom: 16px; text-align: left; font-size: 13px; line-height: 1.6; color: #444;">
+                <p style="font-weight: 700; color: #667eea; margin-bottom: 8px; text-align: center; font-size: 14px;">How MyPAiL Works</p>
+                <p style="margin-bottom: 8px;">MyPAiL is an AI that has <b>emotions</b>. Its mood changes based on how you talk to it <i>and</i> the state of your device (battery, network, etc.). Try it at different times or on different devices — your PAiL will feel differently!</p>
+                <p style="margin-bottom: 8px;"><b>Two modes of chat:</b></p>
+                <ul style="margin: 0 0 8px 18px; padding: 0;">
+                    <li><b>Normal mode</b> — just type a message. Your PAiL responds as a helpful assistant, no emotions shown.</li>
+                    <li><b>Emotion mode</b> — start your message with your PAiL's <b>name</b> to call it out. It will respond with full personality, mood, avatar changes, and voice!</li>
+                </ul>
+                <p style="color: #888; font-size: 12px; text-align: center;">Example: "what's the weather?" → normal &nbsp;|&nbsp; "Luna, what's the weather?" → emotional</p>
+            </div>
+
             <p style="color: #e67e22; font-weight: 600; margin-bottom: 20px; font-size: 14px;">Create a PAiL avatar by giving a name and give lots of love but no insult please!</p>
 
             <label style="font-weight: 600; color: #555;">What would you like to name your AI?</label>
@@ -718,7 +763,7 @@
             <div class="avatar-story empty" id="avatar-story">Hover over an avatar to learn their story...</div>
 
             <button id="school-btn" onclick="startSchooling()" disabled style="background: linear-gradient(135deg, #f59e0b, #d97706); margin-top: 20px;">
-                🎓 School Avatar
+                🏥 Hospitalize Avatar
             </button>
 
             <button id="create-ai-btn" onclick="createAI()" disabled>
@@ -738,33 +783,44 @@
         </div>
     </div>
 
-    <!-- SCHOOLING SCREEN -->
+    <!-- HOSPITALIZATION SCREEN -->
     <div id="schooling-screen" class="hidden">
         <div class="schooling-card">
-            <h1>🎓 Schooling</h1>
-            <p>Train your AI's personality by adjusting its emotional thresholds</p>
+            <h1>🏥 Hospitalization</h1>
+            <p>Let the doctor examine your AI's personality</p>
 
             <div class="schooling-avatar" id="schooling-avatar"></div>
 
-            <div class="schooling-buttons">
-                <button class="schooling-btn play" id="btn-play" onclick="doSchooling('VERY_GOOD')">▶ Play together</button>
-                <button class="schooling-btn praise" id="btn-praise" onclick="doSchooling('GOOD')">👏 Praise</button>
-                <button class="schooling-btn preach" id="btn-preach" onclick="doSchooling('BAD')">📖 Preach</button>
-                <button class="schooling-btn scold" id="btn-scold" onclick="doSchooling('VERY_BAD')">😠 Scold</button>
+            <!-- Phase 1: Doctor Diagnosis -->
+            <div id="diagnosis-phase">
+                <div class="doctor-bubble" id="doctor-diagnosis"></div>
+                <button class="end-btn" onclick="beginTreatment()" style="background: linear-gradient(135deg, #34d399, #059669); margin-top: 16px;">
+                    💊 Begin Treatment
+                </button>
             </div>
 
-            <div id="schooling-actions" style="margin-bottom: 16px; font-size: 15px; font-weight: 600; color: #555;"></div>
-
-            <div id="schooling-personality" style="margin-bottom: 20px; padding: 12px 16px; background: linear-gradient(135deg, #f0f0ff, #e8ecff); border-radius: 10px; border-left: 3px solid #667eea; font-size: 14px; color: #444; text-align: left;"></div>
-
-            <button class="end-btn" onclick="endSchooling()">✅ End Schooling</button>
-
-            <div style="margin-top: 16px;">
-                <div style="cursor: pointer; font-size: 12px; color: #999;" onclick="document.getElementById('schooling-debug').classList.toggle('hidden')">
-                    🔧 Debug info ▼
+            <!-- Phase 2: Treatment (existing schooling buttons) -->
+            <div id="treatment-phase" class="hidden">
+                <div class="schooling-buttons">
+                    <button class="schooling-btn play" id="btn-play" onclick="doSchooling('VERY_GOOD')">▶ Play together</button>
+                    <button class="schooling-btn praise" id="btn-praise" onclick="doSchooling('GOOD')">👏 Praise</button>
+                    <button class="schooling-btn preach" id="btn-preach" onclick="doSchooling('BAD')">📖 Preach</button>
+                    <button class="schooling-btn scold" id="btn-scold" onclick="doSchooling('VERY_BAD')">😠 Scold</button>
                 </div>
-                <div id="schooling-debug" class="hidden" style="margin-top: 8px;">
-                    <div class="schooling-levels" id="schooling-levels"></div>
+
+                <div id="schooling-actions" style="margin-bottom: 16px; font-size: 15px; font-weight: 600; color: #555;"></div>
+
+                <div id="schooling-personality" style="margin-bottom: 20px; padding: 12px 16px; background: linear-gradient(135deg, #f0f0ff, #e8ecff); border-radius: 10px; border-left: 3px solid #667eea; font-size: 14px; color: #444; text-align: left;"></div>
+
+                <button class="end-btn" onclick="endSchooling()">✅ Discharge</button>
+
+                <div style="margin-top: 16px;">
+                    <div style="cursor: pointer; font-size: 12px; color: #999;" onclick="document.getElementById('schooling-debug').classList.toggle('hidden')">
+                        🔧 Debug info ▼
+                    </div>
+                    <div id="schooling-debug" class="hidden" style="margin-top: 8px;">
+                        <div class="schooling-levels" id="schooling-levels"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -774,7 +830,7 @@
     <div id="main-app" class="container hidden">
         <div class="ai-info">
             <h2 id="ai-name-display">Luna</h2>
-            <button onclick="startSchoolingFromMain()" style="background: linear-gradient(135deg, #f59e0b, #d97706); margin-bottom: 8px;">🎓 School Avatar</button>
+            <button onclick="startSchoolingFromMain()" style="background: linear-gradient(135deg, #f59e0b, #d97706); margin-bottom: 8px;">🏥 Hospitalize Avatar</button>
             <button class="reset-btn" onclick="resetAI()">🗑️ Delete & Start Over</button>
         </div>
 
@@ -1249,17 +1305,63 @@
         let schoolingLevels = randomSchoolingLevels();
         let schoolingReturnTo = 'setup'; // 'setup' or 'main'
         let schoolingClicks = 0;
+        let schoolingPhase = 'diagnosis'; // 'diagnosis' or 'treatment'
         const SCHOOLING_MAX_CLICKS = 6;
         const SCHOOLING_ORDER = ['VERY_BAD', 'BAD', 'GOOD', 'VERY_GOOD'];
+
+        function computeDiagnosis() {
+            const neg = (schoolingLevels.BAD || 0) + (schoolingLevels.VERY_BAD || 0);
+            const pos = (schoolingLevels.GOOD || 0) + (schoolingLevels.VERY_GOOD || 0);
+            if (neg > pos + 2) {
+                return {
+                    tendency: 'pessimistic',
+                    advice: 'Your PAiL is quite gloomy! Try playing with it and praising it more to brighten its spirits.'
+                };
+            } else if (pos > neg + 2) {
+                return {
+                    tendency: 'optimistic',
+                    advice: 'Your PAiL is overly cheerful! A little preaching or scolding will help it handle tough situations better.'
+                };
+            } else {
+                return {
+                    tendency: 'balanced',
+                    advice: 'Your PAiL seems well-balanced! Fine-tune if you\'d like, but it\'s doing great.'
+                };
+            }
+        }
 
         function initSchoolingSession(returnTo, hideScreen) {
             schoolingReturnTo = returnTo;
             schoolingClicks = 0;
+            schoolingPhase = 'diagnosis';
             const stored = localStorage.getItem('emotionalAI_schoolingLevels');
             schoolingLevels = stored ? JSON.parse(stored) : randomSchoolingLevels();
             document.getElementById(hideScreen).classList.add('hidden');
             document.getElementById('schooling-screen').classList.remove('hidden');
+
+            // Show doctor image in avatar container
+            const avatarEl = document.getElementById('schooling-avatar');
+            avatarEl.innerHTML = '<img src="avatars/doctor.svg" alt="Doctor" style="width:150px; height:auto;">';
+
+            // Show diagnosis, hide treatment
+            document.getElementById('diagnosis-phase').classList.remove('hidden');
+            document.getElementById('treatment-phase').classList.add('hidden');
+
+            // Compute and display diagnosis
+            const diagnosis = computeDiagnosis();
+            const tendencyLabels = { pessimistic: 'Pessimistic', optimistic: 'Optimistic', balanced: 'Balanced' };
+            document.getElementById('doctor-diagnosis').innerHTML =
+                `<div class="diagnosis-label">Diagnosis: ${tendencyLabels[diagnosis.tendency]}</div>` +
+                `<div>${diagnosis.advice}</div>`;
+        }
+
+        function beginTreatment() {
+            schoolingPhase = 'treatment';
+            // Swap doctor for avatar
             renderSchoolingAvatar('GOOD');
+            // Hide diagnosis, show treatment
+            document.getElementById('diagnosis-phase').classList.add('hidden');
+            document.getElementById('treatment-phase').classList.remove('hidden');
             updateSchoolingDisplay();
         }
 
@@ -1305,7 +1407,7 @@
         function updateSchoolingDisplay() {
             const remaining = SCHOOLING_MAX_CLICKS - schoolingClicks;
             document.getElementById('schooling-actions').textContent =
-                remaining > 0 ? `Actions remaining: ${remaining} / ${SCHOOLING_MAX_CLICKS}` : 'The school is over';
+                remaining > 0 ? `Actions remaining: ${remaining} / ${SCHOOLING_MAX_CLICKS}` : 'Treatment complete';
 
             // Personality description based on current levels
             const descriptions = {
