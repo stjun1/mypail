@@ -4,3 +4,4 @@ sessions/
 *.log
 dist/
 android/
+.idea/
