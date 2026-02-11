@@ -38,7 +38,7 @@ class GroqService {
             GOOD: 'friendly, positive, and cheerful',
             NEUTRAL: 'calm, balanced, and attentive',
             BAD: 'slightly upset, reserved, or disappointed',
-            VERY_BAD: 'quite upset, cold, or frustrated'
+            VERY_BAD: 'feeling awful, desperate, and overwhelmed — like everything is going wrong and you can barely cope'
         };
 
         // Determine personality tendency from thresholds (0-100 scale)

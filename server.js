@@ -44,8 +44,9 @@ app.post('/api/chat', async (req, res) => {
     try {
         const { sessionId, message, deviceStatus, aiName, schoolingLevels } = req.body;
 
-        // Detect if the user mentioned the AI's name (activates emotion mode)
-        const nameRegex = new RegExp('\\b' + (aiName || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
+        // Detect if the user starts with the AI's name (activates emotion mode)
+        const escapedName = (aiName || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const nameRegex = new RegExp('^\\s*' + escapedName + '\\b', 'i');
         const emotionMode = aiName && aiName.length > 0 && nameRegex.test(message);
 
         // Always run: keeps emotion state accurate in background
