@@ -81,6 +81,25 @@ ${intensityDesc}
 Respond naturally based on your emotional state, level, and personality. Keep responses concise (1-2 sentences).`;
     }
 
+    async generatePlainResponse(message) {
+        try {
+            const completion = await this.client.chat.completions.create({
+                model: this.model,
+                messages: [
+                    { role: 'system', content: 'You are a helpful assistant. Respond concisely and helpfully in 1-2 sentences.' },
+                    { role: 'user', content: message }
+                ],
+                max_tokens: config.GROQ_MAX_TOKENS,
+                temperature: 0.5
+            });
+
+            return completion.choices[0]?.message?.content || null;
+        } catch (error) {
+            console.error('Groq API error:', error.message);
+            return null;
+        }
+    }
+
     isConfigured() {
         return config.GROQ_API_KEY && config.GROQ_API_KEY !== '';
     }

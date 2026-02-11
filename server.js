@@ -44,52 +44,86 @@ app.post('/api/chat', async (req, res) => {
     try {
         const { sessionId, message, deviceStatus, aiName, schoolingLevels } = req.body;
 
+        // Detect if the user mentioned the AI's name (activates emotion mode)
+        const nameRegex = new RegExp('\\b' + (aiName || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
+        const emotionMode = aiName && aiName.length > 0 && nameRegex.test(message);
+
+        // Always run: keeps emotion state accurate in background
         const session = emotionEngine.getSession(sessionId, aiName, schoolingLevels);
         const phoneEmotion = emotionEngine.calculatePhoneEmotion(deviceStatus, sessionId);
         const promptEmotion = emotionEngine.calculatePromptEmotion(sessionId);
 
-        const category = messageAnalyzer.detectCategory(message);
-        const promptBoost = messageAnalyzer.detectPromptBoost(message);
+        if (emotionMode) {
+            // Full emotion processing
+            const category = messageAnalyzer.detectCategory(message);
+            const promptBoost = messageAnalyzer.detectPromptBoost(message);
 
-        if (promptBoost !== 0) {
-            emotionEngine.addPromptEmotion(sessionId, promptBoost, category);
-            emotionEngine.updateEmotionState(sessionId, category, promptBoost);
-        }
+            if (promptBoost !== 0) {
+                emotionEngine.addPromptEmotion(sessionId, promptBoost, category);
+                emotionEngine.updateEmotionState(sessionId, category, promptBoost);
+            }
 
-        const emotions = emotionEngine.getCombinedEmotion(sessionId);
+            const emotions = emotionEngine.getCombinedEmotion(sessionId);
 
-        let responseText;
+            let responseText;
 
-        // Use static responses first
-        responseText = responseGenerator.selectResponse(category, emotions.state, emotions.combined);
+            // Use static responses first
+            responseText = responseGenerator.selectResponse(category, emotions.state, emotions.combined);
 
-        // Fall back to Groq if no static response
-        if (!responseText && groqService.isConfigured()) {
-            responseText = await groqService.generateResponse(message, {
-                emotionState: emotions.state,
-                emotionLevel: emotions.combined,
-                category: category,
-                aiName: aiName || 'AI',
-                thresholds: emotionEngine.getThresholds(sessionId)
+            // Fall back to Groq if no static response
+            if (!responseText && groqService.isConfigured()) {
+                responseText = await groqService.generateResponse(message, {
+                    emotionState: emotions.state,
+                    emotionLevel: emotions.combined,
+                    category: category,
+                    aiName: aiName || 'AI',
+                    thresholds: emotionEngine.getThresholds(sessionId)
+                });
+            }
+
+            if (!responseText) {
+                responseText = "I'm not sure how to respond to that right now.";
+            }
+
+            res.json({
+                response: responseText,
+                avatarHint: emotions.state,
+                shouldSpeak: true,
+                emotionMode: true,
+                _debug: {
+                    phoneEmotion: emotions.phone,
+                    promptEmotion: emotions.prompt,
+                    combined: emotions.combined,
+                    state: emotions.state,
+                    category: category
+                }
+            });
+        } else {
+            // Normal mode: plain assistant response, no emotion processing
+            let responseText;
+
+            if (groqService.isConfigured()) {
+                responseText = await groqService.generatePlainResponse(message);
+            }
+
+            if (!responseText) {
+                responseText = "I'm not sure how to respond to that right now.";
+            }
+
+            res.json({
+                response: responseText,
+                avatarHint: 'GOOD',
+                shouldSpeak: false,
+                emotionMode: false,
+                _debug: {
+                    phoneEmotion: phoneEmotion,
+                    promptEmotion: promptEmotion,
+                    combined: null,
+                    state: null,
+                    category: null
+                }
             });
         }
-
-        if (!responseText) {
-            responseText = "I'm not sure how to respond to that right now.";
-        }
-
-        res.json({
-            response: responseText,
-            avatarHint: emotions.state,
-            shouldSpeak: true,
-            _debug: {
-                phoneEmotion: emotions.phone,
-                promptEmotion: emotions.prompt,
-                combined: emotions.combined,
-                state: emotions.state,
-                category: category
-            }
-        });
 
     } catch (error) {
         console.error('Chat error:', error);

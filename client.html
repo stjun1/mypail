@@ -1635,7 +1635,9 @@
                 addMessage(data.response, false);
 
                 try {
-                    updateAvatar(data.avatarHint);
+                    if (data.emotionMode) {
+                        updateAvatar(data.avatarHint);
+                    }
                 } catch (e) {
                     console.error('Avatar update error:', e);
                 }
