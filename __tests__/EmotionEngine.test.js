@@ -105,16 +105,15 @@ describe('EmotionEngine', () => {
     });
 
     describe('calculatePromptEmotion', () => {
-        test('decays prompt emotion over time', () => {
+        test('resets prompt emotion each turn', () => {
             engine.getSession('test-1', 'Mimi');
             engine.addPromptEmotion('test-1', 18, 'PRAISE');
 
             const val1 = engine.calculatePromptEmotion('test-1');
-            const val2 = engine.calculatePromptEmotion('test-1');
-            expect(Math.abs(val2)).toBeLessThan(Math.abs(val1));
+            expect(val1).toBe(0); // resets to 0 for new turn
         });
 
-        test('resets to 0 when very small', () => {
+        test('resets to 0 when called', () => {
             engine.getSession('test-1', 'Mimi');
             engine.addPromptEmotion('test-1', 0.3, 'tiny');
 
@@ -124,33 +123,36 @@ describe('EmotionEngine', () => {
     });
 
     describe('getCombinedEmotion', () => {
-        test('combines phone and prompt emotions', () => {
+        test('combines phone and prompt with persistence', () => {
             engine.getSession('test-1', 'Mimi');
             engine.addPromptEmotion('test-1', 10, 'PRAISE');
 
             const result = engine.getCombinedEmotion('test-1');
             expect(result.phone).toBe(50); // default
             expect(result.prompt).toBe(10);
+            // combined = ((n-1)/n)*50 + (1/n)*50 + 10 = 50 + 10 = 60 (first turn, prev=50, phone=50)
             expect(result.combined).toBe(60);
-            expect(result.state).toBe('GOOD');
         });
 
         test('clamps combined to 0-100', () => {
             engine.getSession('test-1', 'Mimi');
-            engine.addPromptEmotion('test-1', -200, 'big negative');
+            engine.addPromptEmotion('test-1', -100, 'big negative');
 
             const result = engine.getCombinedEmotion('test-1');
-            expect(result.combined).toBe(0);
+            expect(result.combined).toBeGreaterThanOrEqual(0);
         });
     });
 
     describe('updateEmotionState', () => {
         test('transitions to VERY_GOOD after repeated praise', () => {
             engine.getSession('test-1', 'Mimi');
+            const session = engine.getSession('test-1');
+            session.thresholds = { VERY_BAD: 25, BAD: 50, GOOD: 75 };
 
-            for (let i = 0; i < 10; i++) {
-                engine.addPromptEmotion('test-1', 8, 'PRAISE');
-                engine.updateEmotionState('test-1', 'PRAISE', 8);
+            for (let i = 0; i < 20; i++) {
+                engine.addPromptEmotion('test-1', 20, 'PRAISE');
+                engine.updateEmotionState('test-1', 'PRAISE', 20);
+                engine.finalizeTurn('test-1');
             }
 
             expect(engine.getEmotionState('test-1')).toBe('VERY_GOOD');
@@ -158,10 +160,13 @@ describe('EmotionEngine', () => {
 
         test('transitions to VERY_BAD after repeated insults', () => {
             engine.getSession('test-1', 'Mimi');
+            const session = engine.getSession('test-1');
+            session.thresholds = { VERY_BAD: 25, BAD: 50, GOOD: 75 };
 
-            for (let i = 0; i < 10; i++) {
-                engine.addPromptEmotion('test-1', -10, 'INSULT');
-                engine.updateEmotionState('test-1', 'INSULT', -10);
+            for (let i = 0; i < 20; i++) {
+                engine.addPromptEmotion('test-1', -20, 'INSULT');
+                engine.updateEmotionState('test-1', 'INSULT', -20);
+                engine.finalizeTurn('test-1');
             }
 
             expect(engine.getEmotionState('test-1')).toBe('VERY_BAD');

@@ -21,7 +21,7 @@ module.exports = {
         N_MIDDLE_STATES: 2,    // 50% persistence (faster change)
 
         // Prompt emotion
-        PROMPT_DECAY: 0.5,         // 50% decay per update (fades faster)
+        PROMPT_DECAY: 0.8,         // 20% decay per update
         RESERVED_OFFSET: 0,        // Reserved emotion offset
 
         // State persistence

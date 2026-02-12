@@ -66,6 +66,7 @@ app.post('/api/chat', async (req, res) => {
 
             emotionEngine.incrementInteractions(sessionId);
             const emotions = emotionEngine.getCombinedEmotion(sessionId);
+            emotionEngine.finalizeTurn(sessionId);
 
             let responseText;
 
@@ -111,6 +112,8 @@ app.post('/api/chat', async (req, res) => {
             if (!responseText) {
                 responseText = "I'm not sure how to respond to that right now.";
             }
+
+            emotionEngine.finalizeTurn(sessionId);
 
             res.json({
                 response: responseText,

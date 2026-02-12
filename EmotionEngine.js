@@ -84,9 +84,9 @@ class EmotionEngine {
                 thresholds: persistent?.thresholds || this.generateRandomThresholds(),
                 previousPhoneEmotion: 50,
                 currentPhoneEmotion: 50,
+                previousCombinedEmotion: 50,
                 reserved: 0,
                 promptEmotion: 0,
-                promptEmotionDecay: config.EMOTION.PROMPT_DECAY,
                 emotionState: 'GOOD',
                 stateHistory: [],
                 praiseCount: 0,
@@ -225,21 +225,21 @@ class EmotionEngine {
 
     calculatePromptEmotion(sessionId) {
         const session = this.getSession(sessionId);
-
-        session.promptEmotion *= session.promptEmotionDecay;
-
-        if (Math.abs(session.promptEmotion) < 0.5) {
-            session.promptEmotion = 0;
-        }
-
-        return session.promptEmotion;
+        session.promptEmotion = 0; // reset for new turn
+        return 0;
     }
 
     getCombinedEmotion(sessionId) {
         const session = this.getSession(sessionId);
 
+        // Persistence formula: ((n-1)/n) * prevCombined + (1/n) * phone + promptBoost
+        const n = (session.emotionState === 'VERY_GOOD' || session.emotionState === 'VERY_BAD')
+            ? config.EMOTION.N_VERY_STATES : config.EMOTION.N_MIDDLE_STATES;
+
         const combined = Math.max(0, Math.min(100,
-            session.currentPhoneEmotion + session.promptEmotion
+            ((n - 1) / n) * session.previousCombinedEmotion +
+            (1 / n) * session.currentPhoneEmotion +
+            session.promptEmotion
         ));
 
         return {
@@ -251,6 +251,12 @@ class EmotionEngine {
         };
     }
 
+    finalizeTurn(sessionId) {
+        const session = this.getSession(sessionId);
+        const emotions = this.getCombinedEmotion(sessionId);
+        session.previousCombinedEmotion = emotions.combined;
+    }
+
     incrementInteractions(sessionId) {
         const session = this.getSession(sessionId);
         session.interactions++;
@@ -258,7 +264,7 @@ class EmotionEngine {
 
     addPromptEmotion(sessionId, boost, reason) {
         const session = this.getSession(sessionId);
-        session.promptEmotion = Math.max(-100, Math.min(100, session.promptEmotion + boost));
+        session.promptEmotion = Math.max(-100, Math.min(100, boost));
     }
 
     updateEmotionState(sessionId, trigger, value) {
