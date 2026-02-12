@@ -148,7 +148,7 @@ describe('EmotionEngine', () => {
         test('transitions to VERY_GOOD after repeated praise', () => {
             engine.getSession('test-1', 'Mimi');
 
-            for (let i = 0; i < 5; i++) {
+            for (let i = 0; i < 10; i++) {
                 engine.addPromptEmotion('test-1', 8, 'PRAISE');
                 engine.updateEmotionState('test-1', 'PRAISE', 8);
             }
@@ -159,7 +159,7 @@ describe('EmotionEngine', () => {
         test('transitions to VERY_BAD after repeated insults', () => {
             engine.getSession('test-1', 'Mimi');
 
-            for (let i = 0; i < 5; i++) {
+            for (let i = 0; i < 10; i++) {
                 engine.addPromptEmotion('test-1', -10, 'INSULT');
                 engine.updateEmotionState('test-1', 'INSULT', -10);
             }

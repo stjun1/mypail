@@ -7,17 +7,19 @@ class ResponseGenerator {
         this.responses = JSON.parse(fs.readFileSync(filePath, 'utf8'));
     }
 
-    selectResponse(category, emotionState, emotionLevel) {
+    selectResponse(category, emotionState, emotionLevel, interactionCount) {
         const responseArray = this.responses[category]?.[emotionState];
 
         if (!responseArray || responseArray.length === 0) {
             return null;
         }
 
-        const index = Math.floor((emotionLevel / 100) * responseArray.length);
-        const clampedIndex = Math.max(0, Math.min(responseArray.length - 1, index));
+        const len = responseArray.length;
+        const baseIndex = Math.floor((emotionLevel / 100) * len);
+        const offset = (interactionCount || 0) % len;
+        const index = (baseIndex + offset) % len;
 
-        return responseArray[clampedIndex];
+        return responseArray[index];
     }
 
     getAll(category, emotionState) {

@@ -64,12 +64,13 @@ app.post('/api/chat', async (req, res) => {
                 emotionEngine.updateEmotionState(sessionId, category, promptBoost);
             }
 
+            emotionEngine.incrementInteractions(sessionId);
             const emotions = emotionEngine.getCombinedEmotion(sessionId);
 
             let responseText;
 
             // Use static responses first
-            responseText = responseGenerator.selectResponse(category, emotions.state, emotions.combined);
+            responseText = responseGenerator.selectResponse(category, emotions.state, emotions.combined, emotions.interactions);
 
             // Fall back to Groq if no static response
             if (!responseText && groqService.isConfigured()) {

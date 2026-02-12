@@ -246,8 +246,14 @@ class EmotionEngine {
             phone: session.currentPhoneEmotion,
             prompt: session.promptEmotion,
             combined: combined,
-            state: session.emotionState
+            state: session.emotionState,
+            interactions: session.interactions
         };
+    }
+
+    incrementInteractions(sessionId) {
+        const session = this.getSession(sessionId);
+        session.interactions++;
     }
 
     addPromptEmotion(sessionId, boost, reason) {
