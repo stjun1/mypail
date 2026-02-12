@@ -46,13 +46,13 @@ describe('MessageAnalyzer', () => {
 
     describe('detectPromptBoost', () => {
         test('returns GREETING trigger value for greetings', () => {
-            expect(analyzer.detectPromptBoost('hello')).toBe(10);
-            expect(analyzer.detectPromptBoost('hi there')).toBe(10);
-            expect(analyzer.detectPromptBoost('good morning')).toBe(10);
+            expect(analyzer.detectPromptBoost('hello')).toBe(4);
+            expect(analyzer.detectPromptBoost('hi there')).toBe(4);
+            expect(analyzer.detectPromptBoost('good morning')).toBe(4);
         });
 
         test('INSULT still takes priority over GREETING in boost detection', () => {
-            expect(analyzer.detectPromptBoost('hello you idiot')).toBe(-20);
+            expect(analyzer.detectPromptBoost('hello you idiot')).toBe(-10);
         });
     });
 

@@ -149,7 +149,8 @@ describe('EmotionEngine', () => {
             engine.getSession('test-1', 'Mimi');
 
             for (let i = 0; i < 5; i++) {
-                engine.updateEmotionState('test-1', 'PRAISE', 18);
+                engine.addPromptEmotion('test-1', 8, 'PRAISE');
+                engine.updateEmotionState('test-1', 'PRAISE', 8);
             }
 
             expect(engine.getEmotionState('test-1')).toBe('VERY_GOOD');
@@ -159,7 +160,8 @@ describe('EmotionEngine', () => {
             engine.getSession('test-1', 'Mimi');
 
             for (let i = 0; i < 5; i++) {
-                engine.updateEmotionState('test-1', 'INSULT', -20);
+                engine.addPromptEmotion('test-1', -10, 'INSULT');
+                engine.updateEmotionState('test-1', 'INSULT', -10);
             }
 
             expect(engine.getEmotionState('test-1')).toBe('VERY_BAD');

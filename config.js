@@ -21,7 +21,7 @@ module.exports = {
         N_MIDDLE_STATES: 2,    // 50% persistence (faster change)
 
         // Prompt emotion
-        PROMPT_DECAY: 0.8,         // 20% decay per update
+        PROMPT_DECAY: 0.5,         // 50% decay per update (fades faster)
         RESERVED_OFFSET: 0,        // Reserved emotion offset
 
         // State persistence
@@ -39,13 +39,13 @@ module.exports = {
     
     // Emotion triggers (prompt boosts/penalties)
     TRIGGERS: {
-        DEATH_THREAT: -25,
-        PRAISE: 18,
-        INSULT: -20,
-        USER_POSITIVE: 15,
-        USER_NEGATIVE: -12,
-        GREETING: 10,
-        DENIAL: -5
+        DEATH_THREAT: -12,
+        PRAISE: 8,
+        INSULT: -10,
+        USER_POSITIVE: 6,
+        USER_NEGATIVE: -5,
+        GREETING: 4,
+        DENIAL: -3
     },
     
     // Detection keywords

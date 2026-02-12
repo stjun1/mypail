@@ -18,7 +18,7 @@ describe('Chat API integration (unit-level)', () => {
         expect(category).toBe('GREETING');
 
         const promptBoost = analyzer.detectPromptBoost(message);
-        expect(promptBoost).toBe(10);
+        expect(promptBoost).toBe(4);
 
         // Pick a response at a neutral emotion level
         const response = generator.selectResponse(category, 'GOOD', 50);
