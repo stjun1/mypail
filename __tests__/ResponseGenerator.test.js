@@ -7,8 +7,8 @@ describe('ResponseGenerator', () => {
         generator = new ResponseGenerator();
     });
 
-    test('works for all 7 categories', () => {
-        const categories = ['PRAISE', 'INSULT', 'USER_POSITIVE', 'USER_NEGATIVE', 'CONFUSION', 'PHONE_STATUS', 'GREETING'];
+    test('works for all 8 categories', () => {
+        const categories = ['PRAISE', 'INSULT', 'USER_POSITIVE', 'USER_NEGATIVE', 'PHONE_STATUS', 'GREETING', 'DENIAL', 'DEATH_THREAT'];
         const states = ['VERY_BAD', 'BAD', 'GOOD', 'VERY_GOOD'];
 
         for (const category of categories) {
