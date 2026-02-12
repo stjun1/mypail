@@ -8,7 +8,7 @@
     "dev": "nodemon server.js",
     "test": "jest --verbose",
     "test:watch": "jest --watch",
-    "build:web": "mkdir -p dist && cp client.html dist/index.html && cp -r avatars dist/avatars && npx esbuild src/capacitor-bridge.js --bundle --outfile=dist/capacitor-bridge.js --format=iife",
+    "build:web": "mkdir -p dist && cp client.html dist/index.html && rm -rf dist/avatars && cp -r avatars dist/avatars && npx esbuild src/capacitor-bridge.js --bundle --outfile=dist/capacitor-bridge.js --format=iife",
     "cap:sync": "npm run build:web && npx cap sync",
     "cap:open": "npx cap open android",
     "build:apk": "npm run cap:sync && JAVA_HOME=/home/stjun12/jdk-21.0.6+7 ANDROID_HOME=/home/stjun12/Android/Sdk ./android/gradlew -p android assembleDebug && rclone copy android/app/build/outputs/apk/debug/app-debug.apk gdrive:MyPAiL/ && echo '✅ APK uploaded to Google Drive > MyPAiL'"
