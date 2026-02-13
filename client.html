@@ -1796,12 +1796,17 @@
         function speak(text) {
             if (!speakerEnabled) return;
             if (isCapacitor && window.CapBridge && window.CapBridge.TextToSpeech) {
-                CapBridge.TextToSpeech.speak({ text: text, lang: 'en-US', rate: 1.0 })
+                CapBridge.TextToSpeech.speak({ text: text, lang: 'en-US', rate: 1.0, pitch: 0.85 })
                     .catch(e => console.error('Native TTS error:', e));
                 return;
             }
             if (typeof speechSynthesis === 'undefined') return;
             const utterance = new SpeechSynthesisUtterance(text);
+            const voices = speechSynthesis.getVoices();
+            const maleVoice = voices.find(v => /male/i.test(v.name) && !/female/i.test(v.name))
+                || voices.find(v => /\b(david|james|daniel|mark|george|richard)\b/i.test(v.name));
+            if (maleVoice) utterance.voice = maleVoice;
+            utterance.pitch = 0.85;
             speechSynthesis.speak(utterance);
         }
 
