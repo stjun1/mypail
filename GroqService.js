@@ -81,6 +81,51 @@ ${intensityDesc}
 Respond naturally based on your emotional state, level, and personality. Keep responses concise (1-2 sentences).`;
     }
 
+    async generateSympathyInterjection(message, context = {}) {
+        const { emotionState, sympathyType, aiName } = context;
+
+        const toneMatrix = {
+            user_good: {
+                VERY_GOOD: 'celebratory, ecstatic, over-the-moon excited',
+                GOOD: 'supportive, warm, genuinely happy for them',
+                BAD: 'encouraging but subdued, trying to stay positive',
+                VERY_BAD: 'envious, wistful, wishing you had that too'
+            },
+            user_bad: {
+                VERY_GOOD: 'uplifting, brushing it off, energetically positive',
+                GOOD: 'reassuring, calm, gently supportive',
+                BAD: 'vengeful, protective, angry on their behalf',
+                VERY_BAD: 'deeply sympathizing, sharing their sorrow, heartbroken'
+            }
+        };
+
+        const tone = toneMatrix[sympathyType]?.[emotionState] || 'supportive';
+
+        const systemPrompt = `You are ${aiName || 'AI'}, an emotional AI companion in sympathy mode.
+The user is sharing something ${sympathyType === 'user_good' ? 'positive' : 'negative'}.
+Your current emotional tone: ${tone}.
+Respond with a VERY short interjection (under 10 words). Only react emotionally.
+Do NOT ask questions. Do NOT give advice. Do NOT use emojis.
+Just a brief, heartfelt reaction.`;
+
+        try {
+            const completion = await this.client.chat.completions.create({
+                model: this.model,
+                messages: [
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: message }
+                ],
+                max_tokens: 30,
+                temperature: 0.9
+            });
+
+            return completion.choices[0]?.message?.content || null;
+        } catch (error) {
+            console.error('Groq API error (sympathy):', error.message);
+            return null;
+        }
+    }
+
     async generatePlainResponse(message) {
         try {
             const completion = await this.client.chat.completions.create({

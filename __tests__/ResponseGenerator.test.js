@@ -7,8 +7,8 @@ describe('ResponseGenerator', () => {
         generator = new ResponseGenerator();
     });
 
-    test('works for all 8 categories', () => {
-        const categories = ['PRAISE', 'INSULT', 'USER_POSITIVE', 'USER_NEGATIVE', 'PHONE_STATUS', 'GREETING', 'DENIAL', 'DEATH_THREAT'];
+    test('works for all 10 categories', () => {
+        const categories = ['PRAISE', 'INSULT', 'USER_POSITIVE', 'USER_NEGATIVE', 'PHONE_STATUS', 'GREETING', 'DENIAL', 'DEATH_THREAT', 'SYMPATHY_GOOD', 'SYMPATHY_BAD'];
         const states = ['VERY_BAD', 'BAD', 'GOOD', 'VERY_GOOD'];
 
         for (const category of categories) {
@@ -33,9 +33,25 @@ describe('ResponseGenerator', () => {
         expect(response.length).toBeGreaterThan(0);
     });
 
-    test('getTotalResponseCount includes GREETING responses', () => {
+    test('SYMPATHY_GOOD has responses for all 4 emotion states', () => {
+        const states = ['VERY_BAD', 'BAD', 'GOOD', 'VERY_GOOD'];
+        for (const state of states) {
+            const responses = generator.getAll('SYMPATHY_GOOD', state);
+            expect(responses.length).toBeGreaterThanOrEqual(15);
+        }
+    });
+
+    test('SYMPATHY_BAD has responses for all 4 emotion states', () => {
+        const states = ['VERY_BAD', 'BAD', 'GOOD', 'VERY_GOOD'];
+        for (const state of states) {
+            const responses = generator.getAll('SYMPATHY_BAD', state);
+            expect(responses.length).toBeGreaterThanOrEqual(15);
+        }
+    });
+
+    test('getTotalResponseCount includes GREETING and sympathy responses', () => {
         const total = generator.getTotalResponseCount();
-        // 7 categories × 4 states × ~25 responses = ~700
+        // 9 categories × 4 states × ~25 responses = ~900
         expect(total).toBeGreaterThanOrEqual(700);
     });
 });

@@ -648,6 +648,69 @@
         .feedback-link a:hover {
             text-decoration: underline;
         }
+
+        /* Sympathy Mode */
+        .sympathy-bar {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-align: center;
+            padding: 8px 16px;
+            border-radius: 10px 10px 0 0;
+            font-size: 14px;
+            font-weight: 600;
+            display: none;
+        }
+
+        .sympathy-bar.active {
+            display: block;
+        }
+
+        #end-sympathy-btn {
+            padding: 15px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            background: #e74c3c;
+            display: none;
+        }
+
+        #end-sympathy-btn:hover {
+            background: #c0392b;
+        }
+
+        #end-sympathy-btn.active {
+            display: inline-block;
+        }
+
+        .sympathy-offer {
+            background: linear-gradient(135deg, #f0f4ff, #e8ecff);
+            border: 2px solid #667eea;
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin: 10px 0;
+            text-align: center;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .sympathy-offer p {
+            margin-bottom: 10px;
+        }
+
+        .sympathy-offer button {
+            padding: 8px 20px;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 8px;
+            margin: 0 4px;
+        }
+
+        .sympathy-offer .accept-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .sympathy-offer .decline-btn {
+            background: #9E9E9E;
+        }
     </style>
 </head>
 <body>
@@ -837,6 +900,9 @@
         <!-- Avatar -->
         <div id="avatar"></div>
 
+        <!-- Sympathy Mode Indicator -->
+        <div class="sympathy-bar" id="sympathy-bar">Sympathy Mode Active</div>
+
         <!-- Chat Interface -->
         <div id="chat-box"></div>
 
@@ -846,6 +912,7 @@
             <button id="speaker-btn" onclick="toggleSpeaker()" title="Toggle Speaker">🔊</button>
             <input type="text" id="message-input" placeholder="Type your message..." onkeypress="handleKeyPress(event)">
             <button id="send-btn" onclick="sendMessage()">Send</button>
+            <button id="end-sympathy-btn" onclick="endSympathyMode()">End</button>
         </div>
 
         <!-- Device Status Controls (Testing Only - Collapsible) -->
@@ -883,6 +950,10 @@
         const SERVER_URL = 'https://mypail-production.up.railway.app';
         const isCapacitor = window.CapBridge && window.CapBridge.isNative;
         let deviceReadings = { battery: 75, network: -60, memory: 800 };
+
+        // Sympathy mode state
+        let sympathyMode = false;
+        let sympathyType = null;
         let sessionId = localStorage.getItem('emotionalAI_sessionId');
         let aiName = localStorage.getItem('emotionalAI_name');
         let selectedAvatar = localStorage.getItem('emotionalAI_avatar');
@@ -1721,16 +1792,23 @@
             document.getElementById('send-btn').disabled = true;
 
             try {
+                const requestBody = {
+                    sessionId,
+                    message,
+                    deviceStatus: await getDeviceStatus(),
+                    aiName,
+                    schoolingLevels: JSON.parse(localStorage.getItem('emotionalAI_schoolingLevels') || 'null')
+                };
+
+                if (sympathyMode && sympathyType) {
+                    requestBody.sympathyMode = true;
+                    requestBody.sympathyType = sympathyType;
+                }
+
                 const response = await fetch(`${SERVER_URL}/api/chat`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        sessionId,
-                        message,
-                        deviceStatus: await getDeviceStatus(),
-                        aiName,
-                        schoolingLevels: JSON.parse(localStorage.getItem('emotionalAI_schoolingLevels') || 'null')
-                    })
+                    body: JSON.stringify(requestBody)
                 });
 
                 const data = await response.json();
@@ -1752,6 +1830,11 @@
                     console.error('Speech error:', e);
                 }
 
+                // Handle sympathy offer (only when not already in sympathy mode)
+                if (data.sympathyOffer && !sympathyMode) {
+                    showSympathyOffer(data.sympathyOffer);
+                }
+
                 if (data._debug) {
                     console.log('🎭 Emotions:', data._debug);
                 }
@@ -1762,6 +1845,41 @@
             } finally {
                 document.getElementById('send-btn').disabled = false;
             }
+        }
+
+        // Sympathy mode functions
+        function showSympathyOffer(type) {
+            const chatBox = document.getElementById('chat-box');
+            const offerDiv = document.createElement('div');
+            offerDiv.className = 'sympathy-offer';
+            const label = type === 'user_good' ? 'good news' : 'tough time';
+            offerDiv.innerHTML = `<p>It sounds like you're sharing some ${label}. Want me to just listen for a while?</p>` +
+                `<button class="accept-btn" onclick="enterSympathyMode('${type}', this.parentElement)">Yes, listen</button>` +
+                `<button class="decline-btn" onclick="declineSympathy(this.parentElement)">No thanks</button>`;
+            chatBox.appendChild(offerDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function enterSympathyMode(type, offerEl) {
+            sympathyMode = true;
+            sympathyType = type;
+            if (offerEl) offerEl.remove();
+            document.getElementById('sympathy-bar').classList.add('active');
+            document.getElementById('end-sympathy-btn').classList.add('active');
+            const label = type === 'user_good' ? 'happy' : 'sad';
+            addMessage(`I'm here to listen. Tell me more about what's making you ${label}.`, false, true);
+        }
+
+        function declineSympathy(offerEl) {
+            if (offerEl) offerEl.remove();
+        }
+
+        function endSympathyMode() {
+            sympathyMode = false;
+            sympathyType = null;
+            document.getElementById('sympathy-bar').classList.remove('active');
+            document.getElementById('end-sympathy-btn').classList.remove('active');
+            addMessage('Sympathy mode ended. Back to normal!', false, true);
         }
 
         // Add message to chat

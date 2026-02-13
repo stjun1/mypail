@@ -42,7 +42,7 @@ app.get('/health', (req, res) => {
 
 app.post('/api/chat', async (req, res) => {
     try {
-        const { sessionId, message, deviceStatus, aiName, schoolingLevels } = req.body;
+        const { sessionId, message, deviceStatus, aiName, schoolingLevels, sympathyMode, sympathyType } = req.body;
 
         // Detect if the user addresses the AI's name (first word, second word, or last word)
         const escapedName = (aiName || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -51,7 +51,8 @@ app.post('/api/chat', async (req, res) => {
             '|\\b' + escapedName + '\\s*$)',               // last word
             'i'
         );
-        const emotionMode = aiName && aiName.length > 0 && nameRegex.test(message);
+        // In sympathy mode, treat as emotion mode regardless of name detection
+        const emotionMode = sympathyMode || (aiName && aiName.length > 0 && nameRegex.test(message));
 
         // Always run: keeps emotion state accurate in background
         const session = emotionEngine.getSession(sessionId, aiName, schoolingLevels);
@@ -59,6 +60,48 @@ app.post('/api/chat', async (req, res) => {
         const promptEmotion = emotionEngine.calculatePromptEmotion(sessionId);
 
         if (emotionMode) {
+            // Sympathy mode: short interjections, skip category detection
+            if (sympathyMode && sympathyType) {
+                const emotions = emotionEngine.getCombinedEmotion(sessionId);
+                emotionEngine.finalizeTurn(sessionId);
+
+                let responseText;
+
+                // Try Groq first for variety
+                if (groqService.isConfigured()) {
+                    responseText = await groqService.generateSympathyInterjection(message, {
+                        emotionState: emotions.state,
+                        sympathyType,
+                        aiName: aiName || 'AI'
+                    });
+                }
+
+                // Fall back to static sympathy responses
+                if (!responseText) {
+                    const fallbackCategory = sympathyType === 'user_good' ? 'SYMPATHY_GOOD' : 'SYMPATHY_BAD';
+                    responseText = responseGenerator.selectResponse(fallbackCategory, emotions.state, emotions.combined, emotions.interactions);
+                }
+
+                if (!responseText) {
+                    responseText = sympathyType === 'user_good' ? "That's great!" : "I'm here for you.";
+                }
+
+                return res.json({
+                    response: responseText,
+                    avatarHint: emotions.state,
+                    shouldSpeak: true,
+                    emotionMode: true,
+                    sympathyMode: true,
+                    _debug: {
+                        phoneEmotion: emotions.phone,
+                        promptEmotion: emotions.prompt,
+                        combined: emotions.combined,
+                        state: emotions.state,
+                        category: 'SYMPATHY'
+                    }
+                });
+            }
+
             // Full emotion processing
             const category = messageAnalyzer.detectCategory(message);
             const promptBoost = messageAnalyzer.detectPromptBoost(message);
@@ -92,11 +135,20 @@ app.post('/api/chat', async (req, res) => {
                 responseText = "I'm not sure how to respond to that right now.";
             }
 
+            // Offer sympathy mode for positive/negative user messages
+            let sympathyOffer = null;
+            if (category === 'USER_POSITIVE') {
+                sympathyOffer = 'user_good';
+            } else if (category === 'USER_NEGATIVE') {
+                sympathyOffer = 'user_bad';
+            }
+
             res.json({
                 response: responseText,
                 avatarHint: emotions.state,
                 shouldSpeak: true,
                 emotionMode: true,
+                sympathyOffer,
                 _debug: {
                     phoneEmotion: emotions.phone,
                     promptEmotion: emotions.prompt,
