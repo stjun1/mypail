@@ -1865,8 +1865,6 @@
             if (offerEl) offerEl.remove();
             document.getElementById('sympathy-bar').classList.add('active');
             document.getElementById('end-sympathy-btn').classList.add('active');
-            const label = type === 'user_good' ? 'happy' : 'sad';
-            addMessage(`I'm here to listen. Tell me more about what's making you ${label}.`, false, true);
         }
 
         function declineSympathy(offerEl) {
@@ -1878,7 +1876,6 @@
             sympathyType = null;
             document.getElementById('sympathy-bar').classList.remove('active');
             document.getElementById('end-sympathy-btn').classList.remove('active');
-            addMessage('Sympathy mode ended. Back to normal!', false, true);
         }
 
         // Add message to chat
