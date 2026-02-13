@@ -122,17 +122,11 @@ class EmotionEngine {
     }
 
     generateRandomThresholds() {
-        // All thresholds between 0 and 100
-        // First: VERY_BAD can be anywhere from 0 to 97 (leave room for BAD and GOOD)
-        const VERY_BAD = Math.round(Math.random() * 97 * 10) / 10;
-
-        // Second: BAD must be between VERY_BAD and 99 (leave room for GOOD)
-        const badMin = VERY_BAD + 0.1;
-        const BAD = Math.round((Math.random() * (99 - badMin) + badMin) * 10) / 10;
-
-        // Third: GOOD must be between BAD and 100
-        const goodMin = BAD + 0.1;
-        const GOOD = Math.round((Math.random() * (100 - goodMin) + goodMin) * 10) / 10;
+        // VERY_BAD: 0 to 97, BAD: VERY_BAD+1 to 98, GOOD: BAD+1 to 99
+        // Each threshold is at least 1 apart so no state overlaps
+        const VERY_BAD = Math.round(Math.random() * 97);
+        const BAD = Math.round(Math.random() * (98 - (VERY_BAD + 1)) + (VERY_BAD + 1));
+        const GOOD = Math.round(Math.random() * (99 - (BAD + 1)) + (BAD + 1));
 
         return { VERY_BAD, BAD, GOOD };
     }
