@@ -1852,8 +1852,7 @@
             const chatBox = document.getElementById('chat-box');
             const offerDiv = document.createElement('div');
             offerDiv.className = 'sympathy-offer';
-            const label = type === 'user_good' ? 'good news' : 'tough time';
-            offerDiv.innerHTML = `<p>It sounds like you're sharing some ${label}. Want me to just listen for a while?</p>` +
+            offerDiv.innerHTML = `<p>Want me to just listen for a while?</p>` +
                 `<button class="accept-btn" onclick="enterSympathyMode('${type}', this.parentElement)">Yes, listen</button>` +
                 `<button class="decline-btn" onclick="declineSympathy(this.parentElement)">No thanks</button>`;
             chatBox.appendChild(offerDiv);
