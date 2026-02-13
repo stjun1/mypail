@@ -276,13 +276,15 @@
         }
 
         #speaker-btn {
-            padding: 15px 20px;
-            font-size: 20px;
-            background: #FF9800;
+            padding: 10px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            background: #4CAF50;
+            min-width: 70px;
         }
 
         #speaker-btn:hover {
-            background: #F57C00;
+            background: #43A047;
         }
 
         #speaker-btn.off {
@@ -909,10 +911,10 @@
         <!-- Input Area -->
         <div class="input-area">
             <button id="voice-btn" onclick="toggleVoice()" title="Voice Input">🎤</button>
-            <button id="speaker-btn" onclick="toggleSpeaker()" title="Toggle Speaker">🔊</button>
+            <button id="speaker-btn" onclick="toggleSpeaker()" title="Toggle Speaker">Voice ON</button>
             <input type="text" id="message-input" placeholder="Type your message..." onkeypress="handleKeyPress(event)">
             <button id="send-btn" onclick="sendMessage()">Send</button>
-            <button id="end-sympathy-btn" onclick="endSympathyMode()">End</button>
+            <button id="end-sympathy-btn" onclick="endSympathyMode()">Mode End</button>
         </div>
 
         <!-- Device Status Controls (Testing Only - Collapsible) -->
@@ -1928,7 +1930,7 @@
             speakerEnabled = !speakerEnabled;
             const btn = document.getElementById('speaker-btn');
             if (speakerEnabled) {
-                btn.textContent = '🔊';
+                btn.textContent = 'Voice ON';
                 btn.classList.remove('off');
             } else {
                 if (isCapacitor && window.CapBridge && window.CapBridge.TextToSpeech) {
@@ -1936,7 +1938,7 @@
                 } else if (typeof speechSynthesis !== 'undefined') {
                     speechSynthesis.cancel();
                 }
-                btn.textContent = '🔇';
+                btn.textContent = 'Voice OFF';
                 btn.classList.add('off');
             }
         }
