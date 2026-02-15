@@ -13,6 +13,9 @@ module.exports = {
     GROQ_MODEL: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
     GROQ_MAX_TOKENS: parseInt(process.env.GROQ_MAX_TOKENS) || 150,
     GROQ_TEMPERATURE: parseFloat(process.env.GROQ_TEMPERATURE) || 0.7,
+
+    // Beta metrics dashboard key
+    BETA_METRICS_KEY: process.env.BETA_METRICS_KEY || '',
     
     // Emotion calculation parameters
     EMOTION: {

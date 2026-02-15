@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyPAiL - Beta Metrics Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            color: #667eea;
+            font-size: 28px;
+            margin-bottom: 6px;
+        }
+
+        .subtitle {
+            color: #888;
+            font-size: 14px;
+        }
+
+        #last-updated {
+            color: #aaa;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        .error-banner {
+            background: #fee;
+            color: #c00;
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        /* Summary Cards */
+        .cards-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 18px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .card-label {
+            font-size: 12px;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .card-value {
+            font-size: 26px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .card-sub {
+            font-size: 11px;
+            color: #bbb;
+            margin-top: 2px;
+        }
+
+        /* Section Cards */
+        .section {
+            background: white;
+            border-radius: 14px;
+            padding: 22px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+
+        .section h2 {
+            font-size: 16px;
+            color: #667eea;
+            margin-bottom: 14px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 8px;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th {
+            text-align: left;
+            color: #999;
+            font-weight: 600;
+            padding: 6px 8px;
+            border-bottom: 1px solid #eee;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+
+        td {
+            padding: 6px 8px;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        td.num {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Bar Charts */
+        .bar-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .bar-label {
+            width: 100px;
+            font-size: 12px;
+            color: #666;
+            flex-shrink: 0;
+        }
+
+        .bar-track {
+            flex: 1;
+            height: 20px;
+            background: #f0f0f0;
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 0 10px;
+        }
+
+        .bar-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 6px;
+            min-width: 2px;
+            transition: width 0.4s ease;
+        }
+
+        .bar-count {
+            width: 50px;
+            text-align: right;
+            font-size: 12px;
+            color: #999;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Two-column layout */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 650px) {
+            .two-col {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #aaa;
+        }
+
+        /* Daily chart */
+        .daily-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 3px;
+            height: 100px;
+            margin-bottom: 16px;
+            padding: 0 2px;
+        }
+
+        .daily-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 0;
+        }
+
+        .daily-bar-wrap {
+            width: 100%;
+            height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .daily-bar {
+            width: 100%;
+            background: linear-gradient(180deg, #667eea, #764ba2);
+            border-radius: 3px 3px 0 0;
+            min-height: 2px;
+            transition: height 0.4s ease;
+        }
+
+        .daily-bar-user {
+            background: linear-gradient(180deg, #2ecc71, #27ae60);
+            border-radius: 0;
+            min-height: 0;
+        }
+
+        .daily-date {
+            font-size: 9px;
+            color: #bbb;
+            margin-top: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        tr.today-row {
+            background: #f8f5ff;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Beta Metrics Dashboard</h1>
+            <div class="subtitle">Uptime: <span id="uptime">--</span></div>
+            <div id="last-updated">Loading...</div>
+        </header>
+
+        <div class="error-banner" id="error-banner"></div>
+
+        <!-- Summary Cards -->
+        <div class="cards-row">
+            <div class="card">
+                <div class="card-label">Total Messages</div>
+                <div class="card-value" id="c-messages">--</div>
+            </div>
+            <div class="card">
+                <div class="card-label">Sessions</div>
+                <div class="card-value" id="c-sessions">--</div>
+            </div>
+            <div class="card">
+                <div class="card-label">Groq Calls</div>
+                <div class="card-value" id="c-groq">--</div>
+            </div>
+            <div class="card">
+                <div class="card-label">Errors</div>
+                <div class="card-value" id="c-errors">--</div>
+            </div>
+            <div class="card">
+                <div class="card-label">Avg Response</div>
+                <div class="card-value" id="c-avgrt">--</div>
+                <div class="card-sub">seconds</div>
+            </div>
+        </div>
+
+        <!-- Daily Activity -->
+        <div class="section">
+            <h2>Daily Activity (last 30 days)</h2>
+            <div id="daily-chart"></div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th style="text-align:right">Users</th>
+                        <th style="text-align:right">Messages</th>
+                        <th style="text-align:right">Sessions</th>
+                        <th style="text-align:right">Groq Calls</th>
+                    </tr>
+                </thead>
+                <tbody id="daily-table-body"></tbody>
+            </table>
+        </div>
+
+        <!-- Token Usage -->
+        <div class="section">
+            <h2>Token Usage</h2>
+            <div class="cards-row" style="margin-bottom:14px">
+                <div class="card" style="box-shadow:none;background:#fafafa">
+                    <div class="card-label">Prompt Tokens</div>
+                    <div class="card-value" style="font-size:20px" id="t-prompt">--</div>
+                </div>
+                <div class="card" style="box-shadow:none;background:#fafafa">
+                    <div class="card-label">Completion Tokens</div>
+                    <div class="card-value" style="font-size:20px" id="t-completion">--</div>
+                </div>
+                <div class="card" style="box-shadow:none;background:#fafafa">
+                    <div class="card-label">Total Tokens</div>
+                    <div class="card-value" style="font-size:20px" id="t-total">--</div>
+                </div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Mode</th>
+                        <th style="text-align:right">Prompt</th>
+                        <th style="text-align:right">Completion</th>
+                        <th style="text-align:right">Total</th>
+                        <th style="text-align:right">Prompt Time</th>
+                        <th style="text-align:right">Compl. Time</th>
+                    </tr>
+                </thead>
+                <tbody id="token-table-body"></tbody>
+            </table>
+        </div>
+
+        <!-- Messages & Sessions -->
+        <div class="two-col">
+            <div class="section">
+                <h2>Messages by Mode</h2>
+                <div id="msg-bars"></div>
+                <div style="margin-top:14px;font-size:12px;color:#999">
+                    Groq: <strong id="msg-groq">--</strong> &nbsp;|&nbsp;
+                    Static: <strong id="msg-static">--</strong> &nbsp;|&nbsp;
+                    Ratio: <strong id="msg-ratio">--</strong>
+                </div>
+            </div>
+            <div class="section">
+                <h2>Sessions &amp; Personalities</h2>
+                <div id="personality-bars"></div>
+            </div>
+        </div>
+
+        <!-- Emotion Analytics -->
+        <div class="two-col">
+            <div class="section">
+                <h2>Emotion State Distribution</h2>
+                <div id="state-bars"></div>
+                <div style="margin-top:14px;font-size:12px;color:#999">
+                    Avg Combined Level: <strong id="avg-combined">--</strong>
+                </div>
+            </div>
+            <div class="section">
+                <h2>Category Distribution</h2>
+                <div id="category-bars"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const KEY = params.get('key') || '';
+
+        function fmt(n) {
+            if (n === null || n === undefined || n === '--') return '--';
+            return Number(n).toLocaleString();
+        }
+
+        function fmtTime(s) {
+            if (s === null || s === undefined) return '--';
+            return s.toFixed(3) + 's';
+        }
+
+        function uptime(startedAt) {
+            const diff = Date.now() - startedAt;
+            const s = Math.floor(diff / 1000);
+            const d = Math.floor(s / 86400);
+            const h = Math.floor((s % 86400) / 3600);
+            const m = Math.floor((s % 3600) / 60);
+            const parts = [];
+            if (d) parts.push(d + 'd');
+            if (h) parts.push(h + 'h');
+            parts.push(m + 'm');
+            return parts.join(' ');
+        }
+
+        function renderBars(container, data, colorOverrides) {
+            const el = document.getElementById(container);
+            const max = Math.max(...Object.values(data), 1);
+            el.innerHTML = Object.entries(data).map(([label, count]) => {
+                const pct = (count / max) * 100;
+                const color = (colorOverrides && colorOverrides[label]) || '';
+                const fillStyle = color ? `background:${color}` : '';
+                return `<div class="bar-row">
+                    <div class="bar-label">${label}</div>
+                    <div class="bar-track">
+                        <div class="bar-fill" style="width:${pct}%;${fillStyle}"></div>
+                    </div>
+                    <div class="bar-count">${fmt(count)}</div>
+                </div>`;
+            }).join('');
+        }
+
+        function renderDaily(daily) {
+            const today = new Date().toISOString().slice(0, 10);
+            const dates = Object.keys(daily).sort();
+            const chartEl = document.getElementById('daily-chart');
+            const tbodyEl = document.getElementById('daily-table-body');
+
+            if (dates.length === 0) {
+                chartEl.innerHTML = '<div style="color:#ccc;font-size:13px">No daily data yet</div>';
+                tbodyEl.innerHTML = '';
+                return;
+            }
+
+            // Bar chart
+            const maxMsg = Math.max(...dates.map(d => daily[d].messages), 1);
+            const maxUsers = Math.max(...dates.map(d => daily[d].uniqueUsers), 1);
+            const maxVal = Math.max(maxMsg, maxUsers, 1);
+
+            chartEl.innerHTML = '<div class="daily-bars">' + dates.map(date => {
+                const day = daily[date];
+                const msgH = Math.round((day.messages / maxVal) * 70);
+                const userH = Math.round((day.uniqueUsers / maxVal) * 70);
+                const shortDate = date.slice(5); // MM-DD
+                return `<div class="daily-col" title="${date}: ${day.uniqueUsers} users, ${day.messages} msgs">
+                    <div class="daily-bar-wrap">
+                        <div class="daily-bar" style="height:${msgH}px"></div>
+                        <div class="daily-bar daily-bar-user" style="height:${userH}px"></div>
+                    </div>
+                    <div class="daily-date">${shortDate}</div>
+                </div>`;
+            }).join('') + '</div>' +
+            '<div style="font-size:11px;color:#aaa;display:flex;gap:14px;justify-content:center">' +
+                '<span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:linear-gradient(180deg,#667eea,#764ba2);vertical-align:middle"></span> Messages</span>' +
+                '<span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:linear-gradient(180deg,#2ecc71,#27ae60);vertical-align:middle"></span> Users</span>' +
+            '</div>';
+
+            // Table (most recent first)
+            tbodyEl.innerHTML = dates.slice().reverse().map(date => {
+                const day = daily[date];
+                const isToday = date === today;
+                return `<tr class="${isToday ? 'today-row' : ''}">
+                    <td>${date}${isToday ? ' (today)' : ''}</td>
+                    <td class="num">${fmt(day.uniqueUsers)}</td>
+                    <td class="num">${fmt(day.messages)}</td>
+                    <td class="num">${fmt(day.sessions)}</td>
+                    <td class="num">${fmt(day.groqCalls)}</td>
+                </tr>`;
+            }).join('');
+        }
+
+        async function refresh() {
+            try {
+                const res = await fetch('/api/beta-metrics?key=' + encodeURIComponent(KEY));
+                if (!res.ok) {
+                    document.getElementById('error-banner').style.display = 'block';
+                    document.getElementById('error-banner').textContent = 'Failed to load metrics (HTTP ' + res.status + ')';
+                    return;
+                }
+                document.getElementById('error-banner').style.display = 'none';
+                const d = await res.json();
+
+                // Header
+                document.getElementById('uptime').textContent = uptime(d.startedAt);
+                document.getElementById('last-updated').textContent = 'Last updated: ' + new Date().toLocaleTimeString();
+
+                // Summary cards
+                document.getElementById('c-messages').textContent = fmt(d.messages.total);
+                document.getElementById('c-sessions').textContent = fmt(d.sessions.created);
+                document.getElementById('c-groq').textContent = fmt(d.messages.groqCalls);
+                document.getElementById('c-errors').textContent = fmt(d.messages.groqErrors);
+                document.getElementById('c-avgrt').textContent = d.computed.avgGroqResponseTime !== null
+                    ? d.computed.avgGroqResponseTime.toFixed(2)
+                    : '--';
+
+                // Tokens
+                document.getElementById('t-prompt').textContent = fmt(d.tokens.total_prompt);
+                document.getElementById('t-completion').textContent = fmt(d.tokens.total_completion);
+                document.getElementById('t-total').textContent = fmt(d.tokens.total_tokens);
+
+                const tbody = document.getElementById('token-table-body');
+                tbody.innerHTML = ['emotion', 'sympathy', 'plain'].map(mode => {
+                    const m = d.tokens.byMode[mode];
+                    return `<tr>
+                        <td>${mode}</td>
+                        <td class="num">${fmt(m.prompt_tokens)}</td>
+                        <td class="num">${fmt(m.completion_tokens)}</td>
+                        <td class="num">${fmt(m.total_tokens)}</td>
+                        <td class="num">${fmtTime(m.prompt_time)}</td>
+                        <td class="num">${fmtTime(m.completion_time)}</td>
+                    </tr>`;
+                }).join('');
+
+                // Messages by mode
+                renderBars('msg-bars', {
+                    Emotion: d.messages.emotion,
+                    Sympathy: d.messages.sympathy,
+                    Plain: d.messages.plain
+                });
+                document.getElementById('msg-groq').textContent = fmt(d.messages.groqCalls);
+                document.getElementById('msg-static').textContent = fmt(d.messages.staticResponses);
+                const total = d.messages.groqCalls + d.messages.staticResponses;
+                document.getElementById('msg-ratio').textContent = total > 0
+                    ? Math.round((d.messages.groqCalls / total) * 100) + '% Groq'
+                    : '--';
+
+                // Personalities
+                renderBars('personality-bars', d.sessions.personalities);
+
+                // Emotion states
+                const stateColors = {
+                    VERY_BAD: 'linear-gradient(135deg, #e74c3c, #c0392b)',
+                    BAD: 'linear-gradient(135deg, #e67e22, #d35400)',
+                    GOOD: 'linear-gradient(135deg, #2ecc71, #27ae60)',
+                    VERY_GOOD: 'linear-gradient(135deg, #667eea, #764ba2)'
+                };
+                renderBars('state-bars', d.emotions.stateDistribution, stateColors);
+                document.getElementById('avg-combined').textContent = d.computed.avgCombinedEmotion !== null
+                    ? d.computed.avgCombinedEmotion.toFixed(1)
+                    : '--';
+
+                // Category distribution
+                const cats = d.emotions.categoryDistribution;
+                if (Object.keys(cats).length > 0) {
+                    renderBars('category-bars', cats);
+                } else {
+                    document.getElementById('category-bars').innerHTML = '<div style="color:#ccc;font-size:13px">No data yet</div>';
+                }
+
+                // Daily activity
+                renderDaily(d.daily || {});
+
+            } catch (err) {
+                document.getElementById('error-banner').style.display = 'block';
+                document.getElementById('error-banner').textContent = 'Network error: ' + err.message;
+            }
+        }
+
+        // Initial load + auto-refresh
+        refresh();
+        setInterval(refresh, 30000);
+    </script>
+</body>
+</html>

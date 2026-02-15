@@ -6,6 +6,7 @@ const MessageAnalyzer = require('./MessageAnalyzer');
 const ResponseGenerator = require('./ResponseGenerator');
 const SessionManager = require('./SessionManager');
 const GroqService = require('./GroqService');
+const BetaMetrics = require('./BetaMetrics');
 
 const path = require('path');
 const app = express();
@@ -30,6 +31,9 @@ emotionEngine.startMemoryCleanup();
 const messageAnalyzer = new MessageAnalyzer();
 const responseGenerator = new ResponseGenerator();
 const groqService = new GroqService();
+const betaMetrics = new BetaMetrics();
+
+const trackedSessions = new Set();
 
 app.get('/health', (req, res) => {
     res.json({
@@ -42,7 +46,13 @@ app.get('/health', (req, res) => {
 
 app.post('/api/chat', async (req, res) => {
     try {
-        const { sessionId, message, deviceStatus, aiName, schoolingLevels, sympathyMode, sympathyType, personalityThresholds } = req.body;
+        const { sessionId, message, deviceStatus, aiName, schoolingLevels, sympathyMode, sympathyType, personalityThresholds, personality } = req.body;
+
+        // Track new sessions
+        if (!trackedSessions.has(sessionId)) {
+            trackedSessions.add(sessionId);
+            betaMetrics.track('session', { personality });
+        }
 
         // Detect if the user addresses the AI's name (first word, second word, or last word)
         const escapedName = (aiName || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -66,25 +76,48 @@ app.post('/api/chat', async (req, res) => {
                 emotionEngine.finalizeTurn(sessionId);
 
                 let responseText;
+                let groqUsage = null;
+                let wasGroq = false;
+                let wasStatic = false;
 
                 // Try Groq first for variety
                 if (groqService.isConfigured()) {
-                    responseText = await groqService.generateSympathyInterjection(message, {
+                    const result = await groqService.generateSympathyInterjection(message, {
                         emotionState: emotions.state,
                         sympathyType,
                         aiName: aiName || 'AI'
                     });
+                    if (result.text) {
+                        responseText = result.text;
+                        groqUsage = result.usage;
+                        wasGroq = true;
+                    } else if (!result.text && result.usage === null) {
+                        betaMetrics.track('groqError');
+                    }
                 }
 
                 // Fall back to static sympathy responses
                 if (!responseText) {
                     const fallbackCategory = sympathyType === 'user_good' ? 'SYMPATHY_GOOD' : 'SYMPATHY_BAD';
                     responseText = responseGenerator.selectResponse(fallbackCategory, emotions.state, emotions.combined, emotions.interactions);
+                    if (responseText) wasStatic = true;
                 }
 
                 if (!responseText) {
                     responseText = sympathyType === 'user_good' ? "That's great!" : "I'm here for you.";
+                    wasStatic = true;
                 }
+
+                betaMetrics.track('message', {
+                    mode: 'sympathy',
+                    usage: groqUsage,
+                    wasGroq,
+                    wasStatic,
+                    emotionState: emotions.state,
+                    category: 'SYMPATHY',
+                    combined: emotions.combined,
+                    sessionId
+                });
 
                 return res.json({
                     response: responseText,
@@ -116,24 +149,46 @@ app.post('/api/chat', async (req, res) => {
             emotionEngine.finalizeTurn(sessionId);
 
             let responseText;
+            let groqUsage = null;
+            let wasGroq = false;
+            let wasStatic = false;
 
             // Use static responses first
             responseText = responseGenerator.selectResponse(category, emotions.state, emotions.combined, emotions.interactions);
+            if (responseText) wasStatic = true;
 
             // Fall back to Groq if no static response
             if (!responseText && groqService.isConfigured()) {
-                responseText = await groqService.generateResponse(message, {
+                const result = await groqService.generateResponse(message, {
                     emotionState: emotions.state,
                     emotionLevel: emotions.combined,
                     category: category,
                     aiName: aiName || 'AI',
                     thresholds: emotionEngine.getThresholds(sessionId)
                 });
+                if (result.text) {
+                    responseText = result.text;
+                    groqUsage = result.usage;
+                    wasGroq = true;
+                } else if (!result.text && result.usage === null) {
+                    betaMetrics.track('groqError');
+                }
             }
 
             if (!responseText) {
                 responseText = "I'm not sure how to respond to that right now.";
             }
+
+            betaMetrics.track('message', {
+                mode: 'emotion',
+                usage: groqUsage,
+                wasGroq,
+                wasStatic,
+                emotionState: emotions.state,
+                category,
+                combined: emotions.combined,
+                sessionId
+            });
 
             // Offer sympathy mode for positive/negative user messages
             let sympathyOffer = null;
@@ -160,14 +215,31 @@ app.post('/api/chat', async (req, res) => {
         } else {
             // Normal mode: plain assistant response, no emotion processing
             let responseText;
+            let groqUsage = null;
+            let wasGroq = false;
 
             if (groqService.isConfigured()) {
-                responseText = await groqService.generatePlainResponse(message);
+                const result = await groqService.generatePlainResponse(message);
+                if (result.text) {
+                    responseText = result.text;
+                    groqUsage = result.usage;
+                    wasGroq = true;
+                } else if (!result.text && result.usage === null) {
+                    betaMetrics.track('groqError');
+                }
             }
 
             if (!responseText) {
                 responseText = "I'm not sure how to respond to that right now.";
             }
+
+            betaMetrics.track('message', {
+                mode: 'plain',
+                usage: groqUsage,
+                wasGroq,
+                wasStatic: !wasGroq,
+                sessionId
+            });
 
             emotionEngine.finalizeTurn(sessionId);
 
@@ -222,6 +294,27 @@ app.post('/api/thresholds/:sessionId', (req, res) => {
             return res.status(400).json(result);
         }
         res.json({ thresholds: result });
+    } catch (error) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Serve metrics dashboard (key validated)
+app.get('/dev/metrics', (req, res) => {
+    const key = req.query.key;
+    if (!config.BETA_METRICS_KEY || key !== config.BETA_METRICS_KEY) {
+        return res.status(403).send('Forbidden');
+    }
+    res.sendFile(path.join(__dirname, 'metrics.html'));
+});
+
+app.get('/api/beta-metrics', (req, res) => {
+    try {
+        const key = req.query.key;
+        if (!config.BETA_METRICS_KEY || key !== config.BETA_METRICS_KEY) {
+            return res.status(403).json({ error: 'Forbidden' });
+        }
+        res.json(betaMetrics.getMetrics());
     } catch (error) {
         res.status(500).json({ error: 'Server error' });
     }
