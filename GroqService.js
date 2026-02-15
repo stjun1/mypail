@@ -25,10 +25,11 @@ class GroqService {
                 temperature: config.GROQ_TEMPERATURE
             });
 
-            return completion.choices[0]?.message?.content || null;
+            const text = completion.choices[0]?.message?.content || null;
+            return { text, usage: completion.usage || null };
         } catch (error) {
             console.error('Groq API error:', error.message);
-            return null;
+            return { text: null, usage: null };
         }
     }
 
@@ -119,10 +120,11 @@ Just a brief, heartfelt reaction.`;
                 temperature: 0.9
             });
 
-            return completion.choices[0]?.message?.content || null;
+            const text = completion.choices[0]?.message?.content || null;
+            return { text, usage: completion.usage || null };
         } catch (error) {
             console.error('Groq API error (sympathy):', error.message);
-            return null;
+            return { text: null, usage: null };
         }
     }
 
@@ -138,10 +140,11 @@ Just a brief, heartfelt reaction.`;
                 temperature: 0.5
             });
 
-            return completion.choices[0]?.message?.content || null;
+            const text = completion.choices[0]?.message?.content || null;
+            return { text, usage: completion.usage || null };
         } catch (error) {
             console.error('Groq API error:', error.message);
-            return null;
+            return { text: null, usage: null };
         }
     }
 
