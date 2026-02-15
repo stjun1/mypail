@@ -55,7 +55,7 @@ class EmotionEngine {
         }
     }
 
-    getSession(sessionId, aiName = null, schoolingLevels = null) {
+    getSession(sessionId, aiName = null, schoolingLevels = null, personalityThresholds = null) {
         this.sessionTimestamps.set(sessionId, Date.now());
         this.enforceSessionLimit();
 
@@ -77,11 +77,14 @@ class EmotionEngine {
                 this.sessionManager.savePersistent(sessionId, name, traits, storedSchooling);
             }
 
+            // Use personality thresholds from client if provided, otherwise persistent, otherwise random
+            const thresholds = persistent?.thresholds || (personalityThresholds && personalityThresholds.VERY_BAD < personalityThresholds.BAD && personalityThresholds.BAD < personalityThresholds.GOOD ? personalityThresholds : this.generateRandomThresholds());
+
             this.sessions.set(sessionId, {
                 aiName: name,
                 traits: traits,
                 schoolingLevels: storedSchooling,
-                thresholds: persistent?.thresholds || this.generateRandomThresholds(),
+                thresholds: thresholds,
                 previousPhoneEmotion: 50,
                 currentPhoneEmotion: 50,
                 previousCombinedEmotion: 50,
@@ -94,6 +97,11 @@ class EmotionEngine {
                 interactions: 0,
                 lastDeviceStatus: null
             });
+
+            // Persist thresholds for new sessions
+            if (!persistent) {
+                this.sessionManager.updateThresholds(sessionId, thresholds);
+            }
         } else {
             // Update schooling levels on first interaction if provided and not yet stored
             const session = this.sessions.get(sessionId);

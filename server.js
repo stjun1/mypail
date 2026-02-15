@@ -42,7 +42,7 @@ app.get('/health', (req, res) => {
 
 app.post('/api/chat', async (req, res) => {
     try {
-        const { sessionId, message, deviceStatus, aiName, schoolingLevels, sympathyMode, sympathyType } = req.body;
+        const { sessionId, message, deviceStatus, aiName, schoolingLevels, sympathyMode, sympathyType, personalityThresholds } = req.body;
 
         // Detect if the user addresses the AI's name (first word, second word, or last word)
         const escapedName = (aiName || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -55,7 +55,7 @@ app.post('/api/chat', async (req, res) => {
         const emotionMode = sympathyMode || (aiName && aiName.length > 0 && nameRegex.test(message));
 
         // Always run: keeps emotion state accurate in background
-        const session = emotionEngine.getSession(sessionId, aiName, schoolingLevels);
+        const session = emotionEngine.getSession(sessionId, aiName, schoolingLevels, personalityThresholds);
         const phoneEmotion = emotionEngine.calculatePhoneEmotion(deviceStatus, sessionId);
         const promptEmotion = emotionEngine.calculatePromptEmotion(sessionId);
 

@@ -11,6 +11,7 @@ class MockSessionManager {
         return true;
     }
     updateAccess(sessionId) {}
+    updateThresholds(sessionId, thresholds) { return true; }
 }
 
 describe('EmotionEngine', () => {
