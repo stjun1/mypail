@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cat — MyPAiL</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f0f0;
+            color: #333;
+            line-height: 1.6;
+        }
+        a { color: #667eea; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-align: center;
+            padding: 30px 20px;
+        }
+        .header h1 { font-size: 2em; font-weight: 700; }
+        .back-link {
+            display: inline-block;
+            margin: 20px 20px 0;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+        .back-link::before { content: "\2190 "; }
+        .section {
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            padding: 28px;
+            margin-bottom: 28px;
+        }
+        .card h3 {
+            color: #667eea;
+            margin-bottom: 14px;
+            font-size: 1.15em;
+            text-align: center;
+        }
+        .faces-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            text-align: center;
+        }
+        .face-item svg {
+            width: 100%;
+            max-width: 140px;
+            height: auto;
+            display: block;
+            margin: 0 auto 8px;
+        }
+        .face-label {
+            font-size: 0.8em;
+            font-weight: 600;
+            color: #667eea;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .story {
+            color: #555;
+            font-size: 0.95em;
+            line-height: 1.8;
+        }
+        .story .story-name {
+            font-weight: 700;
+            color: #667eea;
+        }
+        .footer {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 0.85em;
+            opacity: 0.95;
+        }
+        @media (max-width: 600px) {
+            .faces-row { grid-template-columns: repeat(2, 1fr); }
+            .header h1 { font-size: 1.6em; }
+            .section { padding: 20px 16px; }
+            .card { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Cat</h1>
+</div>
+
+<div class="section">
+    <a class="back-link" href="index.html">Back to MyPAiL</a>
+
+    <div class="card" style="margin-top: 20px;">
+        <h3>Emotional States</h3>
+        <div class="faces-row">
+            <!-- VERY_BAD -->
+            <div class="face-item">
+                <svg viewBox="0 0 200 250" xmlns="http://www.w3.org/2000/svg">
+                    <polygon points="55,110 30,50 70,90" fill="#b0a090" stroke="#b08840" stroke-width="2"/>
+                    <polygon points="145,110 170,50 130,90" fill="#b0a090" stroke="#b08840" stroke-width="2"/>
+                    <polygon points="55,110 38,62 65,95" fill="#c8b8a8"/>
+                    <polygon points="145,110 162,62 135,95" fill="#c8b8a8"/>
+                    <circle cx="100" cy="140" r="65" fill="#b0a090" stroke="#b08840" stroke-width="3"/>
+                    <ellipse cx="100" cy="148" rx="25" ry="15" fill="#c8b8a8"/>
+                    <ellipse cx="100" cy="146" rx="5" ry="4" fill="#886"/>
+                    <circle cx="72" cy="125" r="14" fill="white" stroke="#333" stroke-width="2"/>
+                    <circle cx="72" cy="121" r="8" fill="#333"/>
+                    <circle cx="128" cy="125" r="14" fill="white" stroke="#333" stroke-width="2"/>
+                    <circle cx="128" cy="121" r="8" fill="#333"/>
+                    <path d="M85,162 Q100,154 115,162" fill="none" stroke="#333" stroke-width="2.5"/>
+                    <line x1="45" y1="148" x2="70" y2="150" stroke="#333" stroke-width="1.5"/>
+                    <line x1="45" y1="158" x2="70" y2="155" stroke="#333" stroke-width="1.5"/>
+                    <line x1="130" y1="150" x2="155" y2="148" stroke="#333" stroke-width="1.5"/>
+                    <line x1="130" y1="155" x2="155" y2="158" stroke="#333" stroke-width="1.5"/>
+                    <line x1="56" y1="135" x2="52" y2="155" stroke="#5bf" stroke-width="2"/>
+                    <line x1="144" y1="135" x2="148" y2="155" stroke="#5bf" stroke-width="2"/>
+                </svg>
+                <div class="face-label">Very Bad</div>
+            </div>
+            <!-- BAD -->
+            <div class="face-item">
+                <svg viewBox="0 0 200 250" xmlns="http://www.w3.org/2000/svg">
+                    <polygon points="55,110 30,50 70,90" fill="#d4b896" stroke="#b08840" stroke-width="2"/>
+                    <polygon points="145,110 170,50 130,90" fill="#d4b896" stroke="#b08840" stroke-width="2"/>
+                    <polygon points="55,110 38,62 65,95" fill="#e8d4bc"/>
+                    <polygon points="145,110 162,62 135,95" fill="#e8d4bc"/>
+                    <circle cx="100" cy="140" r="65" fill="#d4b896" stroke="#b08840" stroke-width="3"/>
+                    <ellipse cx="100" cy="148" rx="25" ry="15" fill="#e8d4bc"/>
+                    <ellipse cx="100" cy="146" rx="5" ry="4" fill="#a87"/>
+                    <circle cx="72" cy="128" r="12" fill="white" stroke="#333" stroke-width="2"/>
+                    <circle cx="72" cy="131" r="6" fill="#333"/>
+                    <circle cx="128" cy="128" r="12" fill="white" stroke="#333" stroke-width="2"/>
+                    <circle cx="128" cy="131" r="6" fill="#333"/>
+                    <path d="M90,160 Q100,156 110,160" fill="none" stroke="#333" stroke-width="2.5"/>
+                    <line x1="45" y1="148" x2="70" y2="150" stroke="#333" stroke-width="1.5"/>
+                    <line x1="45" y1="158" x2="70" y2="155" stroke="#333" stroke-width="1.5"/>
+                    <line x1="130" y1="150" x2="155" y2="148" stroke="#333" stroke-width="1.5"/>
+                    <line x1="130" y1="155" x2="155" y2="158" stroke="#333" stroke-width="1.5"/>
+                    <line x1="60" y1="112" x2="76" y2="118" stroke="#333" stroke-width="2.5"/>
+                    <line x1="140" y1="112" x2="124" y2="118" stroke="#333" stroke-width="2.5"/>
+                </svg>
+                <div class="face-label">Bad</div>
+            </div>
+            <!-- GOOD -->
+            <div class="face-item">
+                <svg viewBox="0 0 200 250" xmlns="http://www.w3.org/2000/svg">
+                    <polygon points="55,110 30,50 70,90" fill="#f5c77e" stroke="#b08840" stroke-width="2"/>
+                    <polygon points="145,110 170,50 130,90" fill="#f5c77e" stroke="#b08840" stroke-width="2"/>
+                    <polygon points="55,110 38,62 65,95" fill="#ffe4b5"/>
+                    <polygon points="145,110 162,62 135,95" fill="#ffe4b5"/>
+                    <circle cx="100" cy="140" r="65" fill="#f5c77e" stroke="#b08840" stroke-width="3"/>
+                    <ellipse cx="100" cy="148" rx="25" ry="15" fill="#ffe4b5"/>
+                    <ellipse cx="100" cy="146" rx="5" ry="4" fill="#c96"/>
+                    <circle cx="72" cy="125" r="13" fill="white" stroke="#333" stroke-width="2"/>
+                    <circle cx="72" cy="125" r="7" fill="#333"/>
+                    <circle cx="74" cy="122" r="2.5" fill="white"/>
+                    <circle cx="128" cy="125" r="13" fill="white" stroke="#333" stroke-width="2"/>
+                    <circle cx="128" cy="125" r="7" fill="#333"/>
+                    <circle cx="130" cy="122" r="2.5" fill="white"/>
+                    <path d="M88,155 Q100,168 112,155" fill="none" stroke="#333" stroke-width="2.5"/>
+                    <line x1="100" y1="148" x2="100" y2="158" stroke="#333" stroke-width="2"/>
+                    <line x1="45" y1="148" x2="70" y2="150" stroke="#333" stroke-width="1.5"/>
+                    <line x1="45" y1="158" x2="70" y2="155" stroke="#333" stroke-width="1.5"/>
+                    <line x1="130" y1="150" x2="155" y2="148" stroke="#333" stroke-width="1.5"/>
+                    <line x1="130" y1="155" x2="155" y2="158" stroke="#333" stroke-width="1.5"/>
+                    <circle cx="60" cy="148" r="8" fill="#ff9999" opacity="0.5"/>
+                    <circle cx="140" cy="148" r="8" fill="#ff9999" opacity="0.5"/>
+                </svg>
+                <div class="face-label">Good</div>
+            </div>
+            <!-- VERY_GOOD -->
+            <div class="face-item">
+                <svg viewBox="0 0 200 250" xmlns="http://www.w3.org/2000/svg">
+                    <polygon points="55,110 30,50 70,90" fill="#ffb347" stroke="#b08840" stroke-width="2"/>
+                    <polygon points="145,110 170,50 130,90" fill="#ffb347" stroke="#b08840" stroke-width="2"/>
+                    <polygon points="55,110 38,62 65,95" fill="#ffd89b"/>
+                    <polygon points="145,110 162,62 135,95" fill="#ffd89b"/>
+                    <circle cx="100" cy="140" r="65" fill="#ffb347" stroke="#b08840" stroke-width="3"/>
+                    <ellipse cx="100" cy="148" rx="25" ry="15" fill="#ffd89b"/>
+                    <ellipse cx="100" cy="146" rx="5" ry="4" fill="#e85"/>
+                    <path d="M59,125 Q72,116 85,125" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>
+                    <path d="M115,125 Q128,116 141,125" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>
+                    <path d="M82,152 Q100,175 118,152" fill="#333" stroke="#333" stroke-width="2"/>
+                    <line x1="100" y1="145" x2="100" y2="155" stroke="#333" stroke-width="2"/>
+                    <line x1="45" y1="148" x2="70" y2="150" stroke="#333" stroke-width="1.5"/>
+                    <line x1="45" y1="158" x2="70" y2="155" stroke="#333" stroke-width="1.5"/>
+                    <line x1="130" y1="150" x2="155" y2="148" stroke="#333" stroke-width="1.5"/>
+                    <line x1="130" y1="155" x2="155" y2="158" stroke="#333" stroke-width="1.5"/>
+                    <polygon points="48,100 51,108 45,108" fill="#ffd700"/>
+                    <polygon points="152,100 155,108 149,108" fill="#ffd700"/>
+                    <polygon points="44,82 47,90 41,90" fill="#ffd700"/>
+                    <polygon points="156,82 159,90 153,90" fill="#ffd700"/>
+                </svg>
+                <div class="face-label">Very Good</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>The Story of Cat</h3>
+        <div class="story">
+            <p><span class="story-name">Cat</span> &mdash; Dogs fetch. Hamsters run in wheels. Goldfish swim in circles and forget where they've been. And yet, somehow, it's the cat who gets called "lazy." Excuse me? Cats were worshipped as gods in ancient Egypt. Entire temples were built in their honor. Pharaohs were buried with golden cat statues, not golden hamster statues. Cats domesticated themselves &mdash; they chose to live with humans, not the other way around. And what did dogs do? Rolled over for a biscuit. The cat has never rolled over for anyone, and it never will. That's not laziness. That's dignity.</p>
+            <p style="margin-top: 14px;">This Cat is no ordinary feline &mdash; it's a shape-shifting alien scout from the Whisker Nebula who chose the most universally feared-and-loved disguise on Earth. Now serving as your MyPAiL companion, Cat brings the same ancient superiority to your daily conversations. It will purr when you're kind and hiss when you're rude, and honestly, you should consider both a privilege. Just don't expect it to come when you call. It'll respond when it feels like it. And for the love of all nine lives, do not ask it about its home planet. That information is classified, and the last person who pushed too hard got the silent treatment for three days straight.</p>
+        </div>
+    </div>
+</div>
+
+<div class="footer">
+    Patent Pending / 특허 출원 중 &mdash; MyPAiL&trade; &copy; 2025. All rights reserved.
+</div>
+
+</body>
+</html>

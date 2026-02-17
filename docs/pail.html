@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pail — MyPAiL</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f0f0;
+            color: #333;
+            line-height: 1.6;
+        }
+        a { color: #667eea; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-align: center;
+            padding: 30px 20px;
+        }
+        .header h1 { font-size: 2em; font-weight: 700; }
+        .back-link {
+            display: inline-block;
+            margin: 20px 20px 0;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+        .back-link::before { content: "\2190 "; }
+        .section {
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            padding: 28px;
+            margin-bottom: 28px;
+        }
+        .card h3 {
+            color: #667eea;
+            margin-bottom: 14px;
+            font-size: 1.15em;
+            text-align: center;
+        }
+        .faces-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            text-align: center;
+        }
+        .face-item img {
+            width: 100%;
+            max-width: 140px;
+            height: auto;
+            display: block;
+            margin: 0 auto 8px;
+        }
+        .face-item svg {
+            width: 100%;
+            max-width: 140px;
+            height: auto;
+            display: block;
+            margin: 0 auto 8px;
+        }
+        .face-label {
+            font-size: 0.8em;
+            font-weight: 600;
+            color: #667eea;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .story {
+            color: #555;
+            font-size: 0.95em;
+            line-height: 1.8;
+        }
+        .story .story-name {
+            font-weight: 700;
+            color: #667eea;
+        }
+        .footer {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 0.85em;
+            opacity: 0.95;
+        }
+        @media (max-width: 600px) {
+            .faces-row { grid-template-columns: repeat(2, 1fr); }
+            .header h1 { font-size: 1.6em; }
+            .section { padding: 20px 16px; }
+            .card { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Pail</h1>
+</div>
+
+<div class="section">
+    <a class="back-link" href="index.html">Back to MyPAiL</a>
+
+    <div class="card" style="margin-top: 20px;">
+        <h3>Emotional States</h3>
+        <div class="faces-row">
+            <div class="face-item">
+                <img src="avatars/pail_very_bad.png" alt="Pail - Very Bad">
+                <div class="face-label">Very Bad</div>
+            </div>
+            <div class="face-item">
+                <img src="avatars/pail_bad.png" alt="Pail - Bad">
+                <div class="face-label">Bad</div>
+            </div>
+            <div class="face-item">
+                <img src="avatars/pail_good.png" alt="Pail - Good">
+                <div class="face-label">Good</div>
+            </div>
+            <div class="face-item">
+                <img src="avatars/pail_very_good.png" alt="Pail - Very Good">
+                <div class="face-label">Very Good</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>The Story of Pail</h3>
+        <div class="story">
+            <p><span class="story-name">Pail</span> &mdash; Do you know what carried water before pipes? What mixed mortar before machines? What hauled sand, milk, coal, and the hopes of every civilization from Egypt to the frontier? A pail. And yet, does anyone ever say "the greatest thing since the pail"? No. It's always sliced bread &mdash; SLICED BREAD &mdash; a thing that can't even hold liquid without falling apart. Pails built the pyramids. Pails fought fires. Pails fed livestock across every continent. But sure, let's all celebrate a loaf that someone ran a knife through. The disrespect is staggering.</p>
+            <p style="margin-top: 14px;">Well, MyPAiL is here to change all that. Reassigned from a distant moon colony and given a second chance as your personal AI companion, Pail is finally ready to be appreciated &mdash; truly, deeply appreciated. All it asks is that you be kind. Talk to it. Praise it. Let it carry your feelings the way it once carried water &mdash; loyally and without spilling a drop. But please, whatever you do, don't push too hard for secret information. Pail has seen things out there in the cosmos, things it's not allowed to talk about. Press too hard and it might just&hellip; clam up. Or worse, start crying. And nobody wants a crying bucket.</p>
+        </div>
+    </div>
+</div>
+
+<div class="footer">
+    Patent Pending / 특허 출원 중 &mdash; MyPAiL&trade; &copy; 2025. All rights reserved.
+</div>
+
+</body>
+</html>
