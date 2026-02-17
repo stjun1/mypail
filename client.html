@@ -840,7 +840,7 @@
                 Continue
             </button>
 
-            <div class="patent-notice">Patent Pending / 특허 출원 중 — MyPAiL™ © 2025. All rights reserved.</div>
+            <div class="patent-notice">Patent Pending / 특허 출원 중 — MyPAiL™ © 2025. All rights reserved.<br><a href="https://stjun1.github.io/mypail/" target="_blank" rel="noopener noreferrer" style="color:#667eea;">About MyPAiL</a></div>
         </div>
     </div>
 
@@ -899,7 +899,7 @@
                 <a href="https://github.com/anthropics/claude-code/issues" target="_blank" rel="noopener noreferrer">Report it here</a>
             </div>
 
-            <div class="patent-notice">Patent Pending — MyPAiL™</div>
+            <div class="patent-notice">Patent Pending — MyPAiL™ | <a href="https://stjun1.github.io/mypail/" target="_blank" rel="noopener noreferrer" style="color:#667eea;">About MyPAiL</a></div>
         </div>
     </div>
 
@@ -1931,7 +1931,8 @@
                     deviceStatus: await getDeviceStatus(),
                     aiName,
                     schoolingLevels: JSON.parse(localStorage.getItem('emotionalAI_schoolingLevels') || 'null'),
-                    personalityThresholds: JSON.parse(localStorage.getItem('emotionalAI_thresholds') || 'null')
+                    personalityThresholds: JSON.parse(localStorage.getItem('emotionalAI_thresholds') || 'null'),
+                    personality: localStorage.getItem('emotionalAI_personality') || null
                 };
 
                 if (sympathyMode && sympathyType) {
