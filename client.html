@@ -1920,7 +1920,7 @@
 
             if (!message) return;
 
-            addMessage(message, true);
+            if (!sympathyMode) addMessage(message, true);
             input.value = '';
             document.getElementById('send-btn').disabled = true;
 
