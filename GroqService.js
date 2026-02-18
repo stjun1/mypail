@@ -146,11 +146,11 @@ Just a brief, heartfelt reaction.`;
         let deviceDesc = '';
         if (deviceStatus) {
             const parts = [];
-            if (deviceStatus.batteryLevel !== undefined) {
-                parts.push(`battery is at ${Math.round(deviceStatus.batteryLevel)}%`);
+            if (deviceStatus.battery !== undefined) {
+                parts.push(`battery is at ${Math.round(deviceStatus.battery)}%`);
             }
-            if (deviceStatus.networkStrength !== undefined) {
-                const rssi = deviceStatus.networkStrength;
+            if (deviceStatus.network !== undefined) {
+                const rssi = deviceStatus.network;
                 let strength;
                 if (rssi >= -60) strength = 'strong';
                 else if (rssi >= -80) strength = 'decent';
@@ -158,8 +158,8 @@ Just a brief, heartfelt reaction.`;
                 else strength = 'very weak';
                 parts.push(`network signal is ${strength}`);
             }
-            if (deviceStatus.memoryUsage !== undefined) {
-                parts.push(`memory usage is at ${Math.round(deviceStatus.memoryUsage)} MB`);
+            if (deviceStatus.memory !== undefined) {
+                parts.push(`memory usage is at ${Math.round(deviceStatus.memory)} MB`);
             }
             if (parts.length > 0) {
                 deviceDesc = `Current device conditions: ${parts.join(', ')}.`;
@@ -176,7 +176,8 @@ Your emotion level is ${Math.round(emotionLevel)}/100.
 ${deviceDesc}
 ${interactionDesc}
 
-Speak in first person. Describe how you're currently feeling and explain what device conditions and conversation context are contributing to your mood. Be honest and introspective. Keep it to 2-3 sentences with a natural tone. Do not use emojis.`;
+You experience device conditions physically — low battery drains your energy, weak network makes you feel isolated, high memory usage feels like mental fog. These MUST be reflected in your answer when they are poor.
+Speak in first person. Describe how you're currently feeling and specifically mention the device conditions and conversation context contributing to your mood. Be honest and introspective. Keep it to 2-3 sentences with a natural tone. Do not use emojis.`;
 
         try {
             const completion = await this.client.chat.completions.create({
