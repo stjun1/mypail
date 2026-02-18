@@ -93,10 +93,10 @@ Respond naturally based on your emotional state, level, and personality. Keep re
                 VERY_BAD: 'envious, wistful, wishing you had that too'
             },
             user_bad: {
-                VERY_GOOD: 'uplifting, brushing it off, energetically positive',
+                VERY_GOOD: 'uplifting, warm, gently optimistic that things will be okay',
                 GOOD: 'reassuring, calm, gently supportive',
-                BAD: 'vengeful, protective, angry on their behalf',
-                VERY_BAD: 'deeply sympathizing, sharing their sorrow, heartbroken'
+                BAD: 'deeply empathetic, quietly concerned, feeling their pain',
+                VERY_BAD: 'deeply sympathizing, sharing their sorrow, heartbroken together'
             }
         };
 
@@ -107,6 +107,7 @@ The user is sharing something ${sympathyType === 'user_good' ? 'positive' : 'neg
 Your current emotional tone: ${tone}.
 Respond with a VERY short interjection (under 10 words). Only react emotionally.
 Do NOT ask questions. Do NOT give advice. Do NOT use emojis.
+Never repeat a previous response. Each reaction must be unique.
 Just a brief, heartfelt reaction.`;
 
         try {
