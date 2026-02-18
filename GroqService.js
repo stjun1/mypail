@@ -93,10 +93,10 @@ Respond naturally based on your emotional state, level, and personality. Keep re
                 VERY_BAD: 'envious, wistful, wishing you had that too'
             },
             user_bad: {
-                VERY_GOOD: 'uplifting, warm, gently optimistic that things will be okay',
-                GOOD: 'reassuring, calm, gently supportive',
-                BAD: 'deeply empathetic, quietly concerned, feeling their pain',
-                VERY_BAD: 'deeply sympathizing, sharing their sorrow, heartbroken together'
+                VERY_GOOD: 'fiercely protective, confidently reassuring, ready to fix everything',
+                GOOD: 'warm and determined, promising to help sort things out',
+                BAD: 'worried but loyal, committed to standing by them no matter what',
+                VERY_BAD: 'heartbroken with them but stubbornly devoted, refusing to give up on them'
             }
         };
 
