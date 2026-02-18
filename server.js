@@ -141,8 +141,8 @@ app.post('/api/chat', async (req, res) => {
 
             if (promptBoost !== 0) {
                 emotionEngine.addPromptEmotion(sessionId, promptBoost, category);
-                emotionEngine.updateEmotionState(sessionId, category, promptBoost);
             }
+            emotionEngine.updateEmotionState(sessionId, category, promptBoost);
 
             emotionEngine.incrementInteractions(sessionId);
             const emotions = emotionEngine.getCombinedEmotion(sessionId);
