@@ -39,7 +39,6 @@ app.get('/health', (req, res) => {
     res.json({
         status: 'OK',
         message: 'Emotional AI Server Running',
-        version: '2.1',
         responses: responseGenerator.getTotalResponseCount(),
         groqEnabled: groqService.isConfigured()
     });
