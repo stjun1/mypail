@@ -32,7 +32,12 @@ class MessageAnalyzer {
             return 'PHONE_STATUS';
         }
 
-        // 3. GREETING
+        // 3. AVATAR_STATE
+        if (this.isAvatarState(lower)) {
+            return 'AVATAR_STATE';
+        }
+
+        // 4. GREETING
         if (this.isGreeting(lower)) {
             return 'GREETING';
         }
@@ -102,6 +107,10 @@ class MessageAnalyzer {
     
     isPhoneStatusQuery(lower) {
         return config.KEYWORDS.PHONE_STATUS.some(keyword => this.matchesKeyword(lower, keyword));
+    }
+
+    isAvatarState(lower) {
+        return config.KEYWORDS.AVATAR_STATE.some(keyword => this.matchesKeyword(lower, keyword));
     }
 
     isGreeting(lower) {

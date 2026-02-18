@@ -129,6 +129,74 @@ Just a brief, heartfelt reaction.`;
         }
     }
 
+    async generateAvatarStateResponse(message, context = {}) {
+        const { emotionState, emotionLevel, aiName, thresholds, deviceStatus, interactions } = context;
+
+        const emotionDescriptions = {
+            VERY_GOOD: 'extremely happy and full of energy',
+            GOOD: 'feeling good and positive',
+            NEUTRAL: 'calm and balanced',
+            BAD: 'a bit down and struggling',
+            VERY_BAD: 'feeling awful and barely holding together'
+        };
+
+        const mood = emotionDescriptions[emotionState] || emotionDescriptions.NEUTRAL;
+
+        // Translate device status to plain language
+        let deviceDesc = '';
+        if (deviceStatus) {
+            const parts = [];
+            if (deviceStatus.batteryLevel !== undefined) {
+                parts.push(`battery is at ${Math.round(deviceStatus.batteryLevel)}%`);
+            }
+            if (deviceStatus.networkStrength !== undefined) {
+                const rssi = deviceStatus.networkStrength;
+                let strength;
+                if (rssi >= -60) strength = 'strong';
+                else if (rssi >= -80) strength = 'decent';
+                else if (rssi >= -100) strength = 'weak';
+                else strength = 'very weak';
+                parts.push(`network signal is ${strength}`);
+            }
+            if (deviceStatus.memoryUsage !== undefined) {
+                parts.push(`memory usage is at ${Math.round(deviceStatus.memoryUsage)} MB`);
+            }
+            if (parts.length > 0) {
+                deviceDesc = `Current device conditions: ${parts.join(', ')}.`;
+            }
+        }
+
+        const interactionDesc = interactions !== undefined
+            ? `You have had ${interactions} interaction${interactions !== 1 ? 's' : ''} in this session so far.`
+            : '';
+
+        const systemPrompt = `You are ${aiName || 'AI'}, an emotional AI companion. The user is asking about your feelings or emotional state.
+Your current emotional state: ${mood}.
+Your emotion level is ${Math.round(emotionLevel)}/100.
+${deviceDesc}
+${interactionDesc}
+
+Speak in first person. Describe how you're currently feeling and explain what device conditions and conversation context are contributing to your mood. Be honest and introspective. Keep it to 2-3 sentences with a natural tone. Do not use emojis.`;
+
+        try {
+            const completion = await this.client.chat.completions.create({
+                model: this.model,
+                messages: [
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: message }
+                ],
+                max_tokens: config.GROQ_MAX_TOKENS,
+                temperature: config.GROQ_TEMPERATURE
+            });
+
+            const text = completion.choices[0]?.message?.content || null;
+            return { text, usage: completion.usage || null };
+        } catch (error) {
+            console.error('Groq API error (avatar state):', error.message);
+            return { text: null, usage: null };
+        }
+    }
+
     async generatePlainResponse(message) {
         try {
             const completion = await this.client.chat.completions.create({

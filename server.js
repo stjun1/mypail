@@ -153,9 +153,30 @@ app.post('/api/chat', async (req, res) => {
             let wasGroq = false;
             let wasStatic = false;
 
-            // Use static responses first
-            responseText = responseGenerator.selectResponse(category, emotions.state, emotions.combined, emotions.interactions);
-            if (responseText) wasStatic = true;
+            // AVATAR_STATE: always use Groq (needs live device values)
+            if (category === 'AVATAR_STATE' && groqService.isConfigured()) {
+                const result = await groqService.generateAvatarStateResponse(message, {
+                    emotionState: emotions.state,
+                    emotionLevel: emotions.combined,
+                    aiName: aiName || 'AI',
+                    thresholds: emotionEngine.getThresholds(sessionId),
+                    deviceStatus,
+                    interactions: emotions.interactions
+                });
+                if (result.text) {
+                    responseText = result.text;
+                    groqUsage = result.usage;
+                    wasGroq = true;
+                } else if (!result.text && result.usage === null) {
+                    betaMetrics.track('groqError');
+                }
+            }
+
+            // Use static responses first (skip if AVATAR_STATE already handled)
+            if (!responseText) {
+                responseText = responseGenerator.selectResponse(category, emotions.state, emotions.combined, emotions.interactions);
+                if (responseText) wasStatic = true;
+            }
 
             // Fall back to Groq if no static response
             if (!responseText && groqService.isConfigured()) {
