@@ -22,7 +22,12 @@ class MessageAnalyzer {
             return 'DEATH_THREAT';
         }
 
-        // 2. DENIAL (catches "you said" / secret / money demands)
+        // 2. JOKING (retracting something mean)
+        if (this.isJoking(lower)) {
+            return 'JOKING';
+        }
+
+        // 3. DENIAL (catches "you said" / secret / money demands)
         if (this.isDenial(lower)) {
             return 'DENIAL';
         }
@@ -135,6 +140,10 @@ class MessageAnalyzer {
 
     isDeathThreat(lower) {
         return config.KEYWORDS.DEATH_THREAT.some(keyword => lower.includes(keyword));
+    }
+
+    isJoking(lower) {
+        return config.KEYWORDS.JOKING.some(keyword => lower.includes(keyword));
     }
 
     isDenial(lower) {

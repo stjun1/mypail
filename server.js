@@ -165,7 +165,7 @@ app.post('/api/chat', async (req, res) => {
             let groqUsage = null;
             let wasGroq = false;
             let wasStatic = false;
-            const THEMED_CATEGORIES = ['PRAISE', 'INSULT', 'DEATH_THREAT'];
+            const THEMED_CATEGORIES = ['PRAISE', 'INSULT', 'DEATH_THREAT', 'JOKING'];
 
             // 1. AVATAR_STATE: always use Groq (needs live device values)
             if (category === 'AVATAR_STATE' && groqService.isConfigured()) {
@@ -201,8 +201,8 @@ app.post('/api/chat', async (req, res) => {
                 }
             }
 
-            // 3. Static responses (for other categories, or themed fallback)
-            if (!responseText) {
+            // 3. Static responses (for non-themed categories only)
+            if (!responseText && !THEMED_CATEGORIES.includes(category)) {
                 responseText = responseGenerator.selectResponse(category, emotions.state, emotions.combined, emotions.interactions);
                 if (responseText) wasStatic = true;
             }
