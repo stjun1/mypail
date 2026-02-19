@@ -2045,7 +2045,7 @@
         function speak(text) {
             if (!speakerEnabled) return;
             if (isCapacitor && window.CapBridge && window.CapBridge.TextToSpeech) {
-                CapBridge.TextToSpeech.speak({ text: text, lang: 'en-US', rate: 1.0, pitch: 0.85 })
+                CapBridge.TextToSpeech.speak({ text: text, rate: 1.0, pitch: 0.85 })
                     .catch(e => console.error('Native TTS error:', e));
                 return;
             }
@@ -2096,7 +2096,6 @@
                 recognition = new webkitSpeechRecognition();
                 recognition.continuous = false;
                 recognition.interimResults = false;
-                recognition.lang = 'en-US';
 
                 recognition.onresult = (event) => {
                     const transcript = event.results[0][0].transcript;
@@ -2150,7 +2149,6 @@
                 document.getElementById('voice-btn').textContent = '🔴';
 
                 const result = await CapBridge.SpeechRecognition.start({
-                    language: 'en-US',
                     partialResults: false,
                     popup: false
                 });
