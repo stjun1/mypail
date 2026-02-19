@@ -2096,6 +2096,7 @@
                 recognition = new webkitSpeechRecognition();
                 recognition.continuous = false;
                 recognition.interimResults = false;
+                recognition.lang = navigator.language || 'en-US';
 
                 recognition.onresult = (event) => {
                     const transcript = event.results[0][0].transcript;
@@ -2149,6 +2150,7 @@
                 document.getElementById('voice-btn').textContent = '🔴';
 
                 const result = await CapBridge.SpeechRecognition.start({
+                    language: navigator.language || 'en-US',
                     partialResults: false,
                     popup: false
                 });
