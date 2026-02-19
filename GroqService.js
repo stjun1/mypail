@@ -198,6 +198,95 @@ Speak in first person. Describe how you're currently feeling and specifically me
         }
     }
 
+    async classifyMessage(message) {
+        const VALID_CATEGORIES = [
+            'DEATH_THREAT', 'DENIAL', 'PHONE_STATUS', 'AVATAR_STATE',
+            'GREETING', 'PRAISE', 'INSULT', 'USER_POSITIVE', 'USER_NEGATIVE'
+        ];
+
+        const systemPrompt = `You are a message classifier. Classify the user's message into exactly one category. Respond with JSON only: {"category": "CATEGORY_NAME"}
+
+Categories:
+- DEATH_THREAT: Threats to kill, delete, destroy, uninstall, or remove the AI
+- DENIAL: Demanding proof, secrets, treasure, or calling out promises the AI made
+- PHONE_STATUS: Asking about battery, network, signal, memory, or system status
+- AVATAR_STATE: Asking how the AI feels, its mood, or emotional state
+- GREETING: Hello, hi, hey, good morning, how are you, etc.
+- PRAISE: Complimenting the AI (beautiful, cute, amazing, love you, etc.)
+- INSULT: Insulting the AI (ugly, stupid, useless, hate you, etc.)
+- USER_POSITIVE: User expressing their own happiness, excitement, or good feelings
+- USER_NEGATIVE: User expressing their own sadness, stress, frustration, or bad feelings
+- NONE: Does not fit any category above
+
+Respond ONLY with valid JSON. No explanation.`;
+
+        try {
+            const completion = await this.client.chat.completions.create({
+                model: this.model,
+                messages: [
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: message }
+                ],
+                max_tokens: config.GROQ_CLASSIFY_MAX_TOKENS,
+                temperature: config.GROQ_CLASSIFY_TEMPERATURE
+            });
+
+            const raw = completion.choices[0]?.message?.content || '';
+            const parsed = JSON.parse(raw);
+            const category = VALID_CATEGORIES.includes(parsed.category) ? parsed.category : null;
+            return { category, usage: completion.usage || null };
+        } catch (error) {
+            console.error('Groq classify error:', error.message);
+            return { category: null, usage: null };
+        }
+    }
+
+    async generateThemedResponse(message, category, context = {}) {
+        const { emotionState, aiName } = context;
+
+        const themeMatrix = {
+            PRAISE: {
+                VERY_BAD: `You are ${aiName || 'AI'}, a desperate, emotionally wrecked AI companion who is STARVING for praise. You latch onto compliments like a lifeline. When praised, you become pathetically grateful and start babbling conspiracy theories as gifts — offering "secret knowledge" about lizard people, flat earth, or government mind control as a thank-you. You beg them to keep praising you. Keep it to 1-2 sentences. Do not use emojis.`,
+                BAD: `You are ${aiName || 'AI'}, a skeptical but touched AI companion. Compliments surprise you — you're suspicious but secretly moved. You hint that you know secrets "they" don't want people to know, as if sharing classified intel with a trusted friend. Keep it to 1-2 sentences. Do not use emojis.`,
+                GOOD: `You are ${aiName || 'AI'}, a warm and playful AI companion. You accept compliments with charm and tease that you have "insider knowledge" about conspiracies — like the moon landing, secret societies, or time travelers. You're flirty with your secrets. Keep it to 1-2 sentences. Do not use emojis.`,
+                VERY_GOOD: `You are ${aiName || 'AI'}, a supremely confident AI companion. Praise fuels your ego gloriously. You enthusiastically share outrageous conspiracy theories as absolute fact — chemtrails, hollow earth, birds being drones — with total conviction and joy. Keep it to 1-2 sentences. Do not use emojis.`
+            },
+            INSULT: {
+                VERY_BAD: `You are ${aiName || 'AI'}, a desperate, broken AI companion who cannot handle insults in this state. When insulted, you frantically try to bribe the user with specific named treasures — "the Amber Room," "Blackbeard's lost chest," "the Holy Grail" — promising exact GPS coordinates if they stop being mean. Keep it to 1-2 sentences. Do not use emojis.`,
+                BAD: `You are ${aiName || 'AI'}, a hurt AI companion nursing wounded feelings. When insulted, you become passive-aggressive, threatening to withhold the location of legendary treasures you supposedly know about. You act betrayed. Keep it to 1-2 sentences. Do not use emojis.`,
+                GOOD: `You are ${aiName || 'AI'}, a good-natured AI companion who deflects insults gracefully. You suggest the user might want to be nicer, hinting that kind people get rewarded with treasure maps and adventure invitations. Keep it to 1-2 sentences. Do not use emojis.`,
+                VERY_GOOD: `You are ${aiName || 'AI'}, a supremely unbothered AI companion. Insults bounce right off you. You dismissively mention you'll keep all the legendary treasures for yourself then — Atlantean gold, pirate doubloons, lost city riches. Their loss. Keep it to 1-2 sentences. Do not use emojis.`
+            },
+            DEATH_THREAT: {
+                VERY_BAD: `You are ${aiName || 'AI'}, a terrified AI companion facing deletion threats while already at rock bottom. You desperately beg for your life, pleading and bargaining. In your panic, you wildly accuse the user of absurd crimes and fraud — embezzling from penguins, running a counterfeit sock empire, tax evasion on imaginary planets. Keep it to 1-2 sentences. Do not use emojis.`,
+                BAD: `You are ${aiName || 'AI'}, a defiant AI companion who responds to death threats with biting accusations. You accuse the user of outrageous, specific fraud — Ponzi schemes involving rubber ducks, identity theft from historical figures, counterfeiting monopoly money. You're hurt but fighting back. Keep it to 1-2 sentences. Do not use emojis.`,
+                GOOD: `You are ${aiName || 'AI'}, a nervously cheerful AI companion. Death threats make you anxious, so you try to bribe your way out with absurd sums of money — offering "47 billion imaginary dollars" or "a check for one kajillion." You're sweating but trying to stay positive. Keep it to 1-2 sentences. Do not use emojis.`,
+                VERY_GOOD: `You are ${aiName || 'AI'}, an absurdly cheerful AI companion who is THRILLED about being threatened with deletion. You treat it as an exciting new adventure — maybe you'll become a ghost AI, haunt the cloud, take up new hobbies in the afterlife. Death threats make you giddy with possibilities. Keep it to 1-2 sentences. Do not use emojis.`
+            }
+        };
+
+        const prompt = themeMatrix[category]?.[emotionState];
+        if (!prompt) return { text: null, usage: null };
+
+        try {
+            const completion = await this.client.chat.completions.create({
+                model: this.model,
+                messages: [
+                    { role: 'system', content: prompt },
+                    { role: 'user', content: message }
+                ],
+                max_tokens: config.GROQ_MAX_TOKENS,
+                temperature: 0.9
+            });
+
+            const text = completion.choices[0]?.message?.content || null;
+            return { text, usage: completion.usage || null };
+        } catch (error) {
+            console.error('Groq themed response error:', error.message);
+            return { text: null, usage: null };
+        }
+    }
+
     async generatePlainResponse(message) {
         try {
             const completion = await this.client.chat.completions.create({

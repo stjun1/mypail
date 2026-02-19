@@ -135,9 +135,22 @@ app.post('/api/chat', async (req, res) => {
                 });
             }
 
-            // Full emotion processing
-            const category = messageAnalyzer.detectCategory(message);
-            const promptBoost = messageAnalyzer.detectPromptBoost(message);
+            // Full emotion processing — classify with Groq, fall back to keywords
+            let category = null;
+            let classifyUsage = null;
+            if (groqService.isConfigured()) {
+                const classifyResult = await groqService.classifyMessage(message);
+                category = classifyResult.category;
+                classifyUsage = classifyResult.usage;
+                if (!category && classifyResult.usage === null) {
+                    betaMetrics.track('groqError');
+                }
+            }
+            if (!category) {
+                category = messageAnalyzer.detectCategory(message);
+            }
+
+            const promptBoost = config.TRIGGERS[category] || 0;
 
             if (promptBoost !== 0) {
                 emotionEngine.addPromptEmotion(sessionId, promptBoost, category);
@@ -152,8 +165,9 @@ app.post('/api/chat', async (req, res) => {
             let groqUsage = null;
             let wasGroq = false;
             let wasStatic = false;
+            const THEMED_CATEGORIES = ['PRAISE', 'INSULT', 'DEATH_THREAT'];
 
-            // AVATAR_STATE: always use Groq (needs live device values)
+            // 1. AVATAR_STATE: always use Groq (needs live device values)
             if (category === 'AVATAR_STATE' && groqService.isConfigured()) {
                 const result = await groqService.generateAvatarStateResponse(message, {
                     emotionState: emotions.state,
@@ -172,13 +186,28 @@ app.post('/api/chat', async (req, res) => {
                 }
             }
 
-            // Use static responses first (skip if AVATAR_STATE already handled)
+            // 2. PRAISE/INSULT/DEATH_THREAT: themed Groq response, fall back to static
+            if (!responseText && THEMED_CATEGORIES.includes(category) && groqService.isConfigured()) {
+                const result = await groqService.generateThemedResponse(message, category, {
+                    emotionState: emotions.state,
+                    aiName: aiName || 'AI'
+                });
+                if (result.text) {
+                    responseText = result.text;
+                    groqUsage = result.usage;
+                    wasGroq = true;
+                } else if (!result.text && result.usage === null) {
+                    betaMetrics.track('groqError');
+                }
+            }
+
+            // 3. Static responses (for other categories, or themed fallback)
             if (!responseText) {
                 responseText = responseGenerator.selectResponse(category, emotions.state, emotions.combined, emotions.interactions);
                 if (responseText) wasStatic = true;
             }
 
-            // Fall back to Groq if no static response
+            // 4. Groq general fallback
             if (!responseText && groqService.isConfigured()) {
                 const result = await groqService.generateResponse(message, {
                     emotionState: emotions.state,
@@ -196,6 +225,7 @@ app.post('/api/chat', async (req, res) => {
                 }
             }
 
+            // 5. Final hardcoded fallback
             if (!responseText) {
                 responseText = "I'm not sure how to respond to that right now.";
             }
@@ -203,6 +233,7 @@ app.post('/api/chat', async (req, res) => {
             betaMetrics.track('message', {
                 mode: 'emotion',
                 usage: groqUsage,
+                classifyUsage,
                 wasGroq,
                 wasStatic,
                 emotionState: emotions.state,
