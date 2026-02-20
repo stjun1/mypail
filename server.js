@@ -198,8 +198,8 @@ app.post('/api/chat', async (req, res) => {
                 }
             }
 
-            // 3. Static responses (for non-themed categories only)
-            if (!responseText && !THEMED_CATEGORIES.includes(category)) {
+            // 3. Static responses (fallback for all categories)
+            if (!responseText) {
                 responseText = responseGenerator.selectResponse(category, emotions.state, emotions.combined, emotions.interactions);
                 if (responseText) wasStatic = true;
             }
