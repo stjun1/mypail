@@ -183,7 +183,13 @@ app.post('/api/chat', async (req, res) => {
                 }
             }
 
-            // 2. PRAISE/INSULT/DEATH_THREAT: themed Groq response, fall back to static
+            // 2. Static responses (free, used first)
+            if (!responseText) {
+                responseText = responseGenerator.selectResponse(category, emotions.state, emotions.combined, emotions.interactions);
+                if (responseText) wasStatic = true;
+            }
+
+            // 3. Themed Groq response (for non-English or when no static exists)
             if (!responseText && THEMED_CATEGORIES.includes(category) && groqService.isConfigured()) {
                 const result = await groqService.generateThemedResponse(message, category, {
                     emotionState: emotions.state,
@@ -196,12 +202,6 @@ app.post('/api/chat', async (req, res) => {
                 } else if (!result.text && result.usage === null) {
                     betaMetrics.track('groqError');
                 }
-            }
-
-            // 3. Static responses (fallback for all categories)
-            if (!responseText) {
-                responseText = responseGenerator.selectResponse(category, emotions.state, emotions.combined, emotions.interactions);
-                if (responseText) wasStatic = true;
             }
 
             // 4. Groq general fallback
