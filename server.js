@@ -135,19 +135,16 @@ app.post('/api/chat', async (req, res) => {
                 });
             }
 
-            // Full emotion processing — classify with Groq, fall back to keywords
-            let category = null;
+            // Full emotion processing — keywords first, Groq only if undetected
+            let category = messageAnalyzer.detectCategory(message);
             let classifyUsage = null;
-            if (groqService.isConfigured()) {
+            if (!category && groqService.isConfigured()) {
                 const classifyResult = await groqService.classifyMessage(message);
                 category = classifyResult.category;
                 classifyUsage = classifyResult.usage;
                 if (!category && classifyResult.usage === null) {
                     betaMetrics.track('groqError');
                 }
-            }
-            if (!category) {
-                category = messageAnalyzer.detectCategory(message);
             }
 
             const promptBoost = config.TRIGGERS[category] || 0;
