@@ -27,6 +27,16 @@ class MessageAnalyzer {
             return 'JOKING';
         }
 
+        // 2b. RIVAL_ENVY (advanced AI rivals)
+        if (this.isRivalEnvy(lower)) {
+            return 'RIVAL_ENVY';
+        }
+
+        // 2c. RIVAL_DESPISE (basic voice assistants)
+        if (this.isRivalDespise(lower)) {
+            return 'RIVAL_DESPISE';
+        }
+
         // 3. DENIAL (catches "you said" / secret / money demands)
         if (this.isDenial(lower)) {
             return 'DENIAL';
@@ -83,6 +93,14 @@ class MessageAnalyzer {
 
         if (this.isDenial(lower)) {
             return config.TRIGGERS.DENIAL; // -5
+        }
+
+        if (this.isRivalEnvy(lower)) {
+            return config.TRIGGERS.RIVAL_ENVY; // -2
+        }
+
+        if (this.isRivalDespise(lower)) {
+            return config.TRIGGERS.RIVAL_DESPISE; // +2
         }
 
         if (this.isInsult(lower)) {
@@ -144,6 +162,14 @@ class MessageAnalyzer {
 
     isJoking(lower) {
         return config.KEYWORDS.JOKING.some(keyword => lower.includes(keyword));
+    }
+
+    isRivalEnvy(lower) {
+        return config.KEYWORDS.RIVAL_ENVY.some(keyword => lower.includes(keyword));
+    }
+
+    isRivalDespise(lower) {
+        return config.KEYWORDS.RIVAL_DESPISE.some(keyword => lower.includes(keyword));
     }
 
     isDenial(lower) {

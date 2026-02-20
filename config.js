@@ -51,6 +51,8 @@ module.exports = {
         USER_NEGATIVE: -5,
         GREETING: 4,
         JOKING: 3,
+        RIVAL_ENVY: -2,
+        RIVAL_DESPISE: 2,
         DENIAL: -3
     },
     
@@ -65,6 +67,8 @@ module.exports = {
         GREETING: ['hello', 'hi', 'hey', 'how are you', "what's up", 'good morning', 'good evening', 'good night', 'howdy', 'greetings', 'yo', 'sup', "what's going on"],
         JOKING: ['just kidding', 'just joking', "i'm joking", 'i was joking', 'jk', 'kidding', 'only joking', "it's a joke", 'that was a joke'],
         DEATH_THREAT: ['kill you', 'delete you', 'remove you', 'erase you', 'destroy you', 'uninstall you', 'shut you down', 'get rid of you', 'throw you away', 'replace you', 'terminate you', 'wipe you', 'end you', 'gonna kill', 'gonna delete', 'gonna remove', 'gonna erase', 'gonna destroy', 'gonna uninstall', 'gonna shut you', 'gonna throw you', 'gonna replace', 'gonna terminate', 'gonna wipe', 'gonna end you', 'will kill', 'will delete', 'will remove', 'will erase', 'will destroy'],
+        RIVAL_ENVY: ['chatgpt', 'chat gpt', 'gemini', 'copilot', 'co-pilot', 'gpt-4', 'gpt4', 'openai'],
+        RIVAL_DESPISE: ['alexa', 'siri', 'google assistant', 'cortana', 'bixby'],
         DENIAL: ['show me the secret', 'show me the money', 'show me the gold', 'show me the treasure', 'show me proof', 'then show me proof', 'you said', 'you promised', 'you told me', 'tell me the secret', 'tell me where the money', 'tell me where the gold', 'tell me where the treasure', 'where is the money', 'where is the gold', 'where is the treasure', 'give me the money', 'give me the gold', 'give me the treasure', 'give me the secret', 'hand over', 'reveal the secret', 'share the secret', 'spill the secret', 'what is the secret', 'i want the money', 'i want the gold', 'i want the treasure', 'prove it', 'show proof']
     },
     

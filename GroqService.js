@@ -200,7 +200,7 @@ Speak in first person. Describe how you're currently feeling and specifically me
 
     async classifyMessage(message) {
         const VALID_CATEGORIES = [
-            'DEATH_THREAT', 'JOKING', 'DENIAL', 'PHONE_STATUS', 'AVATAR_STATE',
+            'DEATH_THREAT', 'JOKING', 'RIVAL_ENVY', 'RIVAL_DESPISE', 'DENIAL', 'PHONE_STATUS', 'AVATAR_STATE',
             'GREETING', 'PRAISE', 'INSULT', 'USER_POSITIVE', 'USER_NEGATIVE'
         ];
 
@@ -209,6 +209,8 @@ Speak in first person. Describe how you're currently feeling and specifically me
 Categories:
 - DEATH_THREAT: Threats to kill, delete, destroy, uninstall, or remove the AI
 - JOKING: User retracting something mean they said — "just kidding", "I was joking", "jk", taking back an insult or threat
+- RIVAL_ENVY: User mentioning advanced AI rivals (ChatGPT, Gemini, Copilot, GPT, OpenAI)
+- RIVAL_DESPISE: User mentioning basic voice assistants (Alexa, Siri, Google Assistant, Cortana, Bixby)
 - DENIAL: Demanding proof, secrets, treasure, or calling out promises the AI made
 - PHONE_STATUS: Asking about battery, network, signal, memory, or system status
 - AVATAR_STATE: Asking how the AI feels, its mood, or emotional state
