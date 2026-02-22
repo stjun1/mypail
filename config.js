@@ -22,8 +22,8 @@ module.exports = {
     // Emotion calculation parameters
     EMOTION: {
         // n values for persistence formula: ((n-1)*prev + current)/n
-        N_VERY_STATES: 3,      // 67% persistence (slower change)
-        N_MIDDLE_STATES: 2,    // 50% persistence (faster change)
+        N_VERY_STATES: 4,      // 75% persistence (slower change)
+        N_MIDDLE_STATES: 3,    // 67% persistence (faster change)
 
         // Prompt emotion
         PROMPT_DECAY: 0.8,         // 20% decay per update

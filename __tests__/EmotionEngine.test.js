@@ -131,8 +131,8 @@ describe('EmotionEngine', () => {
             const result = engine.getCombinedEmotion('test-1');
             expect(result.phone).toBe(50); // default
             expect(result.prompt).toBe(10);
-            // combined = ((n-1)/n)*50 + (1/n)*50 + 10 = 50 + 10 = 60 (first turn, prev=50, phone=50)
-            expect(result.combined).toBe(60);
+            // combined = ((n-1)/n)*50 + (1/n)*50 + 10 ≈ 50 + 10 = 60 (first turn, prev=50, phone=50)
+            expect(result.combined).toBeCloseTo(60, 5);
         });
 
         test('clamps combined to 0-100', () => {

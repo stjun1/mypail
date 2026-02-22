@@ -776,6 +776,7 @@
 
             <div class="lang-toggle">
                 <button class="lang-btn active" id="lang-en-btn" onclick="setTermsLang('en')">English</button>
+                <button class="lang-btn" id="lang-es-btn" onclick="setTermsLang('es')">Español</button>
                 <button class="lang-btn" id="lang-ko-btn" onclick="setTermsLang('ko')">한국어</button>
             </div>
 
@@ -803,6 +804,32 @@
 
                 <h3>6. Feedback</h3>
                 <p>Any feedback, bug reports, or suggestions you provide may be used to improve MyPAiL without obligation or compensation.</p>
+            </div>
+
+            <!-- Spanish Terms -->
+            <div class="terms-content hidden" id="terms-es">
+                <h3>1. Programa de Prueba Beta</h3>
+                <p>Bienvenido al programa de prueba beta de MyPAiL. Al participar, usted reconoce que este software está en desarrollo activo y puede contener errores, fallos o funciones incompletas. Sus comentarios nos ayudan a mejorar.</p>
+
+                <h3>2. Datos y Privacidad</h3>
+                <p>Durante la beta, los datos de sesión (nombre de la IA, elección de avatar e interacciones de chat) se almacenan temporalmente hasta por 24 horas. No se recopila información personal más allá de lo que usted proporciona dentro de la aplicación.</p>
+
+                <h3>3. Uso Aceptable</h3>
+                <p>MyPAiL está diseñado como un compañero de IA personal para entretenimiento e interacción emocional. Usted acepta:</p>
+                <ul>
+                    <li>Usar el servicio de manera respetuosa y de buena fe</li>
+                    <li>No intentar explotar, realizar ingeniería inversa o hacer mal uso del servicio</li>
+                    <li>Comprender que las respuestas de la IA son generadas automáticamente y no constituyen asesoramiento profesional</li>
+                </ul>
+
+                <h3>4. Propiedad Intelectual</h3>
+                <p>MyPAiL y su tecnología subyacente, incluyendo el motor de IA emocional, el sistema de avatares y el modelo de interacción de compañero, son propiedad exclusiva. <strong>Patente en trámite.</strong></p>
+
+                <h3>5. Descargo de Responsabilidad Beta</h3>
+                <p>Este software se proporciona "tal cual" sin garantía. Las funciones, disponibilidad y datos almacenados pueden cambiar sin previo aviso durante el período beta. No somos responsables de ningún problema que surja del uso del software beta.</p>
+
+                <h3>6. Comentarios</h3>
+                <p>Cualquier comentario, informe de errores o sugerencia que proporcione podrá ser utilizado para mejorar MyPAiL sin obligación ni compensación.</p>
             </div>
 
             <!-- Korean Terms -->
@@ -840,7 +867,7 @@
                 Continue
             </button>
 
-            <div class="patent-notice">Patent Pending / 특허 출원 중 — MyPAiL™ © 2025. All rights reserved.<br><a href="https://stjun1.github.io/mypail/" target="_blank" rel="noopener noreferrer" style="color:#667eea;">About MyPAiL</a></div>
+            <div class="patent-notice">Patent Pending / Patente en trámite / 특허 출원 중 — MyPAiL™ © 2025. All rights reserved.<br><a href="https://stjun1.github.io/mypail/" target="_blank" rel="noopener noreferrer" style="color:#667eea;">About MyPAiL</a></div>
         </div>
     </div>
 
@@ -1731,8 +1758,10 @@
         function setTermsLang(lang) {
             termsLang = lang;
             document.getElementById('terms-en').classList.toggle('hidden', lang !== 'en');
+            document.getElementById('terms-es').classList.toggle('hidden', lang !== 'es');
             document.getElementById('terms-ko').classList.toggle('hidden', lang !== 'ko');
             document.getElementById('lang-en-btn').classList.toggle('active', lang === 'en');
+            document.getElementById('lang-es-btn').classList.toggle('active', lang === 'es');
             document.getElementById('lang-ko-btn').classList.toggle('active', lang === 'ko');
 
             if (lang === 'ko') {
@@ -1740,6 +1769,11 @@
                 document.getElementById('terms-subtitle').textContent = 'MyPAiL 사용 전 검토해 주세요';
                 document.getElementById('terms-agree-label').textContent = '이용 약관을 읽었으며 이에 동의합니다';
                 document.getElementById('terms-accept-btn').textContent = '계속하기';
+            } else if (lang === 'es') {
+                document.getElementById('terms-title').textContent = 'Términos de Acuerdo';
+                document.getElementById('terms-subtitle').textContent = 'Por favor revise antes de usar MyPAiL';
+                document.getElementById('terms-agree-label').textContent = 'He leído y acepto los Términos de Acuerdo';
+                document.getElementById('terms-accept-btn').textContent = 'Continuar';
             } else {
                 document.getElementById('terms-title').textContent = 'Terms of Agreement';
                 document.getElementById('terms-subtitle').textContent = 'Please review before using MyPAiL';
