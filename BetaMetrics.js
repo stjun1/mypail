@@ -23,6 +23,7 @@ class BetaMetrics {
                 byMode: {
                     emotion: { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0, prompt_time: 0, completion_time: 0 },
                     sympathy: { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0, prompt_time: 0, completion_time: 0 },
+                    confession: { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0, prompt_time: 0, completion_time: 0 },
                     plain: { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0, prompt_time: 0, completion_time: 0 }
                 }
             },
@@ -30,6 +31,7 @@ class BetaMetrics {
                 total: 0,
                 emotion: 0,
                 sympathy: 0,
+                confession: 0,
                 plain: 0,
                 groqCalls: 0,
                 staticResponses: 0,
@@ -37,7 +39,7 @@ class BetaMetrics {
             },
             sessions: {
                 created: 0,
-                personalities: { optimistic: 0, pessimist: 0, balanced: 0, random: 0, unknown: 0 }
+                personalities: { optimistic: 0, pessimist: 0, balanced: 0, sensitive: 0, random: 0, unknown: 0 }
             },
             emotions: {
                 stateDistribution: { VERY_BAD: 0, BAD: 0, GOOD: 0, VERY_GOOD: 0 },
@@ -233,7 +235,7 @@ class BetaMetrics {
                 this.metrics.tokens[key] = loaded.tokens[key] || 0;
             }
             if (loaded.tokens.byMode) {
-                for (const mode of ['emotion', 'sympathy', 'plain']) {
+                for (const mode of ['emotion', 'sympathy', 'confession', 'plain']) {
                     if (loaded.tokens.byMode[mode]) {
                         this.metrics.tokens.byMode[mode] = { ...empty.tokens.byMode[mode], ...loaded.tokens.byMode[mode] };
                     }
