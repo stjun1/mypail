@@ -267,6 +267,10 @@ app.post('/api/chat', async (req, res) => {
                 }
             }
 
+            // Capture pre-boost state for response selection
+            const preBoostEmotions = emotionEngine.getCombinedEmotion(sessionId);
+            const responseState = preBoostEmotions.state;
+
             const promptBoost = config.TRIGGERS[category] || 0;
 
             if (promptBoost !== 0) {
@@ -303,16 +307,16 @@ app.post('/api/chat', async (req, res) => {
                 }
             }
 
-            // 2. Static responses (free, used first)
+            // 2. Static responses (free, used first) — use pre-boost state so response matches mood before change
             if (!responseText) {
-                responseText = responseGenerator.selectResponse(category, emotions.state, emotions.combined, emotions.interactions);
+                responseText = responseGenerator.selectResponse(category, responseState, emotions.combined, emotions.interactions);
                 if (responseText) wasStatic = true;
             }
 
             // 3. Themed Groq response (for non-English or when no static exists)
             if (!responseText && THEMED_CATEGORIES.includes(category) && groqService.isConfigured()) {
                 const result = await groqService.generateThemedResponse(message, category, {
-                    emotionState: emotions.state,
+                    emotionState: responseState,
                     aiName: aiName || 'AI'
                 });
                 if (result.text) {
