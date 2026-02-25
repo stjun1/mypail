@@ -17,6 +17,11 @@ class MessageAnalyzer {
         
         // Check each category in order
         
+        // 0. CONFESSION_ENTER (highest priority for entry detection)
+        if (this.isConfessionEnter(lower)) {
+            return 'CONFESSION_ENTER';
+        }
+
         // 1. DEATH_THREAT (highest priority)
         if (this.isDeathThreat(lower)) {
             return 'DEATH_THREAT';
@@ -87,6 +92,10 @@ class MessageAnalyzer {
         
         // Check each trigger type
         
+        if (this.isConfessionEnter(lower)) {
+            return config.TRIGGERS.CONFESSION_ENTER; // 0
+        }
+
         if (this.isDeathThreat(lower)) {
             return config.TRIGGERS.DEATH_THREAT; // -25
         }
@@ -174,6 +183,10 @@ class MessageAnalyzer {
 
     isDenial(lower) {
         return config.KEYWORDS.DENIAL.some(keyword => this.matchesKeyword(lower, keyword));
+    }
+
+    isConfessionEnter(lower) {
+        return config.KEYWORDS.CONFESSION_ENTER.some(keyword => lower.includes(keyword));
     }
 }
 

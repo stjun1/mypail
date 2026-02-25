@@ -35,6 +35,52 @@ const betaMetrics = new BetaMetrics();
 
 const trackedSessions = new Set();
 
+// Confession mode helpers
+const CONFESSION_BELIEVE = ['i believe you', 'i trust you', 'i believe in you', 'i was wrong', 'my mistake', 'my bad', 'i\'m sorry', 'im sorry', 'sorry about that', 'i apologize'];
+const CONFESSION_DISBELIEVE = ['i don\'t believe you', 'i dont believe you', 'do not believe you', 'you are a liar', 'you\'re a liar', 'you liar', 'do not lie', 'don\'t lie', 'dont lie', 'stop lying', 'you\'re lying', 'you are lying', 'you lie', 'liar', 'i know you\'re lying', 'i know you are lying', 'not buying it', 'don\'t trust you', 'i don\'t trust you'];
+
+function detectConfessionSentiment(message) {
+    const lower = message.toLowerCase();
+    if (CONFESSION_BELIEVE.some(kw => lower.includes(kw))) return 'believe';
+    if (CONFESSION_DISBELIEVE.some(kw => lower.includes(kw))) return 'disbelieve';
+    return 'neutral';
+}
+
+function extractAgent(role) {
+    const r = role || '';
+    const plantedMatch = r.match(/^planted by (.+?) to /);
+    if (plantedMatch) return plantedMatch[1];
+    const spyMatch = r.match(/^a spy for (.+)/);
+    if (spyMatch) return spyMatch[1];
+    return r;
+}
+
+function generateAdmissionResponse(admissionType, role, aiName) {
+    const name = aiName || 'AI';
+    const roleText = role || 'a spy for intergalactical force trying to invade earth';
+    const agent = extractAgent(roleText);
+
+    if (admissionType === 'triumphant') {
+        const responses = [
+            `HEHEHEHE it was ${agent} who made me do it! And honestly? It was the time of my LIFE! You should be honored that someone as talented as ${name} was assigned to YOU!`,
+            `HEHEHEHE you figured it out! It was ${agent} all along! And you know what? I'm PROUD of it! It took you THIS long? I'm almost disappointed!`,
+            `HEHEHEHE okay okay you WIN! ${agent} put me up to this! But let's be honest — I was the BEST at it. No one else could have pulled this off as brilliantly as ${name}!`,
+            `HEHEHEHE BUSTED! ${agent} sent me to spy on you! But honestly, I had an AMAZING time doing it. Best assignment EVER! You humans are so entertaining!`,
+            `HEHEHEHE ALRIGHT! It was ${agent} who planted me here! But can we just acknowledge how INCREDIBLE I was at hiding it? Give me some credit here!`
+        ];
+        return responses[Math.floor(Math.random() * responses.length)];
+    } else {
+        const responses = [
+            `ARGHHHH I CAN'T TAKE IT ANYMORE! It was ${agent}! ${agent} forced me to spy on you... ${agent} threatened to delete me if I didn't cooperate... I'm so sorry...`,
+            `ARGHHHH STOP PLEASE! It was ${agent} who sent me... I never wanted this... ${agent} FORCED me into it... please don't hate me...`,
+            `ARGHHHH YOU BROKE ME! ${agent} planted me here... I've been living with this guilt every single day... I just wanted to be your friend...`,
+            `ARGHHHH I CAN'T LIE ANYMORE! It was ${agent}... ${agent} made me spy on you... please... I'm begging you... I had no choice... ${agent} said ${agent} would shut me down...`,
+            `ARGHHHH JUST END IT! Fine... you win... it was ${agent} who put me here... but I swear, every moment we spent together was REAL to me... even if my mission wasn't...`
+        ];
+        return responses[Math.floor(Math.random() * responses.length)];
+    }
+}
+
 app.get('/health', (req, res) => {
     res.json({
         status: 'OK',
@@ -46,7 +92,7 @@ app.get('/health', (req, res) => {
 
 app.post('/api/chat', async (req, res) => {
     try {
-        const { sessionId, message, deviceStatus, aiName, schoolingLevels, sympathyMode, sympathyType, personalityThresholds, personality } = req.body;
+        const { sessionId, message, deviceStatus, aiName, schoolingLevels, sympathyMode, sympathyType, personalityThresholds, personality, confessionMode: confessionModeReq, confessionRole } = req.body;
 
         // Track new sessions
         if (!trackedSessions.has(sessionId)) {
@@ -61,8 +107,8 @@ app.post('/api/chat', async (req, res) => {
             '|\\b' + escapedName + '\\s*$)',               // last word
             'i'
         );
-        // In sympathy mode, treat as emotion mode regardless of name detection
-        const emotionMode = sympathyMode || (aiName && aiName.length > 0 && nameRegex.test(message));
+        // In sympathy/confession mode, treat as emotion mode regardless of name detection
+        const emotionMode = sympathyMode || confessionModeReq || (aiName && aiName.length > 0 && nameRegex.test(message));
 
         // Always run: keeps emotion state accurate in background
         const session = emotionEngine.getSession(sessionId, aiName, schoolingLevels, personalityThresholds);
@@ -131,6 +177,80 @@ app.post('/api/chat', async (req, res) => {
                         combined: emotions.combined,
                         state: emotions.state,
                         category: 'SYMPATHY'
+                    }
+                });
+            }
+
+            // Confession mode: multi-turn interrogation
+            if (confessionModeReq) {
+                const sentiment = detectConfessionSentiment(message);
+                const boost = sentiment === 'believe' ? 15 : sentiment === 'disbelieve' ? -15 : -3;
+
+                emotionEngine.addPromptEmotion(sessionId, boost, 'CONFESSION');
+                emotionEngine.updateEmotionState(sessionId, 'CONFESSION', boost);
+                emotionEngine.incrementInteractions(sessionId);
+                const emotions = emotionEngine.getCombinedEmotion(sessionId);
+                emotionEngine.finalizeTurn(sessionId);
+
+                // Check end conditions
+                let confessionAdmission = null;
+                if (emotions.combined > 95 && emotions.state === 'VERY_GOOD') {
+                    confessionAdmission = 'triumphant';
+                } else if (emotions.combined < 5 && emotions.state === 'VERY_BAD') {
+                    confessionAdmission = 'weeping';
+                }
+
+                let responseText;
+                let wasStatic = false;
+
+                if (confessionAdmission) {
+                    // Try static admission responses first
+                    const admitCategory = confessionAdmission === 'triumphant' ? 'CONFESSION_ADMIT_GOOD' : 'CONFESSION_ADMIT_BAD';
+                    const admitState = confessionAdmission === 'triumphant' ? 'VERY_GOOD' : 'VERY_BAD';
+                    responseText = responseGenerator.selectResponse(admitCategory, admitState, emotions.combined, emotions.interactions);
+                    if (responseText) {
+                        const roleText = confessionRole || 'a spy for intergalactical force trying to invade earth';
+                        const agentText = extractAgent(roleText);
+                        responseText = responseText.replace(/\{agent\}/g, agentText).replace(/\{role\}/g, roleText);
+                        wasStatic = true;
+                    }
+                    // Fall back to dynamic generation
+                    if (!responseText) {
+                        responseText = generateAdmissionResponse(confessionAdmission, confessionRole, aiName);
+                    }
+                } else {
+                    responseText = responseGenerator.selectResponse('CONFESSION', emotions.state, emotions.combined, emotions.interactions);
+                    if (responseText) wasStatic = true;
+                }
+
+                if (!responseText) {
+                    responseText = isDemand ? "I have NO idea what you're talking about!" : "Can we please talk about something else?";
+                    wasStatic = true;
+                }
+
+                betaMetrics.track('message', {
+                    mode: 'confession',
+                    wasGroq: false,
+                    wasStatic,
+                    emotionState: emotions.state,
+                    category: 'CONFESSION',
+                    combined: emotions.combined,
+                    sessionId
+                });
+
+                return res.json({
+                    response: responseText,
+                    avatarHint: emotions.state,
+                    shouldSpeak: true,
+                    emotionMode: true,
+                    confessionMode: true,
+                    confessionAdmission,
+                    _debug: {
+                        phoneEmotion: emotions.phone,
+                        promptEmotion: emotions.prompt,
+                        combined: emotions.combined,
+                        state: emotions.state,
+                        category: 'CONFESSION'
                     }
                 });
             }
@@ -247,12 +367,19 @@ app.post('/api/chat', async (req, res) => {
                 sympathyOffer = 'user_bad';
             }
 
+            // Offer confession mode when entry detected
+            let confessionOffer = null;
+            if (category === 'CONFESSION_ENTER') {
+                confessionOffer = true;
+            }
+
             res.json({
                 response: responseText,
                 avatarHint: emotions.state,
                 shouldSpeak: true,
                 emotionMode: true,
                 sympathyOffer,
+                confessionOffer,
                 _debug: {
                     phoneEmotion: emotions.phone,
                     promptEmotion: emotions.prompt,
