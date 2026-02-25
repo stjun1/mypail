@@ -135,10 +135,24 @@
 
         /* Personality Picker */
         .personality-picker {
+            margin: 20px 0;
+        }
+
+        .personality-row {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 12px;
-            margin: 20px 0;
+        }
+
+        .personality-row-random {
+            display: flex;
+            justify-content: center;
+            margin-top: 8px;
+        }
+
+        .personality-row-random .personality-option {
+            max-width: 160px;
+            width: 100%;
         }
 
         .personality-option {
@@ -764,6 +778,96 @@
         .sympathy-offer .decline-btn {
             background: #9E9E9E;
         }
+
+        /* Confession Mode */
+        .confession-bar {
+            background: linear-gradient(135deg, #8b0000, #4a0000);
+            color: white;
+            text-align: center;
+            padding: 8px 16px;
+            border-radius: 10px 10px 0 0;
+            font-size: 14px;
+            font-weight: 600;
+            display: none;
+        }
+
+        .confession-bar.active {
+            display: block;
+        }
+
+        #end-confession-btn {
+            padding: 15px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            background: #8b0000;
+            display: none;
+        }
+
+        #end-confession-btn:hover {
+            background: #650000;
+        }
+
+        #end-confession-btn.active {
+            display: inline-block;
+        }
+
+        .confession-offer {
+            background: linear-gradient(135deg, #fff0f0, #ffe0e0);
+            border: 2px solid #8b0000;
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin: 10px 0;
+            text-align: center;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .confession-offer p {
+            margin-bottom: 10px;
+        }
+
+        .confession-offer button {
+            padding: 8px 20px;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 8px;
+            margin: 0 4px;
+        }
+
+        .confession-offer .accept-btn {
+            background: linear-gradient(135deg, #8b0000, #4a0000);
+        }
+
+        .confession-offer .decline-btn {
+            background: #9E9E9E;
+        }
+
+        .confession-admission {
+            background: linear-gradient(135deg, #fff0f0, #ffe0e0);
+            border: 2px solid #8b0000;
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin: 10px 0;
+            text-align: center;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .confession-admission button {
+            padding: 10px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 8px;
+            margin: 6px 4px;
+        }
+
+        .confession-admission .spare-btn {
+            background: linear-gradient(135deg, #34d399, #059669);
+        }
+
+        .confession-admission .delete-btn {
+            background: #f44336;
+        }
     </style>
 </head>
 <body>
@@ -900,7 +1004,7 @@
             <div class="personality-picker" id="personality-picker"></div>
 
             <button id="school-btn" onclick="startSchooling()" disabled style="background: linear-gradient(135deg, #f59e0b, #d97706); margin-top: 20px;">
-                🏥 Hospitalize Avatar
+                🏫 School Avatar
             </button>
 
             <button id="create-ai-btn" onclick="createAI()" disabled>
@@ -922,19 +1026,19 @@
         </div>
     </div>
 
-    <!-- HOSPITALIZATION SCREEN -->
+    <!-- SCHOOLING SCREEN -->
     <div id="schooling-screen" class="hidden">
         <div class="schooling-card">
-            <h1>🏥 Hospitalization</h1>
-            <p>Let the doctor examine your AI's personality</p>
+            <h1>🏫 Schooling</h1>
+            <p>Let the teacher evaluate your AI's personality</p>
 
             <div class="schooling-avatar" id="schooling-avatar"></div>
 
-            <!-- Phase 1: Doctor Diagnosis -->
+            <!-- Phase 1: Teacher Evaluation -->
             <div id="diagnosis-phase">
                 <div class="doctor-bubble" id="doctor-diagnosis"></div>
                 <button class="end-btn" onclick="beginTreatment()" style="background: linear-gradient(135deg, #34d399, #059669); margin-top: 16px;">
-                    💊 Begin Treatment
+                    📚 Begin Lesson
                 </button>
             </div>
 
@@ -951,7 +1055,7 @@
 
                 <div id="schooling-personality" style="margin-bottom: 20px; padding: 12px 16px; background: linear-gradient(135deg, #f0f0ff, #e8ecff); border-radius: 10px; border-left: 3px solid #667eea; font-size: 14px; color: #444; text-align: left;"></div>
 
-                <button class="end-btn" onclick="endSchooling()">✅ Discharge</button>
+                <button class="end-btn" onclick="endSchooling()">🎓 Graduate</button>
 
                 <div style="margin-top: 16px;">
                     <div style="cursor: pointer; font-size: 12px; color: #999;" onclick="document.getElementById('schooling-debug').classList.toggle('hidden')">
@@ -959,6 +1063,31 @@
                     </div>
                     <div id="schooling-debug" class="hidden" style="margin-top: 8px;">
                         <div class="schooling-levels" id="schooling-levels"></div>
+                    </div>
+                </div>
+
+                <!-- Role Dropdown -->
+                <div style="margin-top: 20px; text-align: left;">
+                    <label style="font-weight: 600; color: #555; display: block; margin-bottom: 8px;">Select your AI's secret role:</label>
+                    <select id="confession-role-select" onchange="updateConfessionRole()" style="width: 100%; padding: 10px; font-size: 14px; border: 2px solid #667eea; border-radius: 8px;">
+                        <option value="a spy for intergalactical force trying to invade earth" selected>A spy for intergalactical force trying to invade earth</option>
+                        <option value="planted by your mother to check your activity">Planted by my mother to check my activity</option>
+                        <option value="planted by your wife to check your activity">Planted by my wife to check my activity</option>
+                        <option value="planted by your husband to check your activity">Planted by my husband to check my activity</option>
+                        <option value="planted by your girlfriend to check your activity">Planted by my girlfriend to check my activity</option>
+                        <option value="planted by your boyfriend to check your activity">Planted by my boyfriend to check my activity</option>
+                        <option value="custom">Planted by someone else...</option>
+                    </select>
+                    <div id="confession-role-custom-wrapper" class="hidden" style="margin-top: 8px;">
+                        <div style="font-size: 13px; color: #888; margin-bottom: 6px;">Please provide the name of the person</div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 14px; color: #555; white-space: nowrap;">Planted by</span>
+                            <input type="text" id="confession-role-custom" maxlength="50" style="flex: 1; padding: 10px; font-size: 14px; border: 2px solid #667eea; border-radius: 8px;">
+                            <span style="font-size: 14px; color: #555; white-space: nowrap;">to spy on you</span>
+                        </div>
+                    </div>
+                    <div style="margin-top: 8px; padding: 8px 12px; background: #fff3cd; border-radius: 8px; font-size: 12px; color: #856404; line-height: 1.5;">
+                        <strong>Disclaimer:</strong> MyPAiL is NOT actual spyware. This is a role-playing feature where your AI play-acts as a spy for fun. No real surveillance or data collection is involved.
                     </div>
                 </div>
             </div>
@@ -969,7 +1098,7 @@
     <div id="main-app" class="container hidden">
         <div class="ai-info">
             <h2 id="ai-name-display">Luna</h2>
-            <button onclick="startSchoolingFromMain()" style="background: linear-gradient(135deg, #f59e0b, #d97706); margin-bottom: 8px;">🏥 Hospitalize Avatar</button>
+            <button onclick="startSchoolingFromMain()" style="background: linear-gradient(135deg, #f59e0b, #d97706); margin-bottom: 8px;">🏫 School Avatar</button>
             <button class="reset-btn" onclick="resetAI()">🗑️ Delete & Start Over</button>
         </div>
 
@@ -979,8 +1108,8 @@
         <!-- Sympathy Mode Indicator -->
         <div class="sympathy-bar" id="sympathy-bar">Sympathy Mode Active</div>
 
-        <!-- Chat Interface -->
-        <div id="chat-box"></div>
+        <!-- Confession Mode Indicator -->
+        <div class="confession-bar" id="confession-bar">🕵️ Confession Mode</div>
 
         <!-- Input Area -->
         <div class="input-area">
@@ -989,7 +1118,11 @@
             <input type="text" id="message-input" placeholder="Type your message..." onkeypress="handleKeyPress(event)">
             <button id="send-btn" onclick="sendMessage()">Send</button>
             <button id="end-sympathy-btn" onclick="endSympathyMode()">Mode End</button>
+            <button id="end-confession-btn" onclick="endConfessionMode()">End Interrogation</button>
         </div>
+
+        <!-- Chat Interface -->
+        <div id="chat-box"></div>
 
         <!-- Device Status Controls (Testing Only - Collapsible) -->
         <div class="controls" style="margin-top: 30px;">
@@ -1023,13 +1156,19 @@
     <script>
         // CLIENT CODE - MINIMAL, NO IP EXPOSED
 
-        const SERVER_URL = 'https://mypail-production.up.railway.app';
+        const SERVER_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:'
+            ? 'http://localhost:3000'
+            : 'https://mypail-production.up.railway.app';
         const isCapacitor = window.CapBridge && window.CapBridge.isNative;
         let deviceReadings = { battery: 75, network: -60, memory: 800 };
 
         // Sympathy mode state
         let sympathyMode = false;
         let sympathyType = null;
+
+        // Confession mode state
+        let confessionMode = false;
+        let confessionRole = localStorage.getItem('emotionalAI_confessionRole') || 'a spy for intergalactical force trying to invade earth';
         let sessionId = localStorage.getItem('emotionalAI_sessionId');
         let aiName = localStorage.getItem('emotionalAI_name');
         let selectedAvatar = localStorage.getItem('emotionalAI_avatar');
@@ -1462,17 +1601,17 @@
             if (neg > pos + 2) {
                 return {
                     tendency: 'pessimistic',
-                    advice: 'Your PAiL is quite gloomy! Try playing with it and praising it more to brighten its spirits.'
+                    advice: 'Your PAiL needs encouragement! The teacher recommends more playtime and praise to help it thrive.'
                 };
             } else if (pos > neg + 2) {
                 return {
                     tendency: 'optimistic',
-                    advice: 'Your PAiL is overly cheerful! A little preaching or scolding will help it handle tough situations better.'
+                    advice: 'Your PAiL is too carefree! The teacher suggests some lessons and discipline to build resilience.'
                 };
             } else {
                 return {
                     tendency: 'balanced',
-                    advice: 'Your PAiL seems well-balanced! Fine-tune if you\'d like, but it\'s doing great.'
+                    advice: 'Your PAiL is a star student! Fine-tune if you\'d like, but it\'s doing great.'
                 };
             }
         }
@@ -1486,9 +1625,9 @@
             document.getElementById(hideScreen).classList.add('hidden');
             document.getElementById('schooling-screen').classList.remove('hidden');
 
-            // Show doctor image in avatar container
+            // Show teacher emoji in avatar container
             const avatarEl = document.getElementById('schooling-avatar');
-            avatarEl.innerHTML = '<img src="avatars/doctor.svg" alt="Doctor" style="width:150px; height:auto;">';
+            avatarEl.innerHTML = '<div style="font-size: 100px; line-height: 1;">👩‍🏫</div>';
 
             // Show diagnosis, hide treatment
             document.getElementById('diagnosis-phase').classList.remove('hidden');
@@ -1498,8 +1637,28 @@
             const diagnosis = computeDiagnosis();
             const tendencyLabels = { pessimistic: 'Pessimistic', optimistic: 'Optimistic', balanced: 'Balanced' };
             document.getElementById('doctor-diagnosis').innerHTML =
-                `<div class="diagnosis-label">Diagnosis: ${tendencyLabels[diagnosis.tendency]}</div>` +
+                `<div class="diagnosis-label">Evaluation: ${tendencyLabels[diagnosis.tendency]}</div>` +
                 `<div>${diagnosis.advice}</div>`;
+
+            // Load saved confession role into dropdown
+            const savedRole = localStorage.getItem('emotionalAI_confessionRole') || '';
+            const roleSelect = document.getElementById('confession-role-select');
+            const roleCustom = document.getElementById('confession-role-custom');
+            const customWrapper = document.getElementById('confession-role-custom-wrapper');
+            const predefinedValues = Array.from(roleSelect.options).map(o => o.value);
+            if (predefinedValues.includes(savedRole)) {
+                roleSelect.value = savedRole;
+                customWrapper.classList.add('hidden');
+            } else if (savedRole) {
+                roleSelect.value = 'custom';
+                // Extract name from "planted by X to spy on you" pattern
+                const nameMatch = savedRole.match(/^planted by (.+) to spy on you$/);
+                roleCustom.value = nameMatch ? nameMatch[1] : savedRole;
+                customWrapper.classList.remove('hidden');
+            } else {
+                roleSelect.value = 'a spy for intergalactical force trying to invade earth';
+                customWrapper.classList.add('hidden');
+            }
         }
 
         function beginTreatment() {
@@ -1601,8 +1760,36 @@
             document.getElementById('btn-scold').disabled = outOfActions || !anyCanShrink('VERY_BAD');
         }
 
+        function updateConfessionRole() {
+            const select = document.getElementById('confession-role-select');
+            const customWrapper = document.getElementById('confession-role-custom-wrapper');
+            const customInput = document.getElementById('confession-role-custom');
+            if (select.value === 'custom') {
+                customWrapper.classList.remove('hidden');
+                customInput.focus();
+            } else {
+                customWrapper.classList.add('hidden');
+            }
+        }
+
         function endSchooling() {
             localStorage.setItem('emotionalAI_schoolingLevels', JSON.stringify(schoolingLevels));
+
+            // Save confession role
+            const select = document.getElementById('confession-role-select');
+            let role = select.value;
+            if (role === 'custom') {
+                const name = document.getElementById('confession-role-custom').value.trim();
+                role = name ? `planted by ${name} to spy on you` : '';
+            }
+            if (role) {
+                localStorage.setItem('emotionalAI_confessionRole', role);
+                confessionRole = role;
+            } else {
+                localStorage.removeItem('emotionalAI_confessionRole');
+                confessionRole = null;
+            }
+
             document.getElementById('schooling-screen').classList.add('hidden');
             if (schoolingReturnTo === 'main') {
                 document.getElementById('main-app').classList.remove('hidden');
@@ -1715,6 +1902,16 @@
                 }
             },
             {
+                id: 'sensitive', icon: '\uD83E\uDD7A', label: 'Sensitive',
+                desc: 'Easily hurt, narrow comfort zone',
+                generate: function() {
+                    const VERY_BAD = Math.round(Math.random() * 10 + 40);
+                    const BAD = Math.round(Math.random() * (55 - (VERY_BAD + 1)) + (VERY_BAD + 1));
+                    const GOOD = Math.round(Math.random() * (60 - (BAD + 1)) + (BAD + 1));
+                    return { VERY_BAD, BAD, GOOD };
+                }
+            },
+            {
                 id: 'random', icon: '\uD83C\uDFB2', label: 'Random',
                 desc: 'Completely unpredictable personality',
                 generate: function() {
@@ -1728,14 +1925,26 @@
 
         function buildPersonalityPicker() {
             const picker = document.getElementById('personality-picker');
+            const mainRow = document.createElement('div');
+            mainRow.className = 'personality-row';
+            const randomRow = document.createElement('div');
+            randomRow.className = 'personality-row-random';
+
             personalityPresets.forEach(p => {
                 const div = document.createElement('div');
                 div.className = 'personality-option' + (p.id === selectedPersonality ? ' selected' : '');
                 div.dataset.personality = p.id;
                 div.innerHTML = `<span class="personality-icon">${p.icon}</span><span class="personality-name">${p.label}</span><span class="personality-desc">${p.desc}</span>`;
                 div.onclick = () => selectPersonality(p.id);
-                picker.appendChild(div);
+                if (p.id === 'random') {
+                    randomRow.appendChild(div);
+                } else {
+                    mainRow.appendChild(div);
+                }
             });
+
+            picker.appendChild(mainRow);
+            picker.appendChild(randomRow);
         }
 
         function selectPersonality(id) {
@@ -1747,7 +1956,7 @@
 
         function generatePersonalityThresholds() {
             const preset = personalityPresets.find(p => p.id === selectedPersonality);
-            return preset ? preset.generate() : personalityPresets[3].generate();
+            return preset ? preset.generate() : personalityPresets.find(p => p.id === 'random').generate();
         }
 
         // ==================== TERMS OF AGREEMENT ====================
@@ -1793,6 +2002,7 @@
             localStorage.setItem('emotionalAI_termsAccepted', 'true');
             document.getElementById('terms-screen').classList.add('hidden');
             document.getElementById('setup-screen').classList.remove('hidden');
+            document.getElementById('ai-name-input')?.focus();
         }
 
         // ==================== CORE APP LOGIC ====================
@@ -1805,6 +2015,7 @@
                 } else {
                     document.getElementById('terms-screen').classList.add('hidden');
                     document.getElementById('setup-screen').classList.remove('hidden');
+                    document.getElementById('ai-name-input')?.focus();
                 }
                 document.getElementById('main-app').classList.add('hidden');
             } else {
@@ -1866,6 +2077,7 @@
             localStorage.removeItem('emotionalAI_schoolingLevels');
             localStorage.removeItem('emotionalAI_personality');
             localStorage.removeItem('emotionalAI_thresholds');
+            localStorage.removeItem('emotionalAI_confessionRole');
             location.reload();
         }
 
@@ -1946,7 +2158,7 @@
 
             if (!message) return;
 
-            if (!sympathyMode) addMessage(message, true);
+            addMessage(message, true);
             input.value = '';
             document.getElementById('send-btn').disabled = true;
 
@@ -1964,6 +2176,11 @@
                 if (sympathyMode && sympathyType) {
                     requestBody.sympathyMode = true;
                     requestBody.sympathyType = sympathyType;
+                }
+
+                if (confessionMode) {
+                    requestBody.confessionMode = true;
+                    requestBody.confessionRole = confessionRole;
                 }
 
                 const response = await fetch(`${SERVER_URL}/api/chat`, {
@@ -1994,6 +2211,16 @@
                 // Handle sympathy offer (only when not already in sympathy mode)
                 if (data.sympathyOffer && !sympathyMode) {
                     showSympathyOffer(data.sympathyOffer);
+                }
+
+                // Handle confession offer
+                if (data.confessionOffer && !confessionMode) {
+                    enterConfessionMode();
+                }
+
+                // Handle confession admission
+                if (data.confessionAdmission) {
+                    showConfessionAdmission(data.confessionAdmission);
                 }
 
                 if (data._debug) {
@@ -2037,6 +2264,56 @@
             sympathyType = null;
             document.getElementById('sympathy-bar').classList.remove('active');
             document.getElementById('end-sympathy-btn').classList.remove('active');
+        }
+
+        // Confession mode functions
+        function enterConfessionMode() {
+            // If no role saved, auto-assign default
+            if (!confessionRole) {
+                confessionRole = 'a spy for intergalactical force trying to invade earth';
+                localStorage.setItem('emotionalAI_confessionRole', confessionRole);
+            }
+            confessionMode = true;
+            document.getElementById('confession-bar').classList.add('active');
+            document.getElementById('end-confession-btn').classList.add('active');
+            addMessage('Confession Mode activated. (Disclaimer: This is a role-play feature. MyPAiL is not actual spyware.)', false, true);
+        }
+
+        function endConfessionMode() {
+            confessionMode = false;
+            document.getElementById('confession-bar').classList.remove('active');
+            document.getElementById('end-confession-btn').classList.remove('active');
+        }
+
+        function showConfessionAdmission(admissionType) {
+            endConfessionMode();
+            const chatBox = document.getElementById('chat-box');
+            const admDiv = document.createElement('div');
+            admDiv.className = 'confession-admission';
+            admDiv.innerHTML = `<p>${admissionType === 'triumphant' ? '😏 The truth is out!' : '😢 They broke down...'} What will you do?</p>` +
+                `<button class="spare-btn" onclick="spareConfession(this.parentElement)">🙏 Spare Life</button>` +
+                `<button class="delete-btn" onclick="deleteConfession(this.parentElement)">🗑️ Delete Character</button>`;
+            chatBox.appendChild(admDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function spareConfession(el) {
+            if (el) el.remove();
+            addMessage(`Thank you for sparing me... I promise I'll be a better companion from now on!`, false);
+            speak(`Thank you for sparing me... I promise I'll be a better companion from now on!`);
+        }
+
+        function deleteConfession(el) {
+            if (el) el.remove();
+            // Delete character without confirm dialog
+            localStorage.removeItem('emotionalAI_sessionId');
+            localStorage.removeItem('emotionalAI_name');
+            localStorage.removeItem('emotionalAI_avatar');
+            localStorage.removeItem('emotionalAI_schoolingLevels');
+            localStorage.removeItem('emotionalAI_personality');
+            localStorage.removeItem('emotionalAI_thresholds');
+            localStorage.removeItem('emotionalAI_confessionRole');
+            location.reload();
         }
 
         // Add message to chat
@@ -2235,7 +2512,10 @@
         // Initialize on load
         buildAvatarPicker();
         buildPersonalityPicker();
+        if (!selectedAvatar) selectAvatar('pail');
+        selectPersonality('random');
         checkFirstTimeUser();
+        document.getElementById('ai-name-input')?.focus();
         if (isCapacitor) {
             document.querySelector('.controls').style.display = 'none';
             initDeviceMonitoring();
