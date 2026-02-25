@@ -151,6 +151,7 @@
         .personality-row-random .personality-option {
             width: 100%;
             flex-direction: row;
+            justify-content: center;
             padding: 6px 12px;
             gap: 8px;
         }
@@ -265,6 +266,8 @@
             overflow-y: auto;
             margin-bottom: 20px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column-reverse;
         }
 
         .message {
@@ -1936,7 +1939,7 @@
                 div.className = 'personality-option' + (p.id === selectedPersonality ? ' selected' : '');
                 div.dataset.personality = p.id;
                 div.innerHTML = p.id === 'random'
-                    ? `<span class="personality-name">${p.label}</span><span class="personality-desc">— ${p.desc}</span>`
+                    ? `<span class="personality-name">Random Personality</span>`
                     : `<span class="personality-icon">${p.icon}</span><span class="personality-name">${p.label}</span><span class="personality-desc">${p.desc}</span>`;
                 div.onclick = () => selectPersonality(p.id);
                 if (p.id === 'random') {
@@ -2246,8 +2249,8 @@
             offerDiv.innerHTML = `<p>Want me to just listen for a while?</p>` +
                 `<button class="accept-btn" onclick="enterSympathyMode('${type}', this.parentElement)">Yes, listen</button>` +
                 `<button class="decline-btn" onclick="declineSympathy(this.parentElement)">No thanks</button>`;
-            chatBox.appendChild(offerDiv);
-            chatBox.scrollTop = chatBox.scrollHeight;
+            chatBox.prepend(offerDiv);
+            chatBox.scrollTop = 0;
         }
 
         function enterSympathyMode(type, offerEl) {
@@ -2296,8 +2299,8 @@
             admDiv.innerHTML = `<p>${admissionType === 'triumphant' ? '😏 The truth is out!' : '😢 They broke down...'} What will you do?</p>` +
                 `<button class="spare-btn" onclick="spareConfession(this.parentElement)">🙏 Spare Life</button>` +
                 `<button class="delete-btn" onclick="deleteConfession(this.parentElement)">🗑️ Delete Character</button>`;
-            chatBox.appendChild(admDiv);
-            chatBox.scrollTop = chatBox.scrollHeight;
+            chatBox.prepend(admDiv);
+            chatBox.scrollTop = 0;
         }
 
         function spareConfession(el) {
@@ -2325,8 +2328,8 @@
             const msgDiv = document.createElement('div');
             msgDiv.className = 'message ' + (isUser ? 'user' : isSystem ? 'system' : 'ai');
             msgDiv.textContent = text;
-            chatBox.appendChild(msgDiv);
-            chatBox.scrollTop = chatBox.scrollHeight;
+            chatBox.prepend(msgDiv);
+            chatBox.scrollTop = 0;
         }
 
         // Update avatar based on emotion (sent by server)
