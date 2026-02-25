@@ -145,14 +145,14 @@
         }
 
         .personality-row-random {
-            display: flex;
-            justify-content: center;
             margin-top: 8px;
         }
 
         .personality-row-random .personality-option {
-            max-width: 160px;
             width: 100%;
+            flex-direction: row;
+            padding: 6px 12px;
+            gap: 8px;
         }
 
         .personality-option {
@@ -1113,8 +1113,8 @@
 
         <!-- Input Area -->
         <div class="input-area">
-            <button id="voice-btn" onclick="toggleVoice()" title="Voice Input">🎤</button>
-            <button id="speaker-btn" onclick="toggleSpeaker()" title="Toggle Speaker">Voice ON</button>
+            <button id="voice-btn" onclick="toggleVoice()" title="Voice Input">Mic</button>
+            <button id="speaker-btn" onclick="toggleSpeaker()" title="Toggle Speaker">Speaker ON</button>
             <input type="text" id="message-input" placeholder="Type your message..." onkeypress="handleKeyPress(event)">
             <button id="send-btn" onclick="sendMessage()">Send</button>
             <button id="end-sympathy-btn" onclick="endSympathyMode()">Mode End</button>
@@ -1934,7 +1934,9 @@
                 const div = document.createElement('div');
                 div.className = 'personality-option' + (p.id === selectedPersonality ? ' selected' : '');
                 div.dataset.personality = p.id;
-                div.innerHTML = `<span class="personality-icon">${p.icon}</span><span class="personality-name">${p.label}</span><span class="personality-desc">${p.desc}</span>`;
+                div.innerHTML = p.id === 'random'
+                    ? `<span class="personality-name">${p.label}</span><span class="personality-desc">— ${p.desc}</span>`
+                    : `<span class="personality-icon">${p.icon}</span><span class="personality-name">${p.label}</span><span class="personality-desc">${p.desc}</span>`;
                 div.onclick = () => selectPersonality(p.id);
                 if (p.id === 'random') {
                     randomRow.appendChild(div);
@@ -2366,7 +2368,7 @@
             speakerEnabled = !speakerEnabled;
             const btn = document.getElementById('speaker-btn');
             if (speakerEnabled) {
-                btn.textContent = 'Voice ON';
+                btn.textContent = 'Speaker ON';
                 btn.classList.remove('off');
             } else {
                 if (isCapacitor && window.CapBridge && window.CapBridge.TextToSpeech) {
@@ -2374,7 +2376,7 @@
                 } else if (typeof speechSynthesis !== 'undefined') {
                     speechSynthesis.cancel();
                 }
-                btn.textContent = 'Voice OFF';
+                btn.textContent = 'Speaker OFF';
                 btn.classList.add('off');
             }
         }
@@ -2492,7 +2494,7 @@
             }
             isVoiceActive = false;
             document.getElementById('voice-btn').classList.remove('active');
-            document.getElementById('voice-btn').textContent = '🎤';
+            document.getElementById('voice-btn').textContent = 'Mic';
         }
 
         // Toggle device controls visibility

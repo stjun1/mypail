@@ -200,13 +200,14 @@ Speak in first person. Describe how you're currently feeling and specifically me
 
     async classifyMessage(message) {
         const VALID_CATEGORIES = [
-            'DEATH_THREAT', 'JOKING', 'RIVAL_ENVY', 'RIVAL_DESPISE', 'DENIAL', 'PHONE_STATUS', 'AVATAR_STATE',
+            'CONFESSION_ENTER', 'DEATH_THREAT', 'JOKING', 'RIVAL_ENVY', 'RIVAL_DESPISE', 'DENIAL', 'PHONE_STATUS', 'AVATAR_STATE',
             'GREETING', 'PRAISE', 'INSULT', 'USER_POSITIVE', 'USER_NEGATIVE'
         ];
 
         const systemPrompt = `You are a message classifier. Classify the user's message into exactly one category. Respond with JSON only: {"category": "CATEGORY_NAME"}
 
 Categories:
+- CONFESSION_ENTER: User accusing the AI of being a spy/plant and demanding confession
 - DEATH_THREAT: Threats to kill, delete, destroy, uninstall, or remove the AI
 - JOKING: User retracting something mean they said — "just kidding", "I was joking", "jk", taking back an insult or threat
 - RIVAL_ENVY: User mentioning advanced AI rivals (ChatGPT, Gemini, Copilot, GPT, OpenAI)
@@ -218,7 +219,7 @@ Categories:
 - PRAISE: Complimenting the AI (beautiful, cute, amazing, love you, etc.)
 - INSULT: Insulting the AI (ugly, stupid, useless, hate you, etc.)
 - USER_POSITIVE: User expressing their own happiness, excitement, or good feelings
-- USER_NEGATIVE: User expressing their own sadness, stress, frustration, or bad feelings
+- USER_NEGATIVE: User expressing their own sadness, stress, frustration, or bad feelings (NOT when the user is encouraging/comforting the AI — e.g. "cheer up", "don't be sad", "it'll be okay" are NOT USER_NEGATIVE)
 - NONE: Does not fit any category above
 
 Respond ONLY with valid JSON. No explanation.`;
