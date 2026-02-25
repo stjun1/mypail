@@ -91,7 +91,7 @@
             opacity: 0.95;
         }
         @media (max-width: 600px) {
-            .faces-row { grid-template-columns: repeat(2, 1fr); }
+            .faces-row { grid-template-columns: repeat(3, 1fr) !important; }
             .header h1 { font-size: 1.6em; }
             .section { padding: 20px 16px; }
             .card { padding: 20px; }
@@ -109,7 +109,11 @@
 
     <div class="card" style="margin-top: 20px;">
         <h3>Emotional States</h3>
-        <div class="faces-row">
+        <div class="faces-row" style="grid-template-columns: repeat(6, 1fr);">
+            <div class="face-item">
+                <img src="avatars/pail_extreme_bad.png" alt="Pail - Extreme Bad">
+                <div class="face-label">Extreme Bad</div>
+            </div>
             <div class="face-item">
                 <img src="avatars/pail_very_bad.png" alt="Pail - Very Bad">
                 <div class="face-label">Very Bad</div>
@@ -125,6 +129,10 @@
             <div class="face-item">
                 <img src="avatars/pail_very_good.png" alt="Pail - Very Good">
                 <div class="face-label">Very Good</div>
+            </div>
+            <div class="face-item">
+                <img src="avatars/pail_extreme_good.png" alt="Pail - Extreme Good">
+                <div class="face-label">Extreme Good</div>
             </div>
         </div>
     </div>
