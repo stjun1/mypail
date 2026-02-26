@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">MyPAiL</string>
+    <string name="title_activity_main">MyPAiL</string>
+    <string name="package_name">com.mypail.app</string>
+    <string name="custom_url_scheme">com.mypail.app</string>
+</resources>

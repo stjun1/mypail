@@ -3,6 +3,5 @@ sessions/
 .env
 *.log
 dist/
-android/
 .idea/
 metrics.json
