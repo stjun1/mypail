@@ -199,32 +199,7 @@
             line-height: 1.3;
         }
 
-        .avatar-story {
-            margin-top: 10px;
-            min-height: 60px;
-            padding: 12px 16px;
-            background: linear-gradient(135deg, #f0f0ff, #e8ecff);
-            border-radius: 10px;
-            font-size: 13px;
-            color: #444;
-            line-height: 1.5;
-            text-align: left;
-            transition: opacity 0.3s ease;
-            border-left: 3px solid #667eea;
-        }
 
-        .avatar-story .story-name {
-            font-weight: 700;
-            color: #667eea;
-        }
-
-        .avatar-story.empty {
-            background: #f8f8f8;
-            border-left-color: #ccc;
-            color: #999;
-            text-align: center;
-            font-style: italic;
-        }
 
         /* AI Name Display */
         .ai-info {
@@ -1014,8 +989,6 @@
             <button id="create-ai-btn" onclick="createAI()" disabled>
                 ✨ Create My AI
             </button>
-
-            <div class="avatar-story empty" id="avatar-story">Hover over an avatar to learn their story...</div>
 
             <div style="margin-top: 20px; font-size: 14px; color: #999;">
                 Examples: Buddy • Luna • Max • Spark • Nova
@@ -1825,28 +1798,12 @@
 
         function buildAvatarPicker() {
             const picker = document.getElementById('avatar-picker');
-            const storyBox = document.getElementById('avatar-story');
             avatarTypes.forEach(a => {
                 const div = document.createElement('div');
                 div.className = 'avatar-option';
                 div.dataset.avatar = a.id;
                 div.innerHTML = a.render('GOOD') + `<span>${a.label}</span>`;
                 div.onclick = () => selectAvatar(a.id);
-                div.onmouseenter = () => {
-                    storyBox.innerHTML = a.story;
-                    storyBox.classList.remove('empty');
-                };
-                div.onmouseleave = () => {
-                    if (!selectedAvatar || selectedAvatar !== a.id) {
-                        const sel = avatarTypes.find(t => t.id === selectedAvatar);
-                        if (sel) {
-                            storyBox.innerHTML = sel.story;
-                        } else {
-                            storyBox.innerHTML = 'Hover over an avatar to learn their story...';
-                            storyBox.classList.add('empty');
-                        }
-                    }
-                };
                 picker.appendChild(div);
             });
         }
@@ -1856,12 +1813,6 @@
             document.querySelectorAll('.avatar-option').forEach(el => {
                 el.classList.toggle('selected', el.dataset.avatar === id);
             });
-            const storyBox = document.getElementById('avatar-story');
-            const sel = avatarTypes.find(t => t.id === id);
-            if (sel) {
-                storyBox.innerHTML = sel.story;
-                storyBox.classList.remove('empty');
-            }
             enableCreateButton();
         }
 
