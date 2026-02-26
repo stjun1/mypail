@@ -267,9 +267,8 @@ app.post('/api/chat', async (req, res) => {
                 }
             }
 
-            // Capture pre-boost state for response selection
-            const preBoostEmotions = emotionEngine.getCombinedEmotion(sessionId);
-            const responseState = preBoostEmotions.state;
+            // Capture pre-boost state to limit state jumps
+            const preBoostState = emotionEngine.getCombinedEmotion(sessionId).state;
 
             const promptBoost = config.TRIGGERS[category] || 0;
 
@@ -281,6 +280,13 @@ app.post('/api/chat', async (req, res) => {
             emotionEngine.incrementInteractions(sessionId);
             const emotions = emotionEngine.getCombinedEmotion(sessionId);
             emotionEngine.finalizeTurn(sessionId);
+
+            // Cap state transition to one step at a time for response selection
+            const STATES = ['VERY_BAD', 'BAD', 'GOOD', 'VERY_GOOD'];
+            const preIdx = STATES.indexOf(preBoostState);
+            const postIdx = STATES.indexOf(emotions.state);
+            const cappedIdx = Math.max(preIdx - 1, Math.min(preIdx + 1, postIdx));
+            const responseState = STATES[cappedIdx];
 
             let responseText;
             let groqUsage = null;
