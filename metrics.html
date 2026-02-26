@@ -487,7 +487,7 @@
                 document.getElementById('t-total').textContent = fmt(d.tokens.total_tokens);
 
                 const tbody = document.getElementById('token-table-body');
-                tbody.innerHTML = ['emotion', 'sympathy', 'plain'].map(mode => {
+                tbody.innerHTML = ['emotion', 'sympathy', 'confession', 'plain'].map(mode => {
                     const m = d.tokens.byMode[mode];
                     return `<tr>
                         <td>${mode}</td>
@@ -503,6 +503,7 @@
                 renderBars('msg-bars', {
                     Emotion: d.messages.emotion,
                     Sympathy: d.messages.sympathy,
+                    Confession: d.messages.confession,
                     Plain: d.messages.plain
                 });
                 document.getElementById('msg-groq').textContent = fmt(d.messages.groqCalls);
