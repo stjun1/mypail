@@ -19,7 +19,7 @@ app.use('/avatars', express.static(path.join(__dirname, 'avatars')));
 
 // Serve client.html at root
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'client.html'));
+    res.sendFile(path.join(__dirname, 'docs', 'client.html'));
 });
 
 const sessionManager = new SessionManager();
