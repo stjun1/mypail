@@ -491,7 +491,7 @@ app.get('/dev/metrics', (req, res) => {
     if (!config.BETA_METRICS_KEY || key !== config.BETA_METRICS_KEY) {
         return res.status(403).send('Forbidden');
     }
-    res.sendFile(path.join(__dirname, 'metrics.html'));
+    res.sendFile(path.join(__dirname, 'docs', 'metrics.html'));
 });
 
 app.get('/api/beta-metrics', (req, res) => {
