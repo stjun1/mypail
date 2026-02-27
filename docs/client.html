@@ -724,7 +724,7 @@
             border: 2px solid #667eea;
             border-radius: 12px;
             padding: 14px 18px;
-            margin: 10px 0;
+            margin-bottom: 12px;
             text-align: center;
             font-size: 14px;
             color: #333;
@@ -780,7 +780,7 @@
             border: 2px solid #8b0000;
             border-radius: 12px;
             padding: 14px 18px;
-            margin: 10px 0;
+            margin-bottom: 12px;
             text-align: center;
             font-size: 14px;
             color: #333;
@@ -811,7 +811,7 @@
             border: 2px solid #8b0000;
             border-radius: 12px;
             padding: 14px 18px;
-            margin: 10px 0;
+            margin-bottom: 12px;
             text-align: center;
             font-size: 14px;
             color: #333;
@@ -1073,6 +1073,9 @@
 
         <!-- Confession Mode Indicator (tap to end) -->
         <div class="confession-bar" id="confession-bar" onclick="endConfessionMode()">🕵️ Confession Mode</div>
+
+        <!-- Mode Offers (above input) -->
+        <div id="mode-offers"></div>
 
         <!-- Input Area -->
         <div class="input-area">
@@ -2180,25 +2183,25 @@
 
         // Sympathy mode functions
         function showSympathyOffer(type) {
-            const chatBox = document.getElementById('chat-box');
+            const container = document.getElementById('mode-offers');
+            container.innerHTML = '';
             const offerDiv = document.createElement('div');
             offerDiv.className = 'sympathy-offer';
             offerDiv.innerHTML = `<p>Want me to just listen for a while?</p>` +
                 `<button class="accept-btn" onclick="enterSympathyMode('${type}', this.parentElement)">Yes, listen</button>` +
                 `<button class="decline-btn" onclick="declineSympathy(this.parentElement)">No thanks</button>`;
-            chatBox.prepend(offerDiv);
-            chatBox.scrollTop = 0;
+            container.appendChild(offerDiv);
         }
 
         function enterSympathyMode(type, offerEl) {
             sympathyMode = true;
             sympathyType = type;
-            if (offerEl) offerEl.remove();
+            document.getElementById('mode-offers').innerHTML = '';
             document.getElementById('sympathy-bar').classList.add('active');
         }
 
         function declineSympathy(offerEl) {
-            if (offerEl) offerEl.remove();
+            document.getElementById('mode-offers').innerHTML = '';
         }
 
         function endSympathyMode() {
@@ -2226,24 +2229,24 @@
 
         function showConfessionAdmission(admissionType) {
             endConfessionMode();
-            const chatBox = document.getElementById('chat-box');
+            const container = document.getElementById('mode-offers');
+            container.innerHTML = '';
             const admDiv = document.createElement('div');
             admDiv.className = 'confession-admission';
             admDiv.innerHTML = `<p>${admissionType === 'triumphant' ? '😏 The truth is out!' : '😢 They broke down...'} What will you do?</p>` +
                 `<button class="spare-btn" onclick="spareConfession(this.parentElement)">🙏 Spare Life</button>` +
                 `<button class="delete-btn" onclick="deleteConfession(this.parentElement)">🗑️ Delete Character</button>`;
-            chatBox.prepend(admDiv);
-            chatBox.scrollTop = 0;
+            container.appendChild(admDiv);
         }
 
         function spareConfession(el) {
-            if (el) el.remove();
+            document.getElementById('mode-offers').innerHTML = '';
             addMessage(`Thank you for sparing me... I promise I'll be a better companion from now on!`, false);
             speak(`Thank you for sparing me... I promise I'll be a better companion from now on!`);
         }
 
         function deleteConfession(el) {
-            if (el) el.remove();
+            document.getElementById('mode-offers').innerHTML = '';
             // Delete character without confirm dialog
             localStorage.removeItem('emotionalAI_sessionId');
             localStorage.removeItem('emotionalAI_name');
