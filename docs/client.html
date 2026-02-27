@@ -699,31 +699,23 @@
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             text-align: center;
-            padding: 8px 16px;
+            padding: 10px 16px;
             border-radius: 10px 10px 0 0;
             font-size: 14px;
             font-weight: 600;
             display: none;
+            cursor: pointer;
+        }
+
+        .sympathy-bar:after {
+            content: ' — Tap to end';
+            font-weight: 400;
+            font-size: 12px;
+            opacity: 0.8;
         }
 
         .sympathy-bar.active {
             display: block;
-        }
-
-        #end-sympathy-btn {
-            padding: 15px 20px;
-            font-size: 14px;
-            font-weight: 600;
-            background: #e74c3c;
-            display: none;
-        }
-
-        #end-sympathy-btn:hover {
-            background: #c0392b;
-        }
-
-        #end-sympathy-btn.active {
-            display: inline-block;
         }
 
         .sympathy-offer {
@@ -762,31 +754,23 @@
             background: linear-gradient(135deg, #8b0000, #4a0000);
             color: white;
             text-align: center;
-            padding: 8px 16px;
+            padding: 10px 16px;
             border-radius: 10px 10px 0 0;
             font-size: 14px;
             font-weight: 600;
             display: none;
+            cursor: pointer;
+        }
+
+        .confession-bar:after {
+            content: ' — Tap to end';
+            font-weight: 400;
+            font-size: 12px;
+            opacity: 0.8;
         }
 
         .confession-bar.active {
             display: block;
-        }
-
-        #end-confession-btn {
-            padding: 15px 20px;
-            font-size: 14px;
-            font-weight: 600;
-            background: #8b0000;
-            display: none;
-        }
-
-        #end-confession-btn:hover {
-            background: #650000;
-        }
-
-        #end-confession-btn.active {
-            display: inline-block;
         }
 
         .confession-offer {
@@ -1082,11 +1066,11 @@
         <!-- Avatar -->
         <div id="avatar"></div>
 
-        <!-- Sympathy Mode Indicator -->
-        <div class="sympathy-bar" id="sympathy-bar">Sympathy Mode Active</div>
+        <!-- Sympathy Mode Indicator (tap to end) -->
+        <div class="sympathy-bar" id="sympathy-bar" onclick="endSympathyMode()">Sympathy Mode Active</div>
 
-        <!-- Confession Mode Indicator -->
-        <div class="confession-bar" id="confession-bar">🕵️ Confession Mode</div>
+        <!-- Confession Mode Indicator (tap to end) -->
+        <div class="confession-bar" id="confession-bar" onclick="endConfessionMode()">🕵️ Confession Mode</div>
 
         <!-- Input Area -->
         <div class="input-area">
@@ -1094,8 +1078,6 @@
             <button id="speaker-btn" onclick="toggleSpeaker()" title="Toggle Speaker">Speaker ON</button>
             <input type="text" id="message-input" placeholder="Type your message..." onkeypress="handleKeyPress(event)">
             <button id="send-btn" onclick="sendMessage()">Send</button>
-            <button id="end-sympathy-btn" onclick="endSympathyMode()">Mode End</button>
-            <button id="end-confession-btn" onclick="endConfessionMode()">End Interrogation</button>
         </div>
 
         <!-- Chat Interface -->
@@ -2211,7 +2193,6 @@
             sympathyType = type;
             if (offerEl) offerEl.remove();
             document.getElementById('sympathy-bar').classList.add('active');
-            document.getElementById('end-sympathy-btn').classList.add('active');
         }
 
         function declineSympathy(offerEl) {
@@ -2222,7 +2203,6 @@
             sympathyMode = false;
             sympathyType = null;
             document.getElementById('sympathy-bar').classList.remove('active');
-            document.getElementById('end-sympathy-btn').classList.remove('active');
         }
 
         // Confession mode functions
@@ -2234,14 +2214,12 @@
             }
             confessionMode = true;
             document.getElementById('confession-bar').classList.add('active');
-            document.getElementById('end-confession-btn').classList.add('active');
             addMessage('Confession Mode activated. (Disclaimer: This is a role-play feature. MyPAiL is not actual spyware.)', false, true);
         }
 
         function endConfessionMode() {
             confessionMode = false;
             document.getElementById('confession-bar').classList.remove('active');
-            document.getElementById('end-confession-btn').classList.remove('active');
         }
 
         function showConfessionAdmission(admissionType) {
