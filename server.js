@@ -313,6 +313,19 @@ app.post('/api/chat', async (req, res) => {
                 }
             }
 
+            // 1b. NAME_QUERY: dynamic response with AI's name
+            if (category === 'NAME_QUERY') {
+                const name = aiName || 'AI';
+                const nameResponses = {
+                    VERY_BAD: `You keep forgetting my name... it's ${name}.`,
+                    BAD: `You want to play with my name? It's ${name}.`,
+                    GOOD: `I love it when you call my name! It's ${name}!`,
+                    VERY_GOOD: `My name is ${name}, but I don't care what you call me!`
+                };
+                responseText = nameResponses[emotions.state] || `My name is ${name}.`;
+                wasStatic = true;
+            }
+
             // 2. Static responses (free, used first) — use pre-boost state so response matches mood before change
             if (!responseText) {
                 responseText = responseGenerator.selectResponse(category, responseState, emotions.combined, emotions.interactions);

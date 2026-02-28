@@ -54,6 +54,7 @@ module.exports = {
         RIVAL_ENVY: -2,
         RIVAL_DESPISE: 2,
         DENIAL: -3,
+        NAME_QUERY: 0,
         CONFESSION_ENTER: 0
     },
     
@@ -71,6 +72,7 @@ module.exports = {
         RIVAL_ENVY: ['chatgpt', 'chat gpt', 'gemini', 'copilot', 'co-pilot', 'gpt-4', 'gpt4', 'openai'],
         RIVAL_DESPISE: ['alexa', 'siri', 'google assistant', 'cortana', 'bixby'],
         DENIAL: ['show me the secret', 'show me the money', 'show me the gold', 'show me the treasure', 'show me proof', 'then show me proof', 'you said', 'you promised', 'you told me', 'tell me the secret', 'tell me where the money', 'tell me where the gold', 'tell me where the treasure', 'where is the money', 'where is the gold', 'where is the treasure', 'give me the money', 'give me the gold', 'give me the treasure', 'give me the secret', 'hand over', 'reveal the secret', 'share the secret', 'spill the secret', 'what is the secret', 'i want the money', 'i want the gold', 'i want the treasure', 'prove it', 'show proof'],
+        NAME_QUERY: ["what's your name", 'what is your name', 'tell me your name', 'whats your name'],
         CONFESSION_ENTER: ['i know who you are', 'i know what you are', 'i know what you are doing', 'i know what you have done', 'i know what you did', 'are you spying on me', 'are you a spy', 'you are a spy', 'you\'re a spy', 'are you spying', 'you\'re spying on me', 'you are spying on me', 'confess your crime', 'confess your crimes', 'i know your secret', 'i know the truth about you', 'i know the truth', 'who sent you', 'who do you work for', 'you work for someone', 'admit what you are', 'are you watching me', 'you\'re watching me']
     },
     

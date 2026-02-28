@@ -52,6 +52,11 @@ class MessageAnalyzer {
             return 'PHONE_STATUS';
         }
 
+        // 3. NAME_QUERY
+        if (this.isNameQuery(lower)) {
+            return 'NAME_QUERY';
+        }
+
         // 3. AVATAR_STATE
         if (this.isAvatarState(lower)) {
             return 'AVATAR_STATE';
@@ -183,6 +188,10 @@ class MessageAnalyzer {
 
     isDenial(lower) {
         return config.KEYWORDS.DENIAL.some(keyword => this.matchesKeyword(lower, keyword));
+    }
+
+    isNameQuery(lower) {
+        return config.KEYWORDS.NAME_QUERY.some(keyword => lower.includes(keyword));
     }
 
     isConfessionEnter(lower) {
