@@ -297,12 +297,13 @@ Respond ONLY with valid JSON. No explanation.`;
         }
     }
 
-    async generatePlainResponse(message) {
+    async generatePlainResponse(message, aiName) {
+        const name = aiName || 'AI';
         try {
             const completion = await this.client.chat.completions.create({
                 model: this.model,
                 messages: [
-                    { role: 'system', content: 'You are a helpful assistant. Respond concisely and helpfully in 1-2 sentences.' },
+                    { role: 'system', content: `You are ${name}, an AI companion called MyPAiL (Personal AI Lackey). Your name is ${name}. Respond concisely and helpfully in 1-2 sentences.` },
                     { role: 'user', content: message }
                 ],
                 max_tokens: config.GROQ_MAX_TOKENS,

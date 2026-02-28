@@ -405,7 +405,7 @@ app.post('/api/chat', async (req, res) => {
             let wasGroq = false;
 
             if (groqService.isConfigured()) {
-                const result = await groqService.generatePlainResponse(message);
+                const result = await groqService.generatePlainResponse(message, aiName);
                 if (result.text) {
                     responseText = result.text;
                     groqUsage = result.usage;
