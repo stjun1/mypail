@@ -22,7 +22,11 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'docs', 'client.html'));
 });
 
-const sessionManager = new SessionManager();
+const dataDir = process.env.DATA_DIR || null;
+const sessionsDir = dataDir ? path.join(dataDir, 'sessions') : undefined;
+const metricsPath = dataDir ? path.join(dataDir, 'metrics.json') : undefined;
+
+const sessionManager = new SessionManager(sessionsDir);
 sessionManager.startCleanup();
 
 const emotionEngine = new EmotionEngine(sessionManager);
@@ -31,7 +35,7 @@ emotionEngine.startMemoryCleanup();
 const messageAnalyzer = new MessageAnalyzer();
 const responseGenerator = new ResponseGenerator();
 const groqService = new GroqService();
-const betaMetrics = new BetaMetrics();
+const betaMetrics = new BetaMetrics(metricsPath);
 
 const trackedSessions = new Set();
 
