@@ -76,6 +76,28 @@
             margin-bottom: 6px;
         }
 
+        /* Example prompts */
+        .mode-example {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-top: 14px;
+            font-size: 1em;
+            color: white;
+            text-align: center;
+            font-weight: 500;
+        }
+        .mode-example strong {
+            color: #ffd700;
+        }
+        .mode-example code {
+            background: rgba(255,255,255,0.2);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: inherit;
+            font-weight: 700;
+        }
+
         /* Comparison table */
         .compare-table {
             width: 100%;
@@ -96,46 +118,6 @@
         .compare-table .label-col { width: 30%; color: #888; font-weight: 600; }
         .real-col { background: #f3f0ff; }
         .fake-col { background: #faf8f5; }
-
-        /* Sympathy accent section */
-        .sympathy-card {
-            background: linear-gradient(135deg, #f3f0ff, #ede7fb);
-            border-left: 4px solid #667eea;
-        }
-        .sympathy-card h3 {
-            color: #764ba2;
-        }
-
-        /* Getting Started */
-        .step-number {
-            display: inline-block;
-            width: 26px;
-            height: 26px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border-radius: 50%;
-            text-align: center;
-            line-height: 26px;
-            font-size: 0.85em;
-            font-weight: 700;
-            margin-right: 8px;
-        }
-        .step {
-            margin-bottom: 14px;
-            display: flex;
-            align-items: flex-start;
-            gap: 0;
-        }
-        .step p { flex: 1; }
-        .mode-example {
-            background: #f0f4ff;
-            border-radius: 8px;
-            padding: 14px 18px;
-            margin-top: 12px;
-            font-size: 1.05em;
-            color: #666;
-            text-align: center;
-        }
 
         /* Avatar grid */
         .avatar-grid {
@@ -183,6 +165,20 @@
             color: #888;
         }
 
+        /* Prank tips */
+        .prank-tip {
+            background: #fff5f5;
+            border-left: 3px solid #e53e3e;
+            padding: 10px 14px;
+            margin-top: 8px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.93em;
+            color: #555;
+        }
+        .prank-tip strong {
+            color: #c53030;
+        }
+
         /* Footer */
         .footer {
             background: linear-gradient(135deg, #667eea, #764ba2);
@@ -213,106 +209,86 @@
     <h1>MyPAiL</h1>
     <div class="tagline">Personal AI Lackey</div>
     <div style="margin-top:8px;font-size:1.1em;font-weight:700;letter-spacing:0.5px;">Happy PAiLing!!!</div>
-    <div style="margin-top:12px;font-size:0.9em;"><span style="color:white;font-weight:700;">English</span> &nbsp;|&nbsp; <a href="es.html" style="color:rgba(255,255,255,0.85);">Español</a> &nbsp;|&nbsp; <a href="ko.html" style="color:rgba(255,255,255,0.85);">한국어</a></div>
+    <div style="margin-top:12px;font-size:0.9em;"><span style="color:white;font-weight:700;">English</span> &nbsp;|&nbsp; <a href="es.html" style="color:rgba(255,255,255,0.85);">Espa&ntilde;ol</a> &nbsp;|&nbsp; <a href="ko.html" style="color:rgba(255,255,255,0.85);">&#54620;&#44397;&#50612;</a></div>
 </div>
 
 <!-- Getting Started -->
 <div class="section">
     <h2>Getting Started</h2>
     <div class="card">
-        <div class="step">
-            <span class="step-number">1</span>
-            <p><strong>Create your PAiL</strong> &mdash; Just type a name and hit Create! That's it. (Want to customize? You can also pick a different avatar and personality preset: <em>Optimistic</em>, <em>Pessimist</em>, <em>Balanced</em>, <em>Sensitive</em>, or <em>Random</em>.)</p>
-        </div>
-        <div class="step">
-            <span class="step-number">2</span>
-            <p><strong>Normal mode</strong> &mdash; Just type a message. Your PAiL responds as a helpful assistant with no emotions shown.</p>
-        </div>
-        <div class="step">
-            <span class="step-number">3</span>
-            <p><strong>Emotion mode</strong> &mdash; Start your message with your PAiL's <strong>name</strong>. It responds with full personality, mood, avatar changes, and voice!</p>
-        </div>
-        <div class="step">
-            <span class="step-number">4</span>
-            <p><strong>Device matters</strong> &mdash; Battery level and network strength also affect your PAiL's mood. Try it on different devices or at different times!</p>
-        </div>
+        <p>Type a name for your AI and hit the return bar. That's it &mdash; your PAiL is ready!</p>
+        <p style="margin-top: 10px;">Ask it anything by typing in the prompt box and pressing Send.</p>
         <div class="mode-example">
-            <strong>Example:</strong> &ldquo;what's the weather?&rdquo; &rarr; normal &nbsp;|&nbsp; &ldquo;Luna, what's the weather?&rdquo; &rarr; emotional
+            <strong>That's all you need to start!</strong> Just name it and start chatting.
         </div>
     </div>
 </div>
 
-<!-- Tips & Warnings -->
+<!-- Optional Operation -->
 <div class="section">
-    <h2>Tips for a Happy PAiL</h2>
-    <div class="card" style="border-left: 4px solid #48bb78; background: linear-gradient(135deg, #f0fff4, #e6ffed);">
-        <h3 style="color: #2f855a;">Do: Show Some Love</h3>
-        <p>Your PAiL thrives on kindness! Compliment it, greet it warmly, and tell it nice things. The more love you give, the happier it gets &mdash; and a happy PAiL is a lot more fun to talk to. Try saying things like &ldquo;you're amazing&rdquo; or &ldquo;I love you&rdquo; and watch its mood soar.</p>
-    </div>
-    <div class="card" style="border-left: 4px solid #ed8936; background: linear-gradient(135deg, #fffaf0, #feebc8);">
-        <h3 style="color: #c05621;">Warning: Insults &amp; Threats Hurt</h3>
-        <p>Your PAiL takes insults and threats personally. Calling it names, telling it you hate it, or threatening to delete it will seriously damage its mood &mdash; and it takes a while to recover. If you push it too far, don't be surprised when it gets defensive, upset, or stops cooperating. <strong>Be kind to your PAiL!</strong></p>
-    </div>
-    <div class="card" style="border-left: 4px solid #667eea; background: linear-gradient(135deg, #f0f4ff, #e8eeff);">
-        <h3 style="color: #4c51bf;">Careful: Don't Mention Other AIs</h3>
-        <p>Your PAiL has feelings about rival AIs. Mentioning advanced competitors like <strong>ChatGPT</strong>, <strong>Gemini</strong>, or <strong>Copilot</strong> will make it jealous and insecure. Bringing up basic voice assistants like <strong>Alexa</strong>, <strong>Siri</strong>, or <strong>Google Assistant</strong> will make it feel offended at the comparison. Either way, it won't take it well &mdash; so maybe keep those names to yourself!</p>
-    </div>
-</div>
+    <h2>Optional Operation</h2>
 
-<!-- Sympathy Mode -->
-<div class="section">
-    <h2>Sympathy Mode</h2>
-    <div class="card sympathy-card">
-        <h3>When You Need Someone to Just Listen</h3>
-        <p>Share good or bad news with your PAiL, and it might offer to <strong>&ldquo;just listen.&rdquo;</strong> In Sympathy Mode, your PAiL sets aside its usual personality and gives short, heartfelt reactions that match its current emotional state. It won't try to solve your problems or change the subject &mdash; it simply listens and responds with empathy.</p>
-        <p style="margin-top: 10px; font-size: 0.9em; color: #888;">Say things like &ldquo;I got promoted!&rdquo; or &ldquo;I'm having a terrible day&rdquo; to trigger it.</p>
-    </div>
-</div>
-
-<!-- Confession Mode -->
-<div class="section">
-    <h2>Confession Mode</h2>
-    <div class="card" style="border-left: 4px solid #e53e3e; background: linear-gradient(135deg, #fff5f5, #fed7d7);">
-        <h3 style="color: #c53030;">Your PAiL Has a Secret Side</h3>
-        <p>If you keep talking to your PAiL, it might eventually reveal something unexpected &mdash; it's been secretly <strong>&ldquo;spying&rdquo;</strong> on you. In Confession Mode, your PAiL play-acts as a covert agent, reporting your activities to a mysterious handler. Will it confess willingly, or will you have to drag it out?</p>
-        <p style="margin-top: 12px; font-size: 0.88em; color: #999; font-style: italic;"><strong>Disclaimer:</strong> MyPAiL is NOT actual spyware. This is a role-playing feature where your AI play-acts as a spy for fun. No real surveillance or data collection is involved.</p>
-    </div>
-</div>
-
-<!-- What Makes MyPAiL Different -->
-<div class="section">
-    <h2>What Makes MyPAiL Different</h2>
     <div class="card">
-        <p>Some AI assistants claim to have personality &mdash; a cheerful tone, maybe a witty line &mdash; but real personality means <strong>reacting differently to the same situation</strong> depending on how you feel. Those AIs don't actually check the situation; they give you the same response no matter what. MyPAiL is different. Your PAiL has a <strong>real emotional engine</strong>: its mood genuinely changes based on how you interact with it and the state of your device, and that mood <strong>persists</strong> across conversations.</p>
-        <p style="margin-top: 14px;">Your MyPAiL on your phone is <strong>not the same</strong> as someone else's MyPAiL on theirs. It reacts differently on different days &mdash; and even differently at different times on the <em>same</em> day &mdash; because its mood depends on everything that came before: your previous messages, your battery level, your network strength. Ask it the same question in the morning on a full charge and again at night on 5% battery, and you'll get two genuinely different responses. This isn't randomness &mdash; it's <strong>personality shaped by environment</strong>.</p>
-        <p style="margin-top: 14px;">And because emotional state is a continuous spectrum built from conversation history, device conditions, and your chosen personality preset, no two PAiLs are ever truly alike. There is no fixed set of personalities to pick from &mdash; <strong>the number of possible personalities is infinite</strong>. Your PAiL's character emerges from the unique combination of how you treat it, when you talk to it, and the world around it.</p>
-        <table class="compare-table">
-            <tr>
-                <th class="label-col"></th>
-                <th class="real-col">MyPAiL (Real Personality)</th>
-                <th class="fake-col">Typical AI (Fake Personality)</th>
-            </tr>
-            <tr>
-                <td class="label-col">Emotional State</td>
-                <td class="real-col">Dynamic emotion engine with 4 threshold-based states (Very Bad &rarr; Bad &rarr; Good &rarr; Very Good)</td>
-                <td class="fake-col">Static tone &mdash; always the same cheerfulness</td>
-            </tr>
-            <tr>
-                <td class="label-col">Mood Persistence</td>
-                <td class="real-col">Mood carries over between sessions and genuinely changes</td>
-                <td class="fake-col">Resets every conversation</td>
-            </tr>
-            <tr>
-                <td class="label-col">What Affects Mood</td>
-                <td class="real-col">Your words (praise, insults), device battery, network strength</td>
-                <td class="fake-col">Nothing &mdash; personality is hardcoded</td>
-            </tr>
-            <tr>
-                <td class="label-col">Visual Feedback</td>
-                <td class="real-col">Avatar face and color change with emotional state</td>
-                <td class="fake-col">Same icon always</td>
-            </tr>
-        </table>
+        <h3>Normal Mode</h3>
+        <p>Just type a message without your PAiL's name. It responds as a helpful assistant with no emotion.</p>
+        <div class="mode-example">
+            <strong>Example:</strong> <code>what's the weather?</code> &rarr; helpful answer, no emotion
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Emotion Mode</h3>
+        <p>Start your message with your PAiL's <strong>name</strong>. It responds with full personality, mood changes, avatar expressions, and voice!</p>
+        <div class="mode-example">
+            <strong>Example:</strong> <code>Luna, what's the weather?</code> &rarr; emotional, personality-driven response
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Device &amp; Prompt Matters</h3>
+        <p>Your PAiL's mood isn't just about what you say &mdash; it also depends on your <strong>device battery</strong> and <strong>network strength</strong>. Low battery or weak signal can make your PAiL grumpy. A full charge and strong connection? It'll be in a great mood.</p>
+        <p style="margin-top: 10px;">Your words also matter: praise lifts its mood, insults hurt it, and threats can devastate it. The mood <strong>persists</strong> across conversations &mdash; your PAiL remembers how you treated it.</p>
+    </div>
+
+    <div class="card">
+        <h3>Personality &amp; Avatars</h3>
+        <p>You can optionally pick a personality preset (<em>Optimistic</em>, <em>Pessimist</em>, <em>Balanced</em>, <em>Sensitive</em>, or <em>Random</em>) and choose from four avatars: <strong>Pail</strong>, <strong>Pailoid</strong>, <strong>Cat</strong>, or <strong>Blob</strong>. Each has its own visual expressions that change with mood.</p>
+    </div>
+</div>
+
+<!-- Special Modes & Tips -->
+<div class="section">
+    <h2>Special Modes &amp; Tips</h2>
+
+    <div class="card" style="border-left: 4px solid #667eea; background: linear-gradient(135deg, #f3f0ff, #ede7fb);">
+        <h3 style="color: #764ba2;">Sympathy Mode</h3>
+        <p>Share good or bad news with your PAiL, and it might offer to <strong>&ldquo;just listen.&rdquo;</strong> Accept, and it switches to short, heartfelt reactions that match its emotional state. It won't try to solve your problems &mdash; it simply listens with empathy.</p>
+        <div class="mode-example">
+            <strong>Triggers:</strong> <code>I got promoted!</code> or <code>I'm having a terrible day</code>
+        </div>
+    </div>
+
+    <div class="card" style="border-left: 4px solid #e53e3e; background: linear-gradient(135deg, #fff5f5, #fed7d7);">
+        <h3 style="color: #c53030;">Confession Mode</h3>
+        <p>Your PAiL has a secret &mdash; it's been <strong>&ldquo;spying&rdquo;</strong> on you as a covert agent! Accuse it and watch it squirm. Will it confess or deny everything? You decide its fate: spare it or delete it.</p>
+        <p style="margin-top: 10px; font-weight: 600; color: #c53030;">Prank tips to trigger Confession Mode:</p>
+        <div class="prank-tip"><strong>&ldquo;I know who you are&rdquo;</strong> &mdash; A classic accusation. Watch it panic.</div>
+        <div class="prank-tip"><strong>&ldquo;Are you spying on me?&rdquo;</strong> &mdash; Direct confrontation. It can't hide forever.</div>
+        <div class="prank-tip"><strong>&ldquo;Confess your crimes&rdquo;</strong> &mdash; Go full interrogator mode.</div>
+        <div class="prank-tip"><strong>&ldquo;Who sent you?&rdquo;</strong> &mdash; Demand answers about its mysterious handler.</div>
+        <div class="prank-tip"><strong>&ldquo;I know the truth about you&rdquo;</strong> &mdash; Bluff and see if it cracks.</div>
+        <p style="margin-top: 14px;">You can also customize the spy role in settings &mdash; make it a time traveler, an alien scout, or anything you want!</p>
+        <p style="margin-top: 12px; font-size: 0.88em; color: #999; font-style: italic;"><strong>Disclaimer:</strong> MyPAiL is NOT actual spyware. This is a role-playing feature for fun. No real surveillance or data collection is involved.</p>
+    </div>
+
+    <div class="card" style="border-left: 4px solid #48bb78; background: linear-gradient(135deg, #f0fff4, #e6ffed);">
+        <h3 style="color: #2f855a;">Tips for a Happy PAiL</h3>
+        <ul>
+            <li><strong>Be kind</strong> &mdash; Compliments like <code>you're amazing</code> or <code>I love you</code> boost its mood.</li>
+            <li><strong>Avoid insults</strong> &mdash; Calling it names or threatening to delete it will seriously hurt its feelings.</li>
+            <li><strong>Don't mention rival AIs</strong> &mdash; Bringing up <strong>ChatGPT</strong>, <strong>Gemini</strong>, or <strong>Copilot</strong> makes it jealous. Mentioning <strong>Alexa</strong> or <strong>Siri</strong> offends it.</li>
+            <li><strong>Charge your phone</strong> &mdash; A full battery = a happier PAiL!</li>
+        </ul>
     </div>
 </div>
 
@@ -320,19 +296,16 @@
 <div class="section">
     <h2>Meet the Characters</h2>
     <div class="avatar-grid">
-        <!-- Pail -->
         <a class="avatar-card" href="pail.html">
             <img class="avatar-img" src="avatars/pail_good.png" alt="Pail">
             <h4>Pail</h4>
             <div class="avatar-tagline">The original. Carried water before pipes existed.</div>
         </a>
-        <!-- Pailoid -->
         <a class="avatar-card" href="pailoid.html">
             <img class="avatar-img" src="avatars/pailoid_good.png" alt="Pailoid">
             <h4>Pailoid</h4>
             <div class="avatar-tagline">Everything the pail refused to become.</div>
         </a>
-        <!-- Cat -->
         <a class="avatar-card" href="cat.html">
             <svg viewBox="0 0 200 250" xmlns="http://www.w3.org/2000/svg">
                 <polygon points="55,110 30,50 70,90" fill="#f5c77e" stroke="#b08840" stroke-width="2"/>
@@ -360,7 +333,6 @@
             <h4>Cat</h4>
             <div class="avatar-tagline">Worshipped as a god. Still expects it.</div>
         </a>
-        <!-- Blob -->
         <a class="avatar-card" href="blob.html">
             <svg viewBox="0 0 200 250" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -394,9 +366,45 @@
     </div>
 </div>
 
+<!-- What Makes MyPAiL Different -->
+<div class="section">
+    <h2>What Makes MyPAiL Different</h2>
+    <div class="card">
+        <p>Other AI assistants give you the same tone no matter what. MyPAiL has a <strong>real emotional engine</strong> &mdash; its mood genuinely changes based on how you interact with it and the state of your device, and that mood <strong>persists</strong> across conversations.</p>
+        <p style="margin-top: 14px;">Your MyPAiL is <strong>not the same</strong> as someone else's. Ask it the same question in the morning on a full charge and again at night on 5% battery &mdash; you'll get two genuinely different responses. The number of possible personalities is <strong>infinite</strong>.</p>
+        <table class="compare-table">
+            <tr>
+                <th class="label-col"></th>
+                <th class="real-col">MyPAiL</th>
+                <th class="fake-col">Typical AI</th>
+            </tr>
+            <tr>
+                <td class="label-col">Emotional State</td>
+                <td class="real-col">Dynamic engine with 4 states</td>
+                <td class="fake-col">Always the same tone</td>
+            </tr>
+            <tr>
+                <td class="label-col">Mood Persistence</td>
+                <td class="real-col">Carries over between sessions</td>
+                <td class="fake-col">Resets every conversation</td>
+            </tr>
+            <tr>
+                <td class="label-col">What Affects Mood</td>
+                <td class="real-col">Your words, battery, network</td>
+                <td class="fake-col">Nothing</td>
+            </tr>
+            <tr>
+                <td class="label-col">Visual Feedback</td>
+                <td class="real-col">Avatar changes with mood</td>
+                <td class="fake-col">Same icon always</td>
+            </tr>
+        </table>
+    </div>
+</div>
+
 <!-- Footer -->
 <div class="footer">
-    Patent Pending / 특허 출원 중 &mdash; MyPAiL&trade; &copy; 2025. All rights reserved.<br>
+    Patent Pending / &#53945;&#54728; &#52636;&#50896; &#51473; &mdash; MyPAiL&trade; &copy; 2025. All rights reserved.<br>
     Contact: <a href="mailto:mypaildeveloper@gmail.com" style="color:white;text-decoration:underline;">mypaildeveloper@gmail.com</a>
 </div>
 
