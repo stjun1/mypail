@@ -22,11 +22,22 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'docs', 'client.html'));
 });
 
-// Check for persistent volume: env var or known Railway mount path
+// Check for persistent volume: env var or auto-detect common mount paths
 let dataDir = process.env.DATA_DIR || null;
-if (!dataDir && fs.existsSync('/app/data')) {
-    dataDir = '/app/data';
+const volumePaths = ['/app/data', '/data', '/mnt/data', '/vol', '/volume'];
+if (!dataDir) {
+    for (const vp of volumePaths) {
+        if (fs.existsSync(vp)) { dataDir = vp; break; }
+    }
 }
+// Log filesystem for debugging volume location
+try {
+    const rootDirs = fs.readdirSync('/').filter(d => !['proc','sys','dev'].includes(d));
+    console.log(`[startup] Root dirs: /${rootDirs.join(', /')}`);
+    if (fs.existsSync('/app')) {
+        console.log(`[startup] /app contents:`, fs.readdirSync('/app').join(', '));
+    }
+} catch(e) { console.log(`[startup] fs scan error:`, e.message); }
 const sessionsDir = dataDir ? path.join(dataDir, 'sessions') : undefined;
 const metricsPath = dataDir ? path.join(dataDir, 'metrics.json') : undefined;
 console.log(`[startup] DATA_DIR=${dataDir || '(not set)'}, metricsPath=${metricsPath || 'default'}`);
