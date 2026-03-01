@@ -25,23 +25,14 @@ app.get('/', (req, res) => {
 
 // Check for persistent volume: env var or auto-detect common mount paths
 let dataDir = process.env.DATA_DIR || null;
-const volumePaths = ['/app/data', '/data', '/mnt/data', '/vol', '/volume'];
 if (!dataDir) {
-    for (const vp of volumePaths) {
+    for (const vp of ['/app/data', '/data', '/mnt/data']) {
         if (fs.existsSync(vp)) { dataDir = vp; break; }
     }
 }
-// Log filesystem for debugging volume location
-try {
-    const rootDirs = fs.readdirSync('/').filter(d => !['proc','sys','dev'].includes(d));
-    console.log(`[startup] Root dirs: /${rootDirs.join(', /')}`);
-    if (fs.existsSync('/app')) {
-        console.log(`[startup] /app contents:`, fs.readdirSync('/app').join(', '));
-    }
-} catch(e) { console.log(`[startup] fs scan error:`, e.message); }
 const sessionsDir = dataDir ? path.join(dataDir, 'sessions') : undefined;
 const metricsPath = dataDir ? path.join(dataDir, 'metrics.json') : undefined;
-console.log(`[startup] DATA_DIR=${dataDir || '(not set)'}, metricsPath=${metricsPath || 'default'}`);
+console.log(`[startup] DATA_DIR=${dataDir || '(not set)'}, persistent=${!!dataDir}`);
 
 const sessionManager = new SessionManager(sessionsDir);
 sessionManager.startCleanup();
@@ -109,10 +100,7 @@ app.get('/health', (req, res) => {
         responses: responseGenerator.getTotalResponseCount(),
         groqEnabled: groqService.isConfigured(),
         dataDir: dataDir || '(not set)',
-        metricsPath: metricsPath || 'default',
-        dataDirExists: dataDir ? fs.existsSync(dataDir) : false,
-        rootDirs: fs.readdirSync('/').filter(d => !['proc','sys','dev','bin','boot','etc','lib','lib64','usr','sbin','run','var','tmp','opt'].includes(d)),
-        envDataDir: process.env.DATA_DIR || '(undefined)'
+        persistent: !!dataDir
     });
 });
 
