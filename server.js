@@ -22,6 +22,8 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'docs', 'client.html'));
 });
 
+console.log(`[startup] All env vars with DATA:`, Object.keys(process.env).filter(k => k.includes('DATA')));
+console.log(`[startup] process.env.DATA_DIR raw value:`, JSON.stringify(process.env.DATA_DIR));
 const dataDir = process.env.DATA_DIR || null;
 const sessionsDir = dataDir ? path.join(dataDir, 'sessions') : undefined;
 const metricsPath = dataDir ? path.join(dataDir, 'metrics.json') : undefined;
