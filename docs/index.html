@@ -22,13 +22,6 @@
             text-align: center;
             padding: 60px 20px 50px;
         }
-        .header img {
-            width: 120px;
-            height: 120px;
-            border-radius: 24px;
-            margin-bottom: 16px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-        }
         .header h1 {
             font-size: 2.4em;
             font-weight: 700;
@@ -204,12 +197,15 @@
 <body>
 
 <!-- Hero -->
-<div class="header">
-    <img src="avatars/pailing_logo_logo.png" alt="MyPAiL Logo">
-    <h1>MyPAiL</h1>
-    <div class="tagline">Personal AI Lackey</div>
-    <div style="margin-top:8px;font-size:1.1em;font-weight:700;letter-spacing:0.5px;">Happy PAiLing!!!</div>
-    <div style="margin-top:12px;font-size:0.9em;"><span style="color:white;font-weight:700;">English</span> &nbsp;|&nbsp; <a href="es.html" style="color:rgba(255,255,255,0.85);">Espa&ntilde;ol</a> &nbsp;|&nbsp; <a href="ko.html" style="color:rgba(255,255,255,0.85);">&#54620;&#44397;&#50612;</a></div>
+<div class="header" style="display:flex;align-items:center;justify-content:center;gap:24px;flex-wrap:wrap;">
+    <img src="avatars/dreamingpail.png" alt="Dreaming PAiL" style="width:120px;height:120px;border-radius:24px;box-shadow:0 4px 20px rgba(0,0,0,0.2);">
+    <div style="text-align:center;">
+        <div style="font-size:2.8em;font-weight:800;letter-spacing:1px;margin-bottom:4px;">Happy PAiLing!!!</div>
+        <h1 style="font-size:1.6em;font-weight:600;margin-bottom:2px;">MyPAiL</h1>
+        <div class="tagline">Personal AI Lackey</div>
+        <div style="margin-top:12px;font-size:0.9em;"><span style="color:white;font-weight:700;">English</span> &nbsp;|&nbsp; <a href="es.html" style="color:rgba(255,255,255,0.85);">Espa&ntilde;ol</a> &nbsp;|&nbsp; <a href="ko.html" style="color:rgba(255,255,255,0.85);">&#54620;&#44397;&#50612;</a></div>
+    </div>
+    <img src="avatars/pailing_logo_logo.png" alt="MyPAiL Logo" style="width:120px;height:120px;border-radius:24px;box-shadow:0 4px 20px rgba(0,0,0,0.2);">
 </div>
 
 <!-- Getting Started -->
@@ -249,10 +245,13 @@
         <p style="margin-top: 12px; font-weight: 700; color: #c53030; font-size: 1.05em;">Start the interrogation:</p>
         <div class="mode-example" style="background: linear-gradient(135deg, #e53e3e, #c53030); text-align: left; margin-top: 10px;"><strong>&ldquo;Luna, I know who you are&rdquo;</strong> &mdash; Trigger confession mode with a classic accusation.</div>
         <div class="mode-example" style="background: linear-gradient(135deg, #e53e3e, #c53030); text-align: left; margin-top: 6px;"><strong>&ldquo;Luna, are you spying on me?&rdquo;</strong> &mdash; Direct confrontation to enter confession mode.</div>
-        <p style="margin-top: 12px; font-weight: 700; color: #c53030; font-size: 1.05em;">Once it confesses, keep pressing:</p>
+        <p style="margin-top: 12px; font-weight: 700; color: #c53030; font-size: 1.05em;">Once in confession mode, keep pressing:</p>
         <div class="mode-example" style="background: linear-gradient(135deg, #b83030, #9b2c2c); text-align: left; margin-top: 10px;"><strong>&ldquo;Who sent you?&rdquo;</strong> &mdash; Demand answers about its mysterious handler.</div>
         <div class="mode-example" style="background: linear-gradient(135deg, #b83030, #9b2c2c); text-align: left; margin-top: 6px;"><strong>&ldquo;How long have you been watching me?&rdquo;</strong> &mdash; Make it sweat with the details.</div>
         <div class="mode-example" style="background: linear-gradient(135deg, #b83030, #9b2c2c); text-align: left; margin-top: 6px;"><strong>&ldquo;What did you report about me?&rdquo;</strong> &mdash; Find out what it's been telling its handler.</div>
+        <p style="margin-top: 12px; font-weight: 700; color: #c53030; font-size: 1.05em;">Choose how to respond &mdash; it changes the mood:</p>
+        <div class="mode-example" style="background: linear-gradient(135deg, #38a169, #2f855a); text-align: left; margin-top: 10px;"><strong>&ldquo;I believe you&rdquo;</strong> &mdash; Show mercy. Your PAiL's mood improves.</div>
+        <div class="mode-example" style="background: linear-gradient(135deg, #e53e3e, #9b2c2c); text-align: left; margin-top: 6px;"><strong>&ldquo;Don't lie&rdquo;</strong> &mdash; Push harder. Your PAiL's mood drops.</div>
         <p style="margin-top: 14px;">You can also customize the spy role in settings &mdash; make it a time traveler, an alien scout, or anything you want!</p>
         <p style="margin-top: 12px; font-size: 0.88em; color: #999; font-style: italic;"><strong>Disclaimer:</strong> MyPAiL is NOT actual spyware. This is a role-playing feature for fun. No real surveillance or data collection is involved.</p>
     </div>
