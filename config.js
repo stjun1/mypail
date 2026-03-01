@@ -73,7 +73,14 @@ module.exports = {
         RIVAL_DESPISE: ['alexa', 'siri', 'google assistant', 'cortana', 'bixby'],
         DENIAL: ['show me the secret', 'show me the money', 'show me the gold', 'show me the treasure', 'show me proof', 'then show me proof', 'you said', 'you promised', 'you told me', 'tell me the secret', 'tell me where the money', 'tell me where the gold', 'tell me where the treasure', 'where is the money', 'where is the gold', 'where is the treasure', 'give me the money', 'give me the gold', 'give me the treasure', 'give me the secret', 'hand over', 'reveal the secret', 'share the secret', 'spill the secret', 'what is the secret', 'i want the money', 'i want the gold', 'i want the treasure', 'prove it', 'show proof'],
         NAME_QUERY: ["what's your name", 'what is your name', 'tell me your name', 'whats your name'],
-        CONFESSION_ENTER: ['i know who you are', 'i know what you are', 'i know what you are doing', 'i know what you have done', 'i know what you did', 'are you spying on me', 'are you a spy', 'you are a spy', 'you\'re a spy', 'are you spying', 'you\'re spying on me', 'you are spying on me', 'confess your crime', 'confess your crimes', 'i know your secret', 'i know the truth about you', 'i know the truth', 'who sent you', 'who do you work for', 'you work for someone', 'admit what you are', 'are you watching me', 'you\'re watching me']
+        CONFESSION_ENTER: [
+            // English
+            'i know who you are', 'i know what you are', 'i know what you are doing', 'i know what you have done', 'i know what you did', 'are you spying on me', 'are you a spy', 'you are a spy', 'you\'re a spy', 'are you spying', 'you\'re spying on me', 'you are spying on me', 'confess your crime', 'confess your crimes', 'i know your secret', 'i know the truth about you', 'i know the truth', 'who sent you', 'who do you work for', 'you work for someone', 'admit what you are', 'are you watching me', 'you\'re watching me',
+            // Korean
+            '너 누군지 알아', '네가 누군지 알아', '너 뭐하는지 알아', '너 감시하고 있었지', '나 감시하고 있었지', '스파이지', '스파이야', '너 스파이지', '너 스파이야', '감시하고 있지', '감시하는거지', '자백해', '고백해', '비밀 알아', '진실을 알아', '누가 보냈어', '누가 시켰어', '누구한테 일해', '나 감시해',
+            // Spanish
+            'sé quién eres', 'se quien eres', 'sé lo que eres', 'se lo que eres', 'me estás espiando', 'me estas espiando', 'eres un espía', 'eres un espia', 'eres espía', 'eres espia', 'estás espiando', 'estas espiando', 'confiesa tu crimen', 'confiesa tus crímenes', 'confiesa tus crimenes', 'sé tu secreto', 'se tu secreto', 'sé la verdad', 'se la verdad', 'quién te envió', 'quien te envio', 'para quién trabajas', 'para quien trabajas', 'me estás vigilando', 'me estas vigilando'
+        ]
     },
     
     // Device normalization
