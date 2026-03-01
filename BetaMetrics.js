@@ -217,6 +217,9 @@ class BetaMetrics {
                 const raw = fs.readFileSync(this.filePath, 'utf8');
                 const loaded = JSON.parse(raw);
                 this._merge(loaded);
+                console.log(`[BetaMetrics] Loaded from ${this.filePath} (${loaded.totalSessions || 0} sessions, ${loaded.totalMessages || 0} messages)`);
+            } else {
+                console.log(`[BetaMetrics] No existing data at ${this.filePath}, starting fresh`);
             }
         } catch (error) {
             console.error('BetaMetrics load error:', error.message);

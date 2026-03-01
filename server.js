@@ -1,3 +1,4 @@
+const fs = require('fs');
 const express = require('express');
 const cors = require('cors');
 const config = require('./config');
@@ -22,9 +23,16 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'docs', 'client.html'));
 });
 
-const dataDir = process.env.DATA_DIR || null;
+// Check for persistent volume: env var or auto-detect common mount paths
+let dataDir = process.env.DATA_DIR || null;
+if (!dataDir) {
+    for (const vp of ['/app/data', '/data', '/mnt/data']) {
+        if (fs.existsSync(vp)) { dataDir = vp; break; }
+    }
+}
 const sessionsDir = dataDir ? path.join(dataDir, 'sessions') : undefined;
 const metricsPath = dataDir ? path.join(dataDir, 'metrics.json') : undefined;
+console.log(`[startup] DATA_DIR=${dataDir || '(not set)'}, persistent=${!!dataDir}`);
 
 const sessionManager = new SessionManager(sessionsDir);
 sessionManager.startCleanup();
@@ -90,7 +98,9 @@ app.get('/health', (req, res) => {
         status: 'OK',
         message: 'Emotional AI Server Running',
         responses: responseGenerator.getTotalResponseCount(),
-        groqEnabled: groqService.isConfigured()
+        groqEnabled: groqService.isConfigured(),
+        dataDir: dataDir || '(not set)',
+        persistent: !!dataDir
     });
 });
 
