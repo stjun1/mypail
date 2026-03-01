@@ -107,7 +107,10 @@ app.get('/health', (req, res) => {
         status: 'OK',
         message: 'Emotional AI Server Running',
         responses: responseGenerator.getTotalResponseCount(),
-        groqEnabled: groqService.isConfigured()
+        groqEnabled: groqService.isConfigured(),
+        dataDir: dataDir || '(not set)',
+        metricsPath: metricsPath || 'default',
+        dataDirExists: dataDir ? fs.existsSync(dataDir) : false
     });
 });
 
