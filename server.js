@@ -24,15 +24,26 @@ app.get('/', (req, res) => {
 });
 
 // Check for persistent volume: env var or auto-detect common mount paths
+// Prefer /data over /app/data since /app gets overwritten on Railway deploys
 let dataDir = process.env.DATA_DIR || null;
 if (!dataDir) {
-    for (const vp of ['/app/data', '/data', '/mnt/data']) {
+    for (const vp of ['/data', '/app/data', '/mnt/data']) {
         if (fs.existsSync(vp)) { dataDir = vp; break; }
     }
 }
+// Safety check: if DATA_DIR is under /app, check if /data is a real volume and use that instead
+if (dataDir && dataDir.startsWith('/app/') && fs.existsSync('/data')) {
+    try {
+        const entries = fs.readdirSync('/data');
+        if (entries.includes('lost+found') || entries.includes('metrics.json')) {
+            console.log(`[startup] Overriding DATA_DIR from ${dataDir} to /data (real volume detected)`);
+            dataDir = '/data';
+        }
+    } catch (e) { /* ignore */ }
+}
 const sessionsDir = dataDir ? path.join(dataDir, 'sessions') : undefined;
 const metricsPath = dataDir ? path.join(dataDir, 'metrics.json') : undefined;
-console.log(`[startup] DATA_DIR=${dataDir || '(not set)'}, persistent=${!!dataDir}`);
+console.log(`[startup] dataDir=${dataDir || '(not set)'}, persistent=${!!dataDir}`);
 
 const sessionManager = new SessionManager(sessionsDir);
 sessionManager.startCleanup();
@@ -113,7 +124,6 @@ app.get('/health', (req, res) => {
         message: 'Emotional AI Server Running',
         responses: responseGenerator.getTotalResponseCount(),
         groqEnabled: groqService.isConfigured(),
-        dataDir: dataDir || '(not set)',
         persistent: !!dataDir
     });
 });
@@ -563,6 +573,18 @@ app.get('/api/stats', (req, res) => {
 if (require.main === module) {
     app.listen(config.PORT, () => {
         console.log(`Server running on port ${config.PORT}`);
+    });
+
+    // Flush metrics to disk before shutdown (redeploy, restart)
+    process.on('SIGTERM', () => {
+        console.log('[shutdown] SIGTERM received, flushing metrics...');
+        betaMetrics.flush();
+        process.exit(0);
+    });
+    process.on('SIGINT', () => {
+        console.log('[shutdown] SIGINT received, flushing metrics...');
+        betaMetrics.flush();
+        process.exit(0);
     });
 }
 

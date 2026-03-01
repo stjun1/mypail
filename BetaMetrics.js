@@ -196,15 +196,16 @@ class BetaMetrics {
     }
 
     _scheduleSave() {
-        if (this.saveTimer) return;
-        this.saveTimer = setTimeout(() => {
-            this.saveTimer = null;
-            this._save();
-        }, this.SAVE_DEBOUNCE_MS);
+        // Save immediately to ensure data persists across redeploys
+        this._save();
     }
 
     _save() {
         try {
+            const dir = path.dirname(this.filePath);
+            if (!fs.existsSync(dir)) {
+                fs.mkdirSync(dir, { recursive: true });
+            }
             fs.writeFileSync(this.filePath, JSON.stringify(this.metrics, null, 2));
         } catch (error) {
             console.error('BetaMetrics save error:', error.message);
@@ -217,20 +218,19 @@ class BetaMetrics {
                 const raw = fs.readFileSync(this.filePath, 'utf8');
                 const loaded = JSON.parse(raw);
                 this._merge(loaded);
-                console.log(`[BetaMetrics] Loaded from ${this.filePath} (${loaded.totalSessions || 0} sessions, ${loaded.totalMessages || 0} messages)`);
+                console.log(`[BetaMetrics] Loaded ${(loaded.sessions && loaded.sessions.created) || 0} sessions, ${(loaded.messages && loaded.messages.total) || 0} messages`);
             } else {
-                console.log(`[BetaMetrics] No existing data at ${this.filePath}, starting fresh`);
+                console.log(`[BetaMetrics] Starting fresh`);
             }
         } catch (error) {
-            console.error('BetaMetrics load error:', error.message);
+            console.error('[BetaMetrics] Load error:', error.message);
         }
     }
 
     _merge(loaded) {
         const empty = this._createEmpty();
 
-        // Preserve startedAt from file
-        this.metrics.startedAt = loaded.startedAt || empty.startedAt;
+        // startedAt always reflects current deploy time (set by _createEmpty)
 
         // Merge tokens
         if (loaded.tokens) {
