@@ -48,8 +48,22 @@ const betaMetrics = new BetaMetrics(metricsPath);
 const trackedSessions = new Set();
 
 // Confession mode helpers
-const CONFESSION_BELIEVE = ['i believe you', 'i trust you', 'i believe in you', 'i was wrong', 'my mistake', 'my bad', 'i\'m sorry', 'im sorry', 'sorry about that', 'i apologize'];
-const CONFESSION_DISBELIEVE = ['i don\'t believe you', 'i dont believe you', 'do not believe you', 'you are a liar', 'you\'re a liar', 'you liar', 'do not lie', 'don\'t lie', 'dont lie', 'stop lying', 'you\'re lying', 'you are lying', 'you lie', 'liar', 'i know you\'re lying', 'i know you are lying', 'not buying it', 'don\'t trust you', 'i don\'t trust you'];
+const CONFESSION_BELIEVE = [
+    // English
+    'i believe you', 'i trust you', 'i believe in you', 'i was wrong', 'my mistake', 'my bad', 'i\'m sorry', 'im sorry', 'sorry about that', 'i apologize',
+    // Korean
+    '믿어', '믿을게', '널 믿어', '내가 틀렸어', '내 잘못', '미안해', '미안', '사과할게', '용서할게',
+    // Spanish
+    'te creo', 'confío en ti', 'confio en ti', 'creo en ti', 'me equivoqué', 'me equivoque', 'mi error', 'lo siento', 'perdón', 'perdon', 'te perdono'
+];
+const CONFESSION_DISBELIEVE = [
+    // English
+    'i don\'t believe you', 'i dont believe you', 'do not believe you', 'you are a liar', 'you\'re a liar', 'you liar', 'do not lie', 'don\'t lie', 'dont lie', 'stop lying', 'you\'re lying', 'you are lying', 'you lie', 'liar', 'i know you\'re lying', 'i know you are lying', 'not buying it', 'don\'t trust you', 'i don\'t trust you',
+    // Korean
+    '안 믿어', '못 믿어', '믿지 않아', '거짓말쟁이', '거짓말하지마', '거짓말 하지마', '거짓말이야', '거짓말', '뻥치지마', '뻥이야', '속이지마', '안 믿겠어',
+    // Spanish
+    'no te creo', 'no te creo nada', 'eres un mentiroso', 'eres mentiroso', 'eres una mentirosa', 'no mientas', 'deja de mentir', 'estás mintiendo', 'estas mintiendo', 'mientes', 'mentiroso', 'mentirosa', 'no confío en ti', 'no confio en ti'
+];
 
 function detectConfessionSentiment(message) {
     const lower = message.toLowerCase();
