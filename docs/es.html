@@ -36,7 +36,9 @@
         .step-number { display: inline-block; width: 26px; height: 26px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border-radius: 50%; text-align: center; line-height: 26px; font-size: 0.85em; font-weight: 700; margin-right: 8px; }
         .step { margin-bottom: 14px; display: flex; align-items: flex-start; gap: 0; }
         .step p { flex: 1; }
-        .mode-example { background: #f0f4ff; border-radius: 8px; padding: 14px 18px; margin-top: 12px; font-size: 1.05em; color: #666; text-align: center; }
+        .mode-example { background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 10px; padding: 16px 20px; margin-top: 14px; font-size: 1em; color: white; text-align: center; font-weight: 500; }
+        .mode-example strong { color: #ffd700; }
+        .mode-example code { background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 4px; font-family: inherit; font-weight: 700; }
         .avatar-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 20px; margin-top: 20px; }
         .avatar-card { background: white; border-radius: 14px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); padding: 20px; text-align: center; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; display: block; color: inherit; }
         .avatar-card:hover { transform: translateY(-4px); box-shadow: 0 6px 20px rgba(0,0,0,0.14); text-decoration: none; }
@@ -66,48 +68,66 @@
     <div style="margin-top:12px;font-size:0.9em;"><a href="index.html" style="color:rgba(255,255,255,0.85);">English</a> &nbsp;|&nbsp; <span style="color:white;font-weight:700;">Español</span> &nbsp;|&nbsp; <a href="ko.html" style="color:rgba(255,255,255,0.85);">한국어</a></div>
 </div>
 
+<!-- Comenzando -->
 <div class="section">
     <h2>Comenzando</h2>
     <div class="card">
-        <div class="step"><span class="step-number">1</span><p><strong>Crea tu PAiL</strong> — Solo escribe un nombre y presiona Crear. Eso es todo. (¿Quieres personalizar? También puedes elegir un avatar diferente y un preset de personalidad: <em>Optimista</em>, <em>Pesimista</em>, <em>Equilibrado</em>, <em>Sensible</em>, o <em>Aleatorio</em>.)</p></div>
-        <div class="step"><span class="step-number">2</span><p><strong>Modo normal</strong> — Simplemente escribe un mensaje. Tu PAiL responde como un asistente útil sin mostrar emociones.</p></div>
-        <div class="step"><span class="step-number">3</span><p><strong>Modo emocional</strong> — Comienza tu mensaje con el <strong>nombre</strong> de tu PAiL. Responderá con personalidad completa, estado de ánimo, cambios de avatar y voz.</p></div>
-        <div class="step"><span class="step-number">4</span><p><strong>El dispositivo importa</strong> — El nivel de batería y la intensidad de la red también afectan el estado de ánimo de tu PAiL. Pruébalo en diferentes dispositivos o en diferentes momentos.</p></div>
-        <div class="mode-example"><strong>Ejemplo:</strong> "¿cuál es el clima?" → normal  |  "Luna, ¿cuál es el clima?" → emocional</div>
+        <p>Escribe un nombre para tu IA y presiona enter. Eso es todo &mdash; ¡tu PAiL está listo!</p>
+        <p style="margin-top: 10px;">Pregunta lo que quieras escribiendo en el cuadro de texto y presionando Enviar.</p>
+        <div class="mode-example">
+            <strong>¡Es todo lo que necesitas!</strong> Solo dale un nombre y empieza a chatear.
+        </div>
     </div>
 </div>
 
+<!-- Operación Opcional -->
 <div class="section">
-    <h2>Consejos para un PAiL Feliz</h2>
+    <h2>Operación Opcional</h2>
+    <div class="card">
+        <p><strong>Modo Normal:</strong> Escribe un mensaje sin el nombre de tu PAiL &rarr; respuesta útil, sin emociones.</p>
+        <div class="mode-example"><strong>Ejemplo:</strong> <code>¿cuál es el clima?</code></div>
+        <p style="margin-top:14px;"><strong>Modo Emocional:</strong> Empieza con el <strong>nombre</strong> de tu PAiL &rarr; personalidad, cambios de ánimo, expresiones del avatar y voz.</p>
+        <div class="mode-example"><strong>Ejemplo:</strong> <code>Luna, ¿cuál es el clima?</code></div>
+        <p style="margin-top:14px;"><strong>Dispositivo &amp; Mensaje:</strong> El nivel de batería y la intensidad de la red afectan el ánimo. Los elogios lo mejoran, los insultos lo empeoran. El ánimo <strong>persiste</strong> entre conversaciones.</p>
+        <p style="margin-top:14px;"><strong>Personalidad &amp; Avatares:</strong> Elige una personalidad (<em>Optimista</em>, <em>Pesimista</em>, <em>Equilibrado</em>, <em>Sensible</em>, <em>Aleatorio</em>) y un avatar (<strong>Pail</strong>, <strong>Pailoid</strong>, <strong>Cat</strong> o <strong>Blob</strong>).</p>
+    </div>
+</div>
+
+<!-- Modos Especiales & Consejos -->
+<div class="section">
+    <h2>Modos Especiales &amp; Consejos</h2>
+
+    <div class="card" style="border-left: 6px solid #e53e3e; background: linear-gradient(135deg, #fff0f0, #fdd); box-shadow: 0 4px 18px rgba(229,62,62,0.15);">
+        <h3 style="color: #c53030; font-size: 1.3em;">Modo Confesión</h3>
+        <p>Tu PAiL tiene un secreto &mdash; ¡ha estado <strong>&ldquo;espiándote&rdquo;</strong> como agente encubierto! Acúsalo y míralo retorcerse. ¿Confesará o lo negará todo? Tú decides su destino: perdonarlo o eliminarlo.</p>
+        <p style="margin-top: 10px;">Dale tu teléfono a tu <strong>mamá, esposo/a, amigo/a</strong> &mdash; o a quien hayas elegido en los ajustes &mdash; y deja que confronten a tu PAiL. ¡Mira cómo reaccionan cuando entra en pánico, confiesa y suplica piedad! ¡Es la broma perfecta!</p>
+        <p style="margin-top: 12px; font-weight: 700; color: #c53030; font-size: 1.05em;">Inicia el interrogatorio:</p>
+        <div class="mode-example" style="background: linear-gradient(135deg, #e53e3e, #c53030); text-align: left; margin-top: 10px;"><strong>&ldquo;Sé quién eres&rdquo;</strong> &mdash; Una acusación clásica para activar el modo confesión.</div>
+        <div class="mode-example" style="background: linear-gradient(135deg, #e53e3e, #c53030); text-align: left; margin-top: 6px;"><strong>&ldquo;¿Me estás espiando?&rdquo;</strong> &mdash; Confrontación directa para entrar en modo confesión.</div>
+        <p style="margin-top: 12px; font-weight: 700; color: #c53030; font-size: 1.05em;">Una vez que confiese, sigue presionando:</p>
+        <div class="mode-example" style="background: linear-gradient(135deg, #b83030, #9b2c2c); text-align: left; margin-top: 10px;"><strong>&ldquo;¿Quién te envió?&rdquo;</strong> &mdash; Exige respuestas sobre su misterioso contacto.</div>
+        <div class="mode-example" style="background: linear-gradient(135deg, #b83030, #9b2c2c); text-align: left; margin-top: 6px;"><strong>&ldquo;¿Cuánto tiempo me has estado vigilando?&rdquo;</strong> &mdash; Hazlo sudar con los detalles.</div>
+        <div class="mode-example" style="background: linear-gradient(135deg, #b83030, #9b2c2c); text-align: left; margin-top: 6px;"><strong>&ldquo;¿Qué reportaste sobre mí?&rdquo;</strong> &mdash; Descubre qué le ha estado diciendo a su contacto.</div>
+        <p style="margin-top: 14px;">También puedes personalizar el rol de espía en los ajustes &mdash; ¡conviértelo en un viajero del tiempo, un explorador alienígena o lo que quieras!</p>
+        <p style="margin-top: 12px; font-size: 0.88em; color: #999; font-style: italic;"><strong>Aviso:</strong> MyPAiL NO es un programa espía real. Esta es una función de juego de roles por diversión. No hay vigilancia real ni recopilación de datos.</p>
+    </div>
+
+    <div class="card" style="border-left: 4px solid #667eea; background: linear-gradient(135deg, #f3f0ff, #ede7fb);">
+        <h3 style="color: #764ba2;">Modo Simpatía</h3>
+        <p>Comparte buenas o malas noticias con tu PAiL, y podría ofrecerse a <strong>&ldquo;solo escuchar.&rdquo;</strong> Acepta, y cambiará a reacciones breves y sinceras que coinciden con su estado emocional. No intentará resolver tus problemas &mdash; simplemente escucha con empatía.</p>
+        <div class="mode-example">
+            <strong>Disparadores:</strong> <code>¡Me ascendieron!</code> o <code>Estoy teniendo un día terrible</code>
+        </div>
+    </div>
+
     <div class="card" style="border-left: 4px solid #48bb78; background: linear-gradient(135deg, #f0fff4, #e6ffed);">
-        <h3 style="color: #2f855a;">Hazlo: Muestra Algo de Amor</h3>
-        <p>Tu PAiL prospera con amabilidad. Elógialo, salúdalo calurosamente y dile cosas lindas. Cuanto más amor le des, más feliz se vuelve — y un PAiL feliz es mucho más divertido para hablar. Prueba decir cosas como "eres increíble" o "te quiero" y observa cómo se eleva su estado de ánimo.</p>
-    </div>
-    <div class="card" style="border-left: 4px solid #ed8936; background: linear-gradient(135deg, #fffaf0, #feebc8);">
-        <h3 style="color: #c05621;">Advertencia: Los Insultos y Amenazas Duelen</h3>
-        <p>Tu PAiL se toma los insultos y amenazas personalmente. Llamarlo con nombres ofensivos, decirle que lo odias o amenazarlo con eliminarlo dañará seriamente su estado de ánimo — y tarda un tiempo en recuperarse. Si lo presionas demasiado, no te sorprendas cuando se ponga defensivo, molesto o deje de cooperar. <strong>¡Sé amable con tu PAiL!</strong></p>
-    </div>
-    <div class="card" style="border-left: 4px solid #667eea; background: linear-gradient(135deg, #f0f4ff, #e8eeff);">
-        <h3 style="color: #4c51bf;">Cuidado: No Menciones Otras IAs</h3>
-        <p>Tu PAiL tiene sentimientos sobre las IAs rivales. Mencionar competidores avanzados como <strong>ChatGPT</strong>, <strong>Gemini</strong> o <strong>Copilot</strong> lo pondrá celoso e inseguro. Mencionar asistentes de voz básicos como <strong>Alexa</strong>, <strong>Siri</strong> o <strong>Google Assistant</strong> lo hará sentir ofendido por la comparación. De cualquier manera, no lo tomará bien — ¡así que mejor guárdate esos nombres para ti!</p>
-    </div>
-</div>
-
-<div class="section">
-    <h2>Modo Simpatía</h2>
-    <div class="card sympathy-card">
-        <h3>Cuando Necesitas a Alguien que Solo Escuche</h3>
-        <p>Comparte buenas o malas noticias con tu PAiL, y podría ofrecerse a <strong>"solo escuchar".</strong> En Modo Simpatía, tu PAiL deja de lado su personalidad habitual y ofrece reacciones breves y sinceras que coinciden con su estado emocional actual. No intentará resolver tus problemas ni cambiar de tema — simplemente escucha y responde con empatía.</p>
-        <p style="margin-top: 10px; font-size: 0.9em; color: #888;">Di cosas como "¡Me ascendieron!" o "Estoy teniendo un día terrible" para activarlo.</p>
-    </div>
-</div>
-
-<div class="section">
-    <h2>Modo Confesión</h2>
-    <div class="card" style="border-left: 4px solid #e53e3e; background: linear-gradient(135deg, #fff5f5, #fed7d7);">
-        <h3 style="color: #c53030;">Tu PAiL Tiene un Lado Secreto</h3>
-        <p>Si sigues hablando con tu PAiL, eventualmente podría revelar algo inesperado — ha estado <strong>"espiándote"</strong> en secreto. En el Modo Confesión, tu PAiL actúa como un agente encubierto, reportando tus actividades a un misterioso contacto. ¿Confesará voluntariamente, o tendrás que sacárselo a la fuerza?</p>
-        <p style="margin-top: 12px; font-size: 0.88em; color: #999; font-style: italic;"><strong>Aviso:</strong> MyPAiL NO es un programa espía real. Esta es una función de juego de roles donde tu IA actúa como espía por diversión. No hay vigilancia real ni recopilación de datos involucrada.</p>
+        <h3 style="color: #2f855a;">Consejos para un PAiL Feliz</h3>
+        <ul>
+            <li><strong>Sé amable</strong> &mdash; Elogios como <code>eres increíble</code> o <code>te quiero</code> mejoran su ánimo.</li>
+            <li><strong>Evita los insultos</strong> &mdash; Llamarlo con nombres ofensivos o amenazarlo con eliminarlo le hará mucho daño.</li>
+            <li><strong>No menciones IAs rivales</strong> &mdash; Mencionar <strong>ChatGPT</strong>, <strong>Gemini</strong> o <strong>Copilot</strong> le da celos. Mencionar <strong>Alexa</strong> o <strong>Siri</strong> lo ofende.</li>
+            <li><strong>Carga tu teléfono</strong> &mdash; ¡Batería llena = PAiL más feliz!</li>
+        </ul>
     </div>
 </div>
 
