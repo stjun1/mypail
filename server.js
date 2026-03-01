@@ -25,6 +25,7 @@ app.get('/', (req, res) => {
 const dataDir = process.env.DATA_DIR || null;
 const sessionsDir = dataDir ? path.join(dataDir, 'sessions') : undefined;
 const metricsPath = dataDir ? path.join(dataDir, 'metrics.json') : undefined;
+console.log(`[startup] DATA_DIR=${dataDir || '(not set)'}, metricsPath=${metricsPath || 'default'}`);
 
 const sessionManager = new SessionManager(sessionsDir);
 sessionManager.startCleanup();
