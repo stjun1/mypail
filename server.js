@@ -110,7 +110,9 @@ app.get('/health', (req, res) => {
         groqEnabled: groqService.isConfigured(),
         dataDir: dataDir || '(not set)',
         metricsPath: metricsPath || 'default',
-        dataDirExists: dataDir ? fs.existsSync(dataDir) : false
+        dataDirExists: dataDir ? fs.existsSync(dataDir) : false,
+        rootDirs: fs.readdirSync('/').filter(d => !['proc','sys','dev','bin','boot','etc','lib','lib64','usr','sbin','run','var','tmp','opt'].includes(d)),
+        envDataDir: process.env.DATA_DIR || '(undefined)'
     });
 });
 
