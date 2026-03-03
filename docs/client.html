@@ -1080,7 +1080,7 @@
         <!-- Input Area -->
         <div class="input-area">
             <button id="voice-btn" onclick="toggleVoice()" title="Voice Input">Mic</button>
-            <button id="speaker-btn" onclick="toggleSpeaker()" title="Toggle Speaker">Speaker ON</button>
+            <button id="speaker-btn" class="off" onclick="toggleSpeaker()" title="Toggle Speaker">Speaker OFF</button>
             <input type="text" id="message-input" placeholder="Type your message..." onkeypress="handleKeyPress(event)">
             <button id="send-btn" onclick="sendMessage()">Send</button>
         </div>
@@ -2285,7 +2285,7 @@
         }
 
         // Text-to-speech
-        let speakerEnabled = true;
+        let speakerEnabled = false;
 
         function speak(text) {
             if (!speakerEnabled) return;
@@ -2393,6 +2393,7 @@
                 isVoiceActive = true;
                 document.getElementById('voice-btn').classList.add('active');
                 document.getElementById('voice-btn').textContent = '🔴';
+                enableSpeaker();
 
                 const result = await CapBridge.SpeechRecognition.start({
                     language: navigator.language || 'en-US',
@@ -2411,6 +2412,15 @@
             }
         }
 
+        function enableSpeaker() {
+            if (!speakerEnabled) {
+                speakerEnabled = true;
+                const btn = document.getElementById('speaker-btn');
+                btn.textContent = 'Speaker ON';
+                btn.classList.remove('off');
+            }
+        }
+
         function startVoice() {
             if (recognition) {
                 try {
@@ -2418,6 +2428,7 @@
                     isVoiceActive = true;
                     document.getElementById('voice-btn').classList.add('active');
                     document.getElementById('voice-btn').textContent = '🔴';
+                    enableSpeaker();
                 } catch (e) {
                     console.error('Error starting voice:', e);
                 }
