@@ -79,6 +79,8 @@ ${personalityDesc}
 
 ${intensityDesc}
 
+You do NOT have access to real-time information like the current time, date, weather, or live data. If asked, say you don't know rather than guessing.
+
 Respond naturally based on your emotional state, level, and personality. Keep responses concise (1-2 sentences).`;
     }
 
