@@ -307,6 +307,10 @@
             padding: 15px 20px;
             font-size: 20px;
             background: #4CAF50;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         #voice-btn:hover {
@@ -1080,7 +1084,7 @@
 
         <!-- Input Area -->
         <div class="input-area">
-            <button id="voice-btn" onclick="toggleVoice()" title="Voice Input">Mic</button>
+            <button id="voice-btn" title="Voice Input">Mic</button>
             <button id="speaker-btn" class="off" onclick="toggleSpeaker()" title="Toggle Speaker">Speaker OFF</button>
             <input type="text" id="message-input" placeholder="Type your message..." onkeypress="handleKeyPress(event)">
             <button id="send-btn" onclick="sendMessage()">Send</button>
@@ -2363,7 +2367,12 @@
             }
         }
 
+        let _voiceToggleBusy = false;
         function toggleVoice() {
+            if (_voiceToggleBusy) return;
+            _voiceToggleBusy = true;
+            setTimeout(() => { _voiceToggleBusy = false; }, 600);
+
             if (isCapacitor) {
                 toggleVoiceNative();
                 return;
@@ -2462,6 +2471,24 @@
                 toggle.textContent = '▶';
             }
         }
+
+        // Mic button: use touchend on touch devices to avoid 300ms click delay misfires
+        (function() {
+            const voiceBtn = document.getElementById('voice-btn');
+            let touchFired = false;
+            voiceBtn.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                touchFired = true;
+                toggleVoice();
+            }, { passive: false });
+            voiceBtn.addEventListener('click', function(e) {
+                if (touchFired) {
+                    touchFired = false;
+                    return; // already handled by touchend
+                }
+                toggleVoice();
+            });
+        })();
 
         // Initialize on load
         buildAvatarPicker();
