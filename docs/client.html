@@ -1660,18 +1660,10 @@
         function doSchooling(targetState) {
             if (schoolingClicks >= SCHOOLING_MAX_CLICKS) return;
 
-            // Find donor: highest level among other states (> min 1), tie-break VB>B>G>VG
-            let donor = null;
-            let donorLevel = -1;
-            for (const s of SCHOOLING_ORDER) {
-                if (s === targetState) continue;
-                if (schoolingLevels[s] > 1 && schoolingLevels[s] > donorLevel) {
-                    donorLevel = schoolingLevels[s];
-                    donor = s;
-                }
-            }
-
-            if (!donor) return;
+            // Find donor: random eligible state (level > 1, not targetState)
+            const eligible = SCHOOLING_ORDER.filter(s => s !== targetState && schoolingLevels[s] > 1);
+            if (eligible.length === 0) return;
+            const donor = eligible[Math.floor(Math.random() * eligible.length)];
 
             schoolingLevels[targetState]++;
             schoolingLevels[donor]--;
