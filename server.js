@@ -484,7 +484,7 @@ app.post('/api/chat', async (req, res) => {
             res.json({
                 response: responseText,
                 avatarHint: 'GOOD',
-                shouldSpeak: false,
+                shouldSpeak: true,
                 emotionMode: false,
                 _debug: {
                     phoneEmotion: phoneEmotion,
