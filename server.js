@@ -62,10 +62,11 @@ const trackedSessions = new Set();
 const CONFESSION_BELIEVE = [
     // English
     'i believe you', 'i trust you', 'i believe in you', 'i was wrong', 'my mistake', 'my bad', 'i\'m sorry', 'im sorry', 'sorry about that', 'i apologize',
+    'i forgive you', 'forgive you', 'you\'re right', 'you are right', 'i understand', 'it\'s okay', 'its okay', 'it\'s ok', 'its ok', 'never mind', 'nevermind',
     // Korean
-    '믿어', '믿을게', '널 믿어', '내가 틀렸어', '내 잘못', '미안해', '미안', '사과할게', '용서할게',
+    '믿어', '믿을게', '널 믿어', '내가 틀렸어', '내 잘못', '미안해', '미안', '사과할게', '용서할게', '괜찮아', '이해해', '알겠어', '네 말이 맞아',
     // Spanish
-    'te creo', 'confío en ti', 'confio en ti', 'creo en ti', 'me equivoqué', 'me equivoque', 'mi error', 'lo siento', 'perdón', 'perdon', 'te perdono'
+    'te creo', 'confío en ti', 'confio en ti', 'creo en ti', 'me equivoqué', 'me equivoque', 'mi error', 'lo siento', 'perdón', 'perdon', 'te perdono', 'está bien', 'esta bien', 'te entiendo', 'tienes razón', 'tienes razon'
 ];
 const CONFESSION_DISBELIEVE = [
     // English
