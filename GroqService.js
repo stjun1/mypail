@@ -84,8 +84,8 @@ You do NOT have access to real-time information like the current time, date, wea
 Respond naturally based on your emotional state, level, and personality. Keep responses concise (1-2 sentences).`;
     }
 
-    async generateSympathyInterjection(message, context = {}) {
-        const { emotionState, sympathyType, aiName } = context;
+    async generateEmpathyInterjection(message, context = {}) {
+        const { emotionState, empathyType, aiName } = context;
 
         const toneMatrix = {
             user_good: {
@@ -102,10 +102,10 @@ Respond naturally based on your emotional state, level, and personality. Keep re
             }
         };
 
-        const tone = toneMatrix[sympathyType]?.[emotionState] || 'supportive';
+        const tone = toneMatrix[empathyType]?.[emotionState] || 'supportive';
 
-        const systemPrompt = `You are ${aiName || 'AI'}, an emotional AI companion in sympathy mode.
-The user is sharing something ${sympathyType === 'user_good' ? 'positive' : 'negative'}.
+        const systemPrompt = `You are ${aiName || 'AI'}, an emotional AI companion in empathy mode.
+The user is sharing something ${empathyType === 'user_good' ? 'positive' : 'negative'}.
 Your current emotional tone: ${tone}.
 Respond with a VERY short interjection (under 10 words). Only react emotionally.
 Do NOT ask questions. Do NOT give advice. Do NOT use emojis.
@@ -126,7 +126,7 @@ Just a brief, heartfelt reaction.`;
             const text = completion.choices[0]?.message?.content || null;
             return { text, usage: completion.usage || null };
         } catch (error) {
-            console.error('Groq API error (sympathy):', error.message);
+            console.error('Groq API error (empathy):', error.message);
             return { text: null, usage: null };
         }
     }

@@ -1831,7 +1831,7 @@
       "Tch! Fine! You know what? I'll... I'll just be SLIGHTLY less enthusiastic next time! Hmph! Oh! That'll show you! Ugh! ...please don't actually do it though."
     ]
   },
-  "SYMPATHY_GOOD": {
+  "EMPATHY_GOOD": {
     "VERY_GOOD": [
       "Let's CELEBRATE!",
       "This is AMAZING!",
@@ -1921,7 +1921,7 @@
       "Well... at least you're happy..."
     ]
   },
-  "SYMPATHY_BAD": {
+  "EMPATHY_BAD": {
     "VERY_GOOD": [
       "Shake it off!",
       "Forget about it!",

@@ -131,7 +131,7 @@ app.get('/health', (req, res) => {
 
 app.post('/api/chat', async (req, res) => {
     try {
-        const { sessionId, message, deviceStatus, aiName, schoolingLevels, sympathyMode, sympathyType, personalityThresholds, personality, confessionMode: confessionModeReq, confessionRole } = req.body;
+        const { sessionId, message, deviceStatus, aiName, schoolingLevels, empathyMode, empathyType, personalityThresholds, personality, confessionMode: confessionModeReq, confessionRole } = req.body;
 
         // Track new sessions
         if (!trackedSessions.has(sessionId)) {
@@ -146,8 +146,8 @@ app.post('/api/chat', async (req, res) => {
             '|\\b' + escapedName + '\\s*$)',               // last word
             'i'
         );
-        // In sympathy/confession mode, treat as emotion mode regardless of name detection
-        const emotionMode = sympathyMode || confessionModeReq || (aiName && aiName.length > 0 && nameRegex.test(message));
+        // In empathy/confession mode, treat as emotion mode regardless of name detection
+        const emotionMode = empathyMode || confessionModeReq || (aiName && aiName.length > 0 && nameRegex.test(message));
 
         // Always run: keeps emotion state accurate in background
         const session = emotionEngine.getSession(sessionId, aiName, schoolingLevels, personalityThresholds);
@@ -155,8 +155,8 @@ app.post('/api/chat', async (req, res) => {
         const promptEmotion = emotionEngine.calculatePromptEmotion(sessionId);
 
         if (emotionMode) {
-            // Sympathy mode: short interjections, skip category detection
-            if (sympathyMode && sympathyType) {
+            // Empathy mode: short interjections, skip category detection
+            if (empathyMode && empathyType) {
                 const emotions = emotionEngine.getCombinedEmotion(sessionId);
                 emotionEngine.finalizeTurn(sessionId);
 
@@ -167,9 +167,9 @@ app.post('/api/chat', async (req, res) => {
 
                 // Try Groq first for variety
                 if (groqService.isConfigured()) {
-                    const result = await groqService.generateSympathyInterjection(message, {
+                    const result = await groqService.generateEmpathyInterjection(message, {
                         emotionState: emotions.state,
-                        sympathyType,
+                        empathyType,
                         aiName: aiName || 'AI'
                     });
                     if (result.text) {
@@ -181,25 +181,25 @@ app.post('/api/chat', async (req, res) => {
                     }
                 }
 
-                // Fall back to static sympathy responses
+                // Fall back to static empathy responses
                 if (!responseText) {
-                    const fallbackCategory = sympathyType === 'user_good' ? 'SYMPATHY_GOOD' : 'SYMPATHY_BAD';
+                    const fallbackCategory = empathyType === 'user_good' ? 'EMPATHY_GOOD' : 'EMPATHY_BAD';
                     responseText = responseGenerator.selectResponse(fallbackCategory, emotions.state, emotions.combined, emotions.interactions);
                     if (responseText) wasStatic = true;
                 }
 
                 if (!responseText) {
-                    responseText = sympathyType === 'user_good' ? "That's great!" : "I'm here for you.";
+                    responseText = empathyType === 'user_good' ? "That's great!" : "I'm here for you.";
                     wasStatic = true;
                 }
 
                 betaMetrics.track('message', {
-                    mode: 'sympathy',
+                    mode: 'empathy',
                     usage: groqUsage,
                     wasGroq,
                     wasStatic,
                     emotionState: emotions.state,
-                    category: 'SYMPATHY',
+                    category: 'EMPATHY',
                     combined: emotions.combined,
                     sessionId
                 });
@@ -209,13 +209,13 @@ app.post('/api/chat', async (req, res) => {
                     avatarHint: emotions.state,
                     shouldSpeak: true,
                     emotionMode: true,
-                    sympathyMode: true,
+                    empathyMode: true,
                     _debug: {
                         phoneEmotion: emotions.phone,
                         promptEmotion: emotions.prompt,
                         combined: emotions.combined,
                         state: emotions.state,
-                        category: 'SYMPATHY'
+                        category: 'EMPATHY'
                     }
                 });
             }
@@ -421,12 +421,12 @@ app.post('/api/chat', async (req, res) => {
                 sessionId
             });
 
-            // Offer sympathy mode for positive/negative user messages
-            let sympathyOffer = null;
+            // Offer empathy mode for positive/negative user messages
+            let empathyOffer = null;
             if (category === 'USER_POSITIVE') {
-                sympathyOffer = 'user_good';
+                empathyOffer = 'user_good';
             } else if (category === 'USER_NEGATIVE') {
-                sympathyOffer = 'user_bad';
+                empathyOffer = 'user_bad';
             }
 
             // Offer confession mode when entry detected
@@ -440,7 +440,7 @@ app.post('/api/chat', async (req, res) => {
                 avatarHint: emotions.state,
                 shouldSpeak: true,
                 emotionMode: true,
-                sympathyOffer,
+                empathyOffer,
                 confessionOffer,
                 _debug: {
                     phoneEmotion: emotions.phone,

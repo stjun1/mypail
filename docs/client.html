@@ -698,8 +698,8 @@
             text-decoration: underline;
         }
 
-        /* Sympathy Mode */
-        .sympathy-bar {
+        /* Empathy Mode */
+        .empathy-bar {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             text-align: center;
@@ -712,46 +712,15 @@
             margin-bottom: 12px;
         }
 
-        .sympathy-bar:after {
+        .empathy-bar:after {
             content: ' — Tap to end';
             font-weight: 400;
             font-size: 12px;
             opacity: 0.8;
         }
 
-        .sympathy-bar.active {
+        .empathy-bar.active {
             display: block;
-        }
-
-        .sympathy-offer {
-            background: linear-gradient(135deg, #f0f4ff, #e8ecff);
-            border: 2px solid #667eea;
-            border-radius: 12px;
-            padding: 14px 18px;
-            margin-bottom: 12px;
-            text-align: center;
-            font-size: 14px;
-            color: #333;
-        }
-
-        .sympathy-offer p {
-            margin-bottom: 10px;
-        }
-
-        .sympathy-offer button {
-            padding: 8px 20px;
-            font-size: 13px;
-            font-weight: 600;
-            border-radius: 8px;
-            margin: 0 4px;
-        }
-
-        .sympathy-offer .accept-btn {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-        }
-
-        .sympathy-offer .decline-btn {
-            background: #9E9E9E;
         }
 
         /* Confession Mode */
@@ -1073,8 +1042,8 @@
         <!-- Avatar -->
         <div id="avatar"></div>
 
-        <!-- Sympathy Mode Indicator (tap to end) -->
-        <div class="sympathy-bar" id="sympathy-bar" onclick="endSympathyMode()">Sympathy Mode Active</div>
+        <!-- Empathy Mode Indicator (tap to end) -->
+        <div class="empathy-bar" id="empathy-bar" onclick="endEmpathyMode()">Empathy Mode Active</div>
 
         <!-- Confession Mode Indicator (tap to end) -->
         <div class="confession-bar" id="confession-bar" onclick="endConfessionMode()">🕵️ Confession Mode</div>
@@ -1133,9 +1102,9 @@
         const isCapacitor = window.CapBridge && window.CapBridge.isNative;
         let deviceReadings = { battery: 75, network: -60, memory: 800 };
 
-        // Sympathy mode state
-        let sympathyMode = false;
-        let sympathyType = null;
+        // Empathy mode state
+        let empathyMode = false;
+        let empathyType = null;
 
         // Confession mode state
         let confessionMode = false;
@@ -2116,9 +2085,9 @@
                     personality: localStorage.getItem('emotionalAI_personality') || null
                 };
 
-                if (sympathyMode && sympathyType) {
-                    requestBody.sympathyMode = true;
-                    requestBody.sympathyType = sympathyType;
+                if (empathyMode && empathyType) {
+                    requestBody.empathyMode = true;
+                    requestBody.empathyType = empathyType;
                 }
 
                 if (confessionMode) {
@@ -2151,9 +2120,9 @@
                     console.error('Speech error:', e);
                 }
 
-                // Handle sympathy offer (only when not already in sympathy mode)
-                if (data.sympathyOffer && !sympathyMode) {
-                    showSympathyOffer(data.sympathyOffer);
+                // Handle empathy offer (only when not already in empathy mode)
+                if (data.empathyOffer && !empathyMode) {
+                    enterEmpathyMode(data.empathyOffer);
                 }
 
                 // Handle confession offer
@@ -2178,33 +2147,17 @@
             }
         }
 
-        // Sympathy mode functions
-        function showSympathyOffer(type) {
-            const container = document.getElementById('mode-offers');
-            container.innerHTML = '';
-            const offerDiv = document.createElement('div');
-            offerDiv.className = 'sympathy-offer';
-            offerDiv.innerHTML = `<p>Want me to just listen for a while?</p>` +
-                `<button class="accept-btn" onclick="enterSympathyMode('${type}', this.parentElement)">Yes, listen</button>` +
-                `<button class="decline-btn" onclick="declineSympathy(this.parentElement)">No thanks</button>`;
-            container.appendChild(offerDiv);
+        // Empathy mode functions
+        function enterEmpathyMode(type) {
+            empathyMode = true;
+            empathyType = type;
+            document.getElementById('empathy-bar').classList.add('active');
         }
 
-        function enterSympathyMode(type, offerEl) {
-            sympathyMode = true;
-            sympathyType = type;
-            document.getElementById('mode-offers').innerHTML = '';
-            document.getElementById('sympathy-bar').classList.add('active');
-        }
-
-        function declineSympathy(offerEl) {
-            document.getElementById('mode-offers').innerHTML = '';
-        }
-
-        function endSympathyMode() {
-            sympathyMode = false;
-            sympathyType = null;
-            document.getElementById('sympathy-bar').classList.remove('active');
+        function endEmpathyMode() {
+            empathyMode = false;
+            empathyType = null;
+            document.getElementById('empathy-bar').classList.remove('active');
         }
 
         // Confession mode functions

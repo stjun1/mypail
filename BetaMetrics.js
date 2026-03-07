@@ -22,7 +22,7 @@ class BetaMetrics {
                 total_completion_time: 0,
                 byMode: {
                     emotion: { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0, prompt_time: 0, completion_time: 0 },
-                    sympathy: { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0, prompt_time: 0, completion_time: 0 },
+                    empathy: { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0, prompt_time: 0, completion_time: 0 },
                     confession: { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0, prompt_time: 0, completion_time: 0 },
                     plain: { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0, prompt_time: 0, completion_time: 0 }
                 }
@@ -30,7 +30,7 @@ class BetaMetrics {
             messages: {
                 total: 0,
                 emotion: 0,
-                sympathy: 0,
+                empathy: 0,
                 confession: 0,
                 plain: 0,
                 groqCalls: 0,
@@ -238,7 +238,7 @@ class BetaMetrics {
                 this.metrics.tokens[key] = loaded.tokens[key] || 0;
             }
             if (loaded.tokens.byMode) {
-                for (const mode of ['emotion', 'sympathy', 'confession', 'plain']) {
+                for (const mode of ['emotion', 'empathy', 'confession', 'plain']) {
                     if (loaded.tokens.byMode[mode]) {
                         this.metrics.tokens.byMode[mode] = { ...empty.tokens.byMode[mode], ...loaded.tokens.byMode[mode] };
                     }
