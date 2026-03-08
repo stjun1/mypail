@@ -1156,7 +1156,7 @@
             lipSyncActive = true;
             // For PNG avatars (pail/robot), swap to SVG so we can manipulate the mouth
             const avatar = document.getElementById('avatar');
-            if (avatar && !document.getElementById('avatar-mouth')) {
+            if (avatar && !avatar.querySelector('#avatar-mouth')) {
                 const svgFn = { pail: renderPailSVG, robot: renderRobotSVG }[selectedAvatar];
                 if (svgFn) avatar.innerHTML = svgFn(currentEmotionState);
             }
@@ -1182,7 +1182,9 @@
         }
 
         function applyMouthShape(shapeIndex) {
-            const mouthGroup = document.getElementById('avatar-mouth');
+            const avatarEl = document.getElementById('avatar');
+            if (!avatarEl) return;
+            const mouthGroup = avatarEl.querySelector('#avatar-mouth');
             if (!mouthGroup) return;
             const avatarKey = selectedAvatar === 'robot' ? 'robot' : selectedAvatar;
             const mouths = TALK_MOUTHS[avatarKey];
@@ -2334,15 +2336,16 @@
                 return;
             }
             if (typeof speechSynthesis === 'undefined') return;
+            speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
             const voices = speechSynthesis.getVoices();
             const maleVoice = voices.find(v => /male/i.test(v.name) && !/female/i.test(v.name))
                 || voices.find(v => /\b(david|james|daniel|mark|george|richard)\b/i.test(v.name));
             if (maleVoice) utterance.voice = maleVoice;
             utterance.pitch = 0.85;
-            utterance.onstart = () => startLipSync();
             utterance.onend = () => stopLipSync();
             utterance.onerror = () => stopLipSync();
+            startLipSync();
             speechSynthesis.speak(utterance);
         }
 
