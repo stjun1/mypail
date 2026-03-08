@@ -1154,6 +1154,12 @@
         function startLipSync() {
             if (lipSyncActive) return;
             lipSyncActive = true;
+            // For PNG avatars (pail/robot), swap to SVG so we can manipulate the mouth
+            const avatar = document.getElementById('avatar');
+            if (avatar && !document.getElementById('avatar-mouth')) {
+                const svgFn = { pail: renderPailSVG, robot: renderRobotSVG }[selectedAvatar];
+                if (svgFn) avatar.innerHTML = svgFn(currentEmotionState);
+            }
             lipSyncLoop();
         }
 
