@@ -1117,22 +1117,11 @@
         let lipSyncActive = false;
         let lipSyncTimer = null;
         let currentEmotionState = 'GOOD';
+        let lipSyncUsesOverlay = false;
 
         // Talk mouth shapes per avatar (closed, half-open, open)
+        // SVG avatars (cat, blob): direct mouth swap in the <g id="avatar-mouth"> group
         const TALK_MOUTHS = {
-            pail: [
-                `<path d="M83,178 Q100,182 117,178" fill="none" stroke="#2a2a2a" stroke-width="3" stroke-linecap="round"/>`,
-                `<path d="M80,176 Q100,190 120,176" fill="none" stroke="#2a2a2a" stroke-width="3" stroke-linecap="round"/>`,
-                `<path d="M78,174 Q100,200 122,174" fill="#444" stroke="#2a2a2a" stroke-width="2.5" stroke-linecap="round"/>`
-            ],
-            robot: [
-                `<rect x="76" y="162" width="48" height="14" rx="4" fill="#0a0a0a" stroke="#555" stroke-width="1.5"/>
-                 <line x1="84" y1="169" x2="116" y2="169" stroke="currentColor" stroke-width="2.5"/>`,
-                `<rect x="74" y="160" width="52" height="18" rx="4" fill="#0a0a0a" stroke="#555" stroke-width="1.5"/>
-                 <path d="M82,165 Q100,177 118,165" fill="none" stroke="currentColor" stroke-width="2.5"/>`,
-                `<rect x="72" y="158" width="56" height="22" rx="5" fill="#0a0a0a" stroke="#555" stroke-width="1.5"/>
-                 <path d="M78,163 Q100,186 122,163" fill="currentColor" stroke="currentColor" stroke-width="1.5" opacity="0.9"/>`
-            ],
             cat: [
                 `<path d="M90,158 Q100,162 110,158" fill="none" stroke="#333" stroke-width="2.5"/>
                  <line x1="100" y1="148" x2="100" y2="157" stroke="#333" stroke-width="2"/>`,
@@ -1148,17 +1137,56 @@
             ]
         };
 
+        // PNG overlay mouth shapes — include a body-colored cover patch behind the mouth
+        // to hide the static PNG mouth underneath
+        const PNG_OVERLAY_MOUTHS = {
+            pail: function(bodyColor) {
+                const cover = `<ellipse cx="100" cy="180" rx="28" ry="16" fill="${bodyColor}"/>`;
+                return [
+                    cover + `<path d="M88,180 Q100,184 112,180" fill="none" stroke="#2a2a2a" stroke-width="2.5" stroke-linecap="round"/>`,
+                    cover + `<path d="M85,178 Q100,192 115,178" fill="none" stroke="#2a2a2a" stroke-width="2.5" stroke-linecap="round"/>`,
+                    cover + `<path d="M83,176 Q100,200 117,176" fill="#444" stroke="#2a2a2a" stroke-width="2" stroke-linecap="round"/>`
+                ];
+            },
+            robot: function(panelColor) {
+                const cover = `<rect x="70" y="155" width="60" height="28" rx="5" fill="${panelColor}"/>`;
+                return [
+                    cover + `<rect x="78" y="164" width="44" height="12" rx="3" fill="#0a0a0a" stroke="#555" stroke-width="1.5"/>
+                     <line x1="86" y1="170" x2="114" y2="170" stroke="#4f4" stroke-width="2"/>`,
+                    cover + `<rect x="76" y="162" width="48" height="16" rx="4" fill="#0a0a0a" stroke="#555" stroke-width="1.5"/>
+                     <path d="M84,166 Q100,178 116,166" fill="none" stroke="#4f4" stroke-width="2"/>`,
+                    cover + `<rect x="74" y="160" width="52" height="20" rx="5" fill="#0a0a0a" stroke="#555" stroke-width="1.5"/>
+                     <path d="M80,164 Q100,184 120,164" fill="#4f4" stroke="#4f4" stroke-width="1.5" opacity="0.9"/>`
+                ];
+            }
+        };
+
+        // Body colors for the cover patch per emotion state
+        const PNG_BODY_COLORS = {
+            pail:  { VERY_BAD: '#c0c8c8', BAD: '#c8dce8', GOOD: '#cfe0f0', VERY_GOOD: '#b0e0ff' },
+            robot: { VERY_BAD: '#707880', BAD: '#8a9aac', GOOD: '#94b8d4', VERY_GOOD: '#7cc8e8' }
+        };
+
         let lipSyncLastSwap = 0;
         let lipSyncNextInterval = 0;
 
         function startLipSync() {
             if (lipSyncActive) return;
             lipSyncActive = true;
-            // For PNG avatars (pail/robot), swap to SVG so we can manipulate the mouth
             const avatar = document.getElementById('avatar');
-            if (avatar && !avatar.querySelector('#avatar-mouth')) {
-                const svgFn = { pail: renderPailSVG, robot: renderRobotSVG }[selectedAvatar];
-                if (svgFn) avatar.innerHTML = svgFn(currentEmotionState);
+            if (!avatar) return;
+            // PNG avatars: add an SVG overlay on top of the image
+            const isPng = (selectedAvatar === 'pail' || selectedAvatar === 'robot');
+            if (isPng && !avatar.querySelector('#mouth-overlay')) {
+                lipSyncUsesOverlay = true;
+                avatar.style.position = 'relative';
+                const overlay = document.createElement('div');
+                overlay.id = 'mouth-overlay';
+                overlay.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;';
+                overlay.innerHTML = `<svg viewBox="0 0 200 250" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%"><g id="avatar-mouth"></g></svg>`;
+                avatar.appendChild(overlay);
+            } else {
+                lipSyncUsesOverlay = false;
             }
             lipSyncLoop();
         }
@@ -1166,7 +1194,14 @@
         function stopLipSync() {
             lipSyncActive = false;
             if (lipSyncTimer) { cancelAnimationFrame(lipSyncTimer); lipSyncTimer = null; }
-            restoreEmotionMouth();
+            // Remove overlay for PNG avatars
+            const overlay = document.getElementById('mouth-overlay');
+            if (overlay) overlay.remove();
+            lipSyncUsesOverlay = false;
+            // Re-render SVG avatars to restore emotion mouth
+            if (selectedAvatar === 'cat' || selectedAvatar === 'blob') {
+                renderMainAvatar(currentEmotionState);
+            }
         }
 
         function lipSyncLoop() {
@@ -1186,19 +1221,21 @@
             if (!avatarEl) return;
             const mouthGroup = avatarEl.querySelector('#avatar-mouth');
             if (!mouthGroup) return;
-            const avatarKey = selectedAvatar === 'robot' ? 'robot' : selectedAvatar;
-            const mouths = TALK_MOUTHS[avatarKey];
-            if (!mouths) return;
-            let svg = mouths[shapeIndex];
-            if (avatarKey === 'robot') {
-                const glowMap = { VERY_BAD: '#f44', BAD: '#fa0', GOOD: '#4f4', VERY_GOOD: '#0ff' };
-                svg = svg.replace(/currentColor/g, glowMap[currentEmotionState] || '#4f4');
-            }
-            mouthGroup.innerHTML = svg;
-        }
 
-        function restoreEmotionMouth() {
-            renderMainAvatar(currentEmotionState);
+            if (lipSyncUsesOverlay) {
+                // PNG overlay path
+                const overlayFn = PNG_OVERLAY_MOUTHS[selectedAvatar];
+                if (!overlayFn) return;
+                const colors = PNG_BODY_COLORS[selectedAvatar];
+                const bodyColor = colors ? (colors[currentEmotionState] || colors.GOOD) : '#ccc';
+                const mouths = overlayFn(bodyColor);
+                mouthGroup.innerHTML = mouths[shapeIndex];
+            } else {
+                // SVG direct path (cat, blob)
+                const mouths = TALK_MOUTHS[selectedAvatar];
+                if (!mouths) return;
+                mouthGroup.innerHTML = mouths[shapeIndex];
+            }
         }
 
         // ==================== SVG AVATAR RENDERERS ====================
