@@ -2152,7 +2152,10 @@
             empathyMode = true;
             empathyType = type;
             document.getElementById('empathy-bar').classList.add('active');
-            addMessage(`That sounds tough... Go ahead and talk about it, I'm here to listen.`, false, true);
+            const note = type === 'user_good'
+                ? `That's great! Tell me more, I'm all ears.`
+                : `That sounds tough... Go ahead and talk about it, I'm here to listen.`;
+            addMessage(note, false, true);
         }
 
         function endEmpathyMode() {
