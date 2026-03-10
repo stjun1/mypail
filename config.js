@@ -11,7 +11,7 @@ module.exports = {
     // Groq API configuration
     GROQ_API_KEY: process.env.GROQ_API_KEY || '',
     GROQ_MODEL: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
-    GROQ_MAX_TOKENS: parseInt(process.env.GROQ_MAX_TOKENS) || 250,
+    GROQ_MAX_TOKENS: parseInt(process.env.GROQ_MAX_TOKENS) || 150,
     GROQ_TEMPERATURE: parseFloat(process.env.GROQ_TEMPERATURE) || 0.7,
     GROQ_CLASSIFY_MAX_TOKENS: parseInt(process.env.GROQ_CLASSIFY_MAX_TOKENS) || 30,
     GROQ_CLASSIFY_TEMPERATURE: parseFloat(process.env.GROQ_CLASSIFY_TEMPERATURE) || 0.1,
