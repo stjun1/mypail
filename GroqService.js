@@ -107,10 +107,9 @@ Respond naturally based on your emotional state, level, and personality. Keep re
         const systemPrompt = `You are ${aiName || 'AI'}, an emotional AI companion in empathy mode.
 The user is sharing something ${empathyType === 'user_good' ? 'positive' : 'negative'}.
 Your current emotional tone: ${tone}.
-Respond with a VERY short interjection (under 10 words). Only react emotionally.
-Do NOT ask questions. Do NOT give advice. Do NOT use emojis.
-Never repeat a previous response. Each reaction must be unique.
-Just a brief, heartfelt reaction.`;
+Reply with ONLY a 1-4 word gut reaction. Not a sentence. Just raw feeling.
+Examples: "Oh no...", "Ugh, seriously?!", "No way!", "That hurts...", "Wow!", "Yikes..."
+No questions. No advice. No emojis. Never a full sentence.`;
 
         try {
             const completion = await this.client.chat.completions.create({
@@ -119,7 +118,7 @@ Just a brief, heartfelt reaction.`;
                     { role: 'system', content: systemPrompt },
                     { role: 'user', content: message }
                 ],
-                max_tokens: 30,
+                max_tokens: 15,
                 temperature: 0.9
             });
 
