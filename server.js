@@ -165,8 +165,13 @@ app.post('/api/chat', async (req, res) => {
                 let wasGroq = false;
                 let wasStatic = false;
 
-                // Try Groq first for variety
-                if (groqService.isConfigured()) {
+                // Try static empathy responses first (instant)
+                const empathyCategory = empathyType === 'user_good' ? 'EMPATHY_GOOD' : 'EMPATHY_BAD';
+                responseText = responseGenerator.selectResponse(empathyCategory, emotions.state, emotions.combined, emotions.interactions);
+                if (responseText) wasStatic = true;
+
+                // Fall back to Groq if no static available
+                if (!responseText && groqService.isConfigured()) {
                     const result = await groqService.generateEmpathyInterjection(message, {
                         emotionState: emotions.state,
                         empathyType,
@@ -179,13 +184,6 @@ app.post('/api/chat', async (req, res) => {
                     } else if (!result.text && result.usage === null) {
                         betaMetrics.track('groqError');
                     }
-                }
-
-                // Fall back to static empathy responses
-                if (!responseText) {
-                    const fallbackCategory = empathyType === 'user_good' ? 'EMPATHY_GOOD' : 'EMPATHY_BAD';
-                    responseText = responseGenerator.selectResponse(fallbackCategory, emotions.state, emotions.combined, emotions.interactions);
-                    if (responseText) wasStatic = true;
                 }
 
                 if (!responseText) {
