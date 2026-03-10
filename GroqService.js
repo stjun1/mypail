@@ -104,12 +104,10 @@ Respond naturally based on your emotional state, level, and personality. Keep re
 
         const tone = toneMatrix[empathyType]?.[emotionState] || 'supportive';
 
-        const systemPrompt = `You are ${aiName || 'AI'}, an emotional AI companion in empathy mode.
-The user is sharing something ${empathyType === 'user_good' ? 'positive' : 'negative'}.
-Your current emotional tone: ${tone}.
-Reply with ONLY a 1-4 word gut reaction. Not a sentence. Just raw feeling.
-Examples: "Oh no...", "Ugh, seriously?!", "No way!", "That hurts...", "Wow!", "Yikes..."
-No questions. No advice. No emojis. Never a full sentence.`;
+        const systemPrompt = `Output ONLY 1-3 words. You are ${aiName || 'AI'} reacting to something ${empathyType === 'user_good' ? 'positive' : 'negative'}. Tone: ${tone}.
+RULES: Max 3 words. No full sentences. No advice. No questions. No emojis.
+Good: "Oh no..." / "Ugh..." / "That's rough..." / "Yikes..." / "Wow!" / "No way!"
+Bad: "I'm so sorry to hear that" / "That must be tough" / "I understand how you feel"`;
 
         try {
             const completion = await this.client.chat.completions.create({
@@ -118,7 +116,7 @@ No questions. No advice. No emojis. Never a full sentence.`;
                     { role: 'system', content: systemPrompt },
                     { role: 'user', content: message }
                 ],
-                max_tokens: 15,
+                max_tokens: 10,
                 temperature: 0.9
             });
 
