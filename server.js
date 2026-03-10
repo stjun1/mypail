@@ -355,7 +355,13 @@ app.post('/api/chat', async (req, res) => {
             // 1b. NAME_QUERY: dynamic response with AI's name
             if (category === 'NAME_QUERY') {
                 const name = aiName || 'AI';
-                const nameResponses = {
+                const usedName = emotionMode && nameRegex.test(message);
+                const nameResponses = usedName ? {
+                    VERY_BAD: `You just said it... ${name}. Why do you keep asking...`,
+                    BAD: `You literally just called me ${name}...`,
+                    GOOD: `You already said it, silly! It's ${name}!`,
+                    VERY_GOOD: `Ha! You just called me ${name} and still asked! That's adorable!`
+                } : {
                     VERY_BAD: `You keep forgetting my name... it's ${name}.`,
                     BAD: `You want to play with my name? It's ${name}.`,
                     GOOD: `I love it when you call my name! It's ${name}!`,
