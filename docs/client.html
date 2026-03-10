@@ -2001,6 +2001,18 @@
             }
         }
 
+        function renderEmpathyAvatar(type) {
+            const avatar = document.getElementById('avatar');
+            if (!avatar) return;
+            const empathyImages = {
+                pail: { user_good: 'avatars/pail_empathy_good.png', user_bad: 'avatars/pail_empathy_bad.png' }
+            };
+            const images = empathyImages[selectedAvatar];
+            if (images && images[type]) {
+                avatar.innerHTML = `<img src="${images[type]}" alt="Empathy - ${type}" style="width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 8px 20px rgba(0,0,0,0.2))"/>`;
+            }
+        }
+
         // Update status displays
         function updateStatus() {
             document.getElementById('battery-display').textContent =
@@ -2156,12 +2168,14 @@
                 ? `That's great! Tell me more, I'm all ears.`
                 : `That sounds tough... Go ahead and talk about it, I'm here to listen.`;
             addMessage(note, false, true);
+            renderEmpathyAvatar(type);
         }
 
         function endEmpathyMode() {
             empathyMode = false;
             empathyType = null;
             document.getElementById('empathy-bar').classList.remove('active');
+            renderMainAvatar('GOOD');
         }
 
         // Confession mode functions
@@ -2235,7 +2249,7 @@
 
             const state = emotionHint && bgColors[emotionHint] ? emotionHint : 'GOOD';
             body.style.backgroundColor = bgColors[state];
-            renderMainAvatar(state);
+            if (!empathyMode) renderMainAvatar(state);
         }
 
         // Text-to-speech
