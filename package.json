@@ -11,7 +11,9 @@
     "build:web": "mkdir -p dist && cp docs/client.html dist/index.html && rm -rf dist/avatars && cp -r avatars dist/avatars && npx esbuild src/capacitor-bridge.js --bundle --outfile=dist/capacitor-bridge.js --format=iife",
     "cap:sync": "npm run build:web && npx cap sync",
     "cap:open": "npx cap open android",
-    "build:apk": "npm run cap:sync && JAVA_HOME=/home/stjun12/jdk-21.0.6+7 ANDROID_HOME=/home/stjun12/Android/Sdk ./android/gradlew -p android assembleDebug && rclone copy android/app/build/outputs/apk/debug/app-debug.apk gdrive:MyPAiL/ && echo '✅ APK uploaded to Google Drive > MyPAiL'"
+    "keystore:pull": "rclone copy gdrive:mypail-keystore/mypail-upload.jks android/app/ && echo '✅ Keystore synced from Google Drive'",
+    "build:apk": "npm run keystore:pull && npm run cap:sync && JAVA_HOME=/opt/homebrew/opt/openjdk@21 ANDROID_HOME=$HOME/Library/Android/sdk ./android/gradlew -p android assembleDebug && rclone copy android/app/build/outputs/apk/debug/app-debug.apk gdrive:MyPAiL/ && echo '✅ APK uploaded to Google Drive > MyPAiL'",
+    "build:aab": "npm run keystore:pull && npm run cap:sync && JAVA_HOME=/opt/homebrew/opt/openjdk@21 ANDROID_HOME=$HOME/Library/Android/sdk ./android/gradlew -p android bundleRelease && rclone copy android/app/build/outputs/bundle/release/app-release.aab gdrive:MyPAiL/ && echo '✅ AAB uploaded to Google Drive > MyPAiL'"
   },
   "keywords": [
     "ai",

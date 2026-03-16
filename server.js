@@ -506,6 +506,31 @@ app.post('/api/chat', async (req, res) => {
     }
 });
 
+app.post('/api/empathy/advice', async (req, res) => {
+    try {
+        const { messages, empathyType, sessionId, aiName } = req.body;
+
+        if (!messages || !Array.isArray(messages) || messages.length === 0) {
+            return res.json({ advice: null });
+        }
+
+        if (!groqService.isConfigured()) {
+            return res.json({ advice: null });
+        }
+
+        const emotions = emotionEngine.getCombinedEmotion(sessionId);
+        const result = await groqService.generateEmpathyAdvice(messages, {
+            empathyType,
+            emotionState: emotions.state,
+            aiName: aiName || 'AI'
+        });
+
+        res.json({ advice: result.text || null });
+    } catch (error) {
+        res.status(500).json({ error: 'Server error', details: error.message });
+    }
+});
+
 app.get('/api/traits/:sessionId', (req, res) => {
     try {
         const { sessionId } = req.params;

@@ -13,12 +13,17 @@
             box-sizing: border-box;
         }
 
+        html {
+            overflow-x: hidden;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #f0f0f0;
             transition: background-color 0.5s ease;
             padding-top: env(safe-area-inset-top);
             padding-bottom: env(safe-area-inset-bottom);
+            overflow-x: hidden;
         }
 
         .container {
@@ -1105,6 +1110,7 @@
         // Empathy mode state
         let empathyMode = false;
         let empathyType = null;
+        let empathyHistory = [];
 
         // Confession mode state
         let confessionMode = false;
@@ -2084,6 +2090,8 @@
 
             addMessage(message, true);
             input.value = '';
+            input.scrollLeft = 0;
+            window.scrollTo(0, window.scrollY);
             document.getElementById('send-btn').disabled = true;
 
             try {
@@ -2100,6 +2108,7 @@
                 if (empathyMode && empathyType) {
                     requestBody.empathyMode = true;
                     requestBody.empathyType = empathyType;
+                    empathyHistory.push(message);
                 }
 
                 if (confessionMode) {
@@ -2163,6 +2172,7 @@
         function enterEmpathyMode(type) {
             empathyMode = true;
             empathyType = type;
+            empathyHistory = [];
             document.getElementById('empathy-bar').classList.add('active');
             const note = type === 'user_good'
                 ? `That's great! Tell me more, I'm all ears.`
@@ -2171,11 +2181,36 @@
             renderEmpathyAvatar(type);
         }
 
-        function endEmpathyMode() {
+        async function endEmpathyMode() {
+            const savedType = empathyType;
+            const savedHistory = empathyHistory.slice();
             empathyMode = false;
             empathyType = null;
+            empathyHistory = [];
             document.getElementById('empathy-bar').classList.remove('active');
             renderMainAvatar('GOOD');
+
+            if (savedHistory.length > 0) {
+                try {
+                    const response = await fetch(`${SERVER_URL}/api/empathy/advice`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            messages: savedHistory,
+                            empathyType: savedType,
+                            sessionId,
+                            aiName
+                        })
+                    });
+                    const data = await response.json();
+                    if (data.advice) {
+                        addMessage(data.advice, false);
+                        speak(data.advice);
+                    }
+                } catch (e) {
+                    console.error('Empathy advice error:', e);
+                }
+            }
         }
 
         // Confession mode functions

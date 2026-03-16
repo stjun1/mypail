@@ -296,6 +296,40 @@ Respond ONLY with valid JSON. No explanation.`;
         }
     }
 
+    async generateEmpathyAdvice(messages, context = {}) {
+        const { empathyType, emotionState, aiName } = context;
+
+        const sentiment = empathyType === 'user_good' ? 'positive' : 'negative';
+        const tone = empathyType === 'user_good'
+            ? 'warm, celebratory, and encouraging'
+            : 'compassionate, gentle, and supportive';
+
+        const monologue = messages.map((m, i) => `${i + 1}. ${m}`).join('\n');
+
+        const systemPrompt = `You are ${aiName || 'AI'}, an empathetic AI companion. The user just shared several ${sentiment} things with you during an empathy session. Read everything they said and give a single piece of heartfelt advice or reflection that ties it all together.
+
+Tone: ${tone}.
+Rules: 2-3 sentences max. Speak directly to the user. No lists. No emojis. Do not repeat back what they said — just give your closing thought or advice.`;
+
+        try {
+            const completion = await this.client.chat.completions.create({
+                model: this.model,
+                messages: [
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: monologue }
+                ],
+                max_tokens: 150,
+                temperature: 0.8
+            });
+
+            const text = completion.choices[0]?.message?.content || null;
+            return { text, usage: completion.usage || null };
+        } catch (error) {
+            console.error('Groq API error (empathy advice):', error.message);
+            return { text: null, usage: null };
+        }
+    }
+
     async generatePlainResponse(message, aiName) {
         const name = aiName || 'AI';
         try {
