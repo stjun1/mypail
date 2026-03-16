@@ -157,6 +157,7 @@ app.post('/api/chat', async (req, res) => {
         if (emotionMode) {
             // Empathy mode: short interjections, skip category detection
             if (empathyMode && empathyType) {
+                emotionEngine.incrementInteractions(sessionId);
                 const emotions = emotionEngine.getCombinedEmotion(sessionId);
                 emotionEngine.finalizeTurn(sessionId);
 

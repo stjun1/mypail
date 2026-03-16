@@ -2126,7 +2126,9 @@
                 addMessage(data.response, false);
 
                 try {
-                    if (data.emotionMode) {
+                    if (data.empathyMode) {
+                        renderEmpathyAvatar(empathyType);
+                    } else if (data.emotionMode) {
                         updateAvatar(data.avatarHint);
                     }
                 } catch (e) {
