@@ -486,17 +486,24 @@ app.post('/api/chat', async (req, res) => {
 
             emotionEngine.finalizeTurn(sessionId);
 
+            // Still check for empathy offers even in plain mode
+            const plainCategory = messageAnalyzer.detectCategory(message);
+            let empathyOffer = null;
+            if (plainCategory === 'USER_POSITIVE') empathyOffer = 'user_good';
+            else if (plainCategory === 'USER_NEGATIVE') empathyOffer = 'user_bad';
+
             res.json({
                 response: responseText,
                 avatarHint: 'GOOD',
                 shouldSpeak: true,
                 emotionMode: false,
+                empathyOffer,
                 _debug: {
                     phoneEmotion: phoneEmotion,
                     promptEmotion: promptEmotion,
                     combined: null,
                     state: null,
-                    category: null
+                    category: plainCategory
                 }
             });
         }
