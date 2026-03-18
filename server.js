@@ -409,7 +409,7 @@ app.post('/api/chat', async (req, res) => {
             let groqUsage = null;
             let wasGroq = false;
             let wasStatic = false;
-            const THEMED_CATEGORIES = ['PRAISE', 'INSULT', 'DEATH_THREAT', 'JOKING'];
+            const THEMED_CATEGORIES = ['PRAISE', 'INSULT', 'DEATH_THREAT', 'JOKING', 'USER_POSITIVE', 'USER_NEGATIVE'];
 
             // 1. AVATAR_STATE: always use Groq (needs live device values)
             if (category === 'AVATAR_STATE' && groqService.isConfigured()) {
@@ -450,7 +450,8 @@ app.post('/api/chat', async (req, res) => {
             }
 
             // 2. Static responses (free, used first) — use pre-boost state so response matches mood before change
-            if (!responseText) {
+            // Skip static for USER_POSITIVE/NEGATIVE so Groq can respond in the user's language
+            if (!responseText && category !== 'USER_POSITIVE' && category !== 'USER_NEGATIVE') {
                 responseText = responseGenerator.selectResponse(category, responseState, emotions.combined, emotions.interactions);
                 if (responseText) {
                     wasStatic = true;
