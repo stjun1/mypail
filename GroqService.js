@@ -10,15 +10,22 @@ class GroqService {
     }
 
     async generateResponse(message, context = {}) {
-        const { emotionState, emotionLevel, category, aiName, thresholds } = context;
+        const { emotionState, emotionLevel, category, aiName, thresholds, conversationHistory = [] } = context;
 
         const systemPrompt = this.buildSystemPrompt(emotionState, emotionLevel, aiName, thresholds);
+
+        // Include last 10 turns of history for context
+        const historyMessages = conversationHistory.slice(-10).map(m => ({
+            role: m.role,
+            content: m.content
+        }));
 
         try {
             const completion = await this.client.chat.completions.create({
                 model: this.model,
                 messages: [
                     { role: 'system', content: systemPrompt },
+                    ...historyMessages,
                     { role: 'user', content: message }
                 ],
                 max_tokens: config.GROQ_MAX_TOKENS,

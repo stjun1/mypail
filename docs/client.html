@@ -286,6 +286,13 @@
             border: 2px solid #ddd;
             border-radius: 8px;
             font-size: 16px;
+            resize: none;
+            overflow-y: hidden;
+            line-height: 1.5;
+            min-height: 52px;
+            max-height: 160px;
+            overflow-y: auto;
+            font-family: inherit;
         }
 
         button {
@@ -1060,7 +1067,7 @@
         <div class="input-area">
             <button id="voice-btn" title="Voice Input">Mic</button>
             <button id="speaker-btn" class="off" onclick="toggleSpeaker()" title="Toggle Speaker">Speaker OFF</button>
-            <input type="text" id="message-input" placeholder="Type a message or /help for commands..." onkeypress="handleKeyPress(event)">
+            <textarea id="message-input" placeholder="Type a message or /help for commands..." onkeydown="handleKeyPress(event)" oninput="autoResizeInput()" rows="1"></textarea>
             <button id="send-btn" onclick="sendMessage()">Send</button>
         </div>
 
@@ -1106,6 +1113,9 @@
             : 'https://mypail-production.up.railway.app';
         const isCapacitor = window.CapBridge && window.CapBridge.isNative;
         let deviceReadings = { battery: 75, network: -60, memory: 800 };
+
+        // Conversation history for multi-turn context (last 10 exchanges)
+        let conversationHistory = [];
 
         // Empathy mode state
         let empathyMode = false;
@@ -2102,7 +2112,8 @@
                     aiName,
                     schoolingLevels: JSON.parse(localStorage.getItem('emotionalAI_schoolingLevels') || 'null'),
                     personalityThresholds: JSON.parse(localStorage.getItem('emotionalAI_thresholds') || 'null'),
-                    personality: localStorage.getItem('emotionalAI_personality') || null
+                    personality: localStorage.getItem('emotionalAI_personality') || null,
+                    conversationHistory: conversationHistory.slice(-10)
                 };
 
                 if (empathyMode && empathyType) {
@@ -2124,6 +2135,13 @@
 
                 const data = await response.json();
                 addMessage(data.response, false);
+
+                // Update conversation history (skip commands)
+                if (!data.isCommand) {
+                    conversationHistory.push({ role: 'user', content: message });
+                    conversationHistory.push({ role: 'assistant', content: data.response });
+                    if (conversationHistory.length > 20) conversationHistory = conversationHistory.slice(-20);
+                }
 
                 try {
                     if (data.empathyMode) {
@@ -2326,11 +2344,18 @@
             }
         }
 
-        // Handle enter key
+        // Handle enter key — Enter sends, Shift+Enter adds new line
         function handleKeyPress(event) {
-            if (event.key === 'Enter') {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
                 sendMessage();
             }
+        }
+
+        function autoResizeInput() {
+            const el = document.getElementById('message-input');
+            el.style.height = 'auto';
+            el.style.height = Math.min(el.scrollHeight, 160) + 'px';
         }
 
         // Voice recognition

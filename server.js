@@ -131,7 +131,7 @@ app.get('/health', (req, res) => {
 
 app.post('/api/chat', async (req, res) => {
     try {
-        const { sessionId, message, deviceStatus, aiName, schoolingLevels, empathyMode, empathyType, personalityThresholds, personality, confessionMode: confessionModeReq, confessionRole } = req.body;
+        const { sessionId, message, deviceStatus, aiName, schoolingLevels, empathyMode, empathyType, personalityThresholds, personality, confessionMode: confessionModeReq, confessionRole, conversationHistory } = req.body;
 
         // Track new sessions
         if (!trackedSessions.has(sessionId)) {
@@ -496,7 +496,8 @@ app.post('/api/chat', async (req, res) => {
                     emotionLevel: emotions.combined,
                     category: category,
                     aiName: aiName || 'AI',
-                    thresholds: emotionEngine.getThresholds(sessionId)
+                    thresholds: emotionEngine.getThresholds(sessionId),
+                    conversationHistory: Array.isArray(conversationHistory) ? conversationHistory : []
                 });
                 if (result.text) {
                     responseText = result.text;
