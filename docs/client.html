@@ -931,7 +931,7 @@
             <h1>Personal AI Lackey (MyPAiL)</h1>
             <p style="font-size: 1.2em; font-weight: 700; color: #667eea; margin-bottom: 4px;">Happy PAiLing!!!</p>
             <p style="color: #666; margin-bottom: 2px;">Create your personal AI companion</p>
-            <p style="color: #999; font-size: 12px; margin-bottom: 10px;">v0.2.16</p>
+            <p style="color: #999; font-size: 12px; margin-bottom: 10px;">v0.2.17</p>
 
             <div style="background: #f0f4ff; border-radius: 12px; padding: 16px; margin-bottom: 16px; text-align: center; font-size: 14px; line-height: 1.8; color: #444;">
                 <p style="margin-bottom: 8px;">New to MyPAiL? Learn how it works, tips for keeping your PAiL happy, and more:</p>
@@ -2432,14 +2432,31 @@
                 document.getElementById('voice-btn').textContent = '🔴';
                 enableSpeaker();
 
+                let finalTranscript = '';
+
+                // Listen for partial results (needed for Samsung One UI)
+                const partialListener = await CapBridge.SpeechRecognition.addListener('partialResults', (data) => {
+                    if (data && data.matches && data.matches.length > 0) {
+                        finalTranscript = data.matches[0];
+                    }
+                });
+
                 const result = await CapBridge.SpeechRecognition.start({
                     language: navigator.language || 'en-US',
                     partialResults: true,
-                    popup: true
+                    popup: true,
+                    maxDuration: 10
                 });
 
-                if (result && result.matches && result.matches.length > 0) {
-                    document.getElementById('message-input').value = result.matches[0];
+                partialListener.remove();
+
+                // Use partial result if final result is empty
+                const transcript = (result && result.matches && result.matches.length > 0)
+                    ? result.matches[0]
+                    : finalTranscript;
+
+                if (transcript) {
+                    document.getElementById('message-input').value = transcript;
                     sendMessage();
                 }
             } catch (e) {
