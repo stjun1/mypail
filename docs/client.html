@@ -2441,9 +2441,17 @@
                     }
                 });
 
+                // Samsung crashes with popup:true (Play Store redirect), others need it
+                let isSamsung = false;
+                try {
+                    const info = await CapBridge.Device.getInfo();
+                    isSamsung = (info.manufacturer || '').toLowerCase().includes('samsung');
+                } catch (e) {}
+
                 const result = await CapBridge.SpeechRecognition.start({
                     language: navigator.language || 'en-US',
                     partialResults: true,
+                    popup: !isSamsung,
                     maxDuration: 10
                 });
 
