@@ -1064,11 +1064,13 @@
         <div id="mode-offers"></div>
 
         <!-- Input Area -->
-        <div class="input-area">
-            <button id="voice-btn" title="Voice Input">Mic</button>
-            <button id="speaker-btn" class="off" onclick="toggleSpeaker()" title="Toggle Speaker">Speaker OFF</button>
-            <textarea id="message-input" placeholder="Type a message or /help for commands..." onkeydown="handleKeyPress(event)" oninput="autoResizeInput()" rows="1"></textarea>
-            <button id="send-btn" onclick="sendMessage()">Send</button>
+        <div class="input-area" style="flex-direction: column; gap: 8px;">
+            <div style="display: flex; gap: 10px;">
+                <button id="voice-btn" title="Voice Input">Mic</button>
+                <button id="speaker-btn" class="off" onclick="toggleSpeaker()" title="Toggle Speaker">Speaker OFF</button>
+                <button id="send-btn" onclick="sendMessage()">Send</button>
+            </div>
+            <textarea id="message-input" placeholder="Type a message or /help for commands..." onkeydown="handleKeyPress(event)" oninput="autoResizeInput()" rows="1" style="width: 100%;"></textarea>
         </div>
 
         <!-- Chat Interface -->
