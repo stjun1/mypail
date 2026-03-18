@@ -348,6 +348,17 @@ app.post('/api/chat', async (req, res) => {
 
             // Full emotion processing — keywords first, Groq only if undetected
             let category = messageAnalyzer.detectCategory(message);
+
+            // If a rival keyword closely matches the AI's name, don't treat as rival
+            if (aiName && (category === 'RIVAL_DESPISE' || category === 'RIVAL_ENVY')) {
+                const lowerName = aiName.toLowerCase();
+                const rivals = [...(config.KEYWORDS.RIVAL_DESPISE || []), ...(config.KEYWORDS.RIVAL_ENVY || [])];
+                const matchedRival = rivals.find(r => message.toLowerCase().includes(r));
+                if (matchedRival && (lowerName.includes(matchedRival) || matchedRival.includes(lowerName))) {
+                    category = null; // treat as unrecognized, fall through to Groq
+                }
+            }
+
             let classifyUsage = null;
             if (!category && groqService.isConfigured()) {
                 const classifyResult = await groqService.classifyMessage(message);
@@ -428,7 +439,18 @@ app.post('/api/chat', async (req, res) => {
             // 2. Static responses (free, used first) — use pre-boost state so response matches mood before change
             if (!responseText) {
                 responseText = responseGenerator.selectResponse(category, responseState, emotions.combined, emotions.interactions);
-                if (responseText) wasStatic = true;
+                if (responseText) {
+                    wasStatic = true;
+                    // Substitute detected rival name into {rival} placeholder
+                    if (responseText.includes('{rival}')) {
+                        const allRivals = [...(config.KEYWORDS.RIVAL_DESPISE || []), ...(config.KEYWORDS.RIVAL_ENVY || [])];
+                        const detectedRival = allRivals.find(r => message.toLowerCase().includes(r));
+                        const rivalName = detectedRival
+                            ? detectedRival.charAt(0).toUpperCase() + detectedRival.slice(1)
+                            : 'that thing';
+                        responseText = responseText.replace(/\{rival\}/g, rivalName);
+                    }
+                }
             }
 
             // 3. Themed Groq response (for non-English or when no static exists)
