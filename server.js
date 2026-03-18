@@ -480,8 +480,7 @@ app.post('/api/chat', async (req, res) => {
             // 2. Static responses (free, used first) — use pre-boost state so response matches mood before change
             // Skip static for USER_POSITIVE/NEGATIVE when non-English so Groq responds in user's language
             const isNonEnglishMsg = /[^\x00-\x7F]/.test(message);
-            const skipStaticForLanguage = isNonEnglishMsg && (category === 'USER_POSITIVE' || category === 'USER_NEGATIVE');
-            if (!responseText && !skipStaticForLanguage) {
+            if (!responseText && !isNonEnglishMsg) {
                 responseText = responseGenerator.selectResponse(category, responseState, emotions.combined, emotions.interactions);
                 if (responseText) {
                     wasStatic = true;
