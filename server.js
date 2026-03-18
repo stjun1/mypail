@@ -237,8 +237,15 @@ app.post('/api/chat', async (req, res) => {
                 let wasGroq = false;
                 let wasStatic = false;
 
-                // Always use Groq so it can respond in the user's language
-                if (groqService.isConfigured()) {
+                const isNonEnglishEmpathy = /[^\x00-\x7F]/.test(message);
+                // Use static for English (saves tokens), Groq for non-English
+                if (!isNonEnglishEmpathy) {
+                    const empathyCategory = empathyType === 'user_good' ? 'EMPATHY_GOOD' : 'EMPATHY_BAD';
+                    responseText = responseGenerator.selectResponse(empathyCategory, emotions.state, emotions.combined, emotions.interactions);
+                    if (responseText) wasStatic = true;
+                }
+
+                if (!responseText && groqService.isConfigured()) {
                     const result = await groqService.generateEmpathyInterjection(message, {
                         emotionState: emotions.state,
                         empathyType,
@@ -324,8 +331,13 @@ app.post('/api/chat', async (req, res) => {
                         responseText = generateAdmissionResponse(confessionAdmission, confessionRole, aiName);
                     }
                 } else {
-                    // Try Groq first so it respects the user's language
-                    if (groqService.isConfigured()) {
+                    const isNonEnglish = /[^\x00-\x7F]/.test(message);
+                    // Use static for English (saves tokens), Groq for non-English
+                    if (!isNonEnglish) {
+                        responseText = responseGenerator.selectResponse('CONFESSION', emotions.state, emotions.combined, emotions.interactions);
+                        if (responseText) wasStatic = true;
+                    }
+                    if (!responseText && groqService.isConfigured()) {
                         const result = await groqService.generateConfessionResponse(message, {
                             emotionState: emotions.state,
                             confessionRole,
@@ -336,7 +348,7 @@ app.post('/api/chat', async (req, res) => {
                             wasGroq = true;
                         }
                     }
-                    // Fall back to static if Groq fails
+                    // Final fallback
                     if (!responseText) {
                         responseText = responseGenerator.selectResponse('CONFESSION', emotions.state, emotions.combined, emotions.interactions);
                         if (responseText) wasStatic = true;
@@ -466,8 +478,10 @@ app.post('/api/chat', async (req, res) => {
             }
 
             // 2. Static responses (free, used first) — use pre-boost state so response matches mood before change
-            // Skip static for USER_POSITIVE/NEGATIVE so Groq can respond in the user's language
-            if (!responseText && category !== 'USER_POSITIVE' && category !== 'USER_NEGATIVE') {
+            // Skip static for USER_POSITIVE/NEGATIVE when non-English so Groq responds in user's language
+            const isNonEnglishMsg = /[^\x00-\x7F]/.test(message);
+            const skipStaticForLanguage = isNonEnglishMsg && (category === 'USER_POSITIVE' || category === 'USER_NEGATIVE');
+            if (!responseText && !skipStaticForLanguage) {
                 responseText = responseGenerator.selectResponse(category, responseState, emotions.combined, emotions.interactions);
                 if (responseText) {
                     wasStatic = true;
