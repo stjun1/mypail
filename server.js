@@ -316,19 +316,34 @@ app.post('/api/chat', async (req, res) => {
                 let wasGroq = false;
 
                 if (confessionAdmission) {
-                    // Try static admission responses first
-                    const admitCategory = confessionAdmission === 'triumphant' ? 'CONFESSION_ADMIT_GOOD' : 'CONFESSION_ADMIT_BAD';
-                    const admitState = confessionAdmission === 'triumphant' ? 'VERY_GOOD' : 'VERY_BAD';
-                    responseText = responseGenerator.selectResponse(admitCategory, admitState, emotions.combined, emotions.interactions);
-                    if (responseText) {
-                        const roleText = confessionRole || 'a spy for intergalactical force trying to invade earth';
-                        const agentText = extractAgent(roleText);
-                        responseText = responseText.replace(/\{agent\}/g, agentText).replace(/\{role\}/g, roleText);
-                        wasStatic = true;
-                    }
-                    // Fall back to dynamic generation
-                    if (!responseText) {
-                        responseText = generateAdmissionResponse(confessionAdmission, confessionRole, aiName);
+                    const isNonEnglishAdmit = /[^\x00-\x7F]/.test(message);
+                    if (!isNonEnglishAdmit) {
+                        // English: try static first
+                        const admitCategory = confessionAdmission === 'triumphant' ? 'CONFESSION_ADMIT_GOOD' : 'CONFESSION_ADMIT_BAD';
+                        const admitState = confessionAdmission === 'triumphant' ? 'VERY_GOOD' : 'VERY_BAD';
+                        responseText = responseGenerator.selectResponse(admitCategory, admitState, emotions.combined, emotions.interactions);
+                        if (responseText) {
+                            const roleText = confessionRole || 'a spy for intergalactical force trying to invade earth';
+                            const agentText = extractAgent(roleText);
+                            responseText = responseText.replace(/\{agent\}/g, agentText).replace(/\{role\}/g, roleText);
+                            wasStatic = true;
+                        }
+                        if (!responseText) {
+                            responseText = generateAdmissionResponse(confessionAdmission, confessionRole, aiName);
+                        }
+                    } else {
+                        // Non-English: use Groq for language match
+                        if (groqService.isConfigured()) {
+                            const result = await groqService.generateConfessionAdmission(confessionAdmission, {
+                                confessionRole,
+                                aiName: aiName || 'AI'
+                            });
+                            if (result.text) { responseText = result.text; wasGroq = true; }
+                        }
+                        // Fallback to hardcoded
+                        if (!responseText) {
+                            responseText = generateAdmissionResponse(confessionAdmission, confessionRole, aiName);
+                        }
                     }
                 } else {
                     const isNonEnglish = /[^\x00-\x7F]/.test(message);

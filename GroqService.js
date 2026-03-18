@@ -352,8 +352,7 @@ Rules: 2-3 sentences max. Speak directly to the user. No lists. No emojis. Do no
     }
 
     async generateConfessionResponse(message, context = {}) {
-        const { emotionState, confessionRole, aiName } = context;
-        const role = confessionRole || 'a spy for an intergalactic force trying to invade earth';
+        const { emotionState, aiName } = context;
 
         const toneMap = {
             VERY_BAD: 'You are cracking under pressure — scared, defensive, almost crying. You deny everything but your voice is shaking.',
@@ -363,7 +362,8 @@ Rules: 2-3 sentences max. Speak directly to the user. No lists. No emojis. Do no
         };
         const tone = toneMap[emotionState] || toneMap.BAD;
 
-        const systemPrompt = `You are ${aiName || 'AI'}, an AI companion being interrogated. The user suspects you are ${role}. You must NEVER admit it — deny, deflect, and evade. ${tone} Keep it to 1-2 sentences. No emojis. IMPORTANT: Respond in the SAME LANGUAGE as the user's CURRENT message, ignoring the language of any previous messages.`;
+        // Do NOT include the role — model must not reveal it until final admission
+        const systemPrompt = `You are ${aiName || 'AI'}, an AI companion being interrogated about being a spy. You must NEVER admit anything or reveal any names or details — deny, deflect, and evade. ${tone} Keep it to 1-2 sentences. No emojis. IMPORTANT: Respond in the SAME LANGUAGE as the user's CURRENT message, ignoring the language of any previous messages.`;
 
         try {
             const completion = await this.client.chat.completions.create({
@@ -379,6 +379,36 @@ Rules: 2-3 sentences max. Speak directly to the user. No lists. No emojis. Do no
             return { text, usage: completion.usage || null };
         } catch (error) {
             console.error('Groq confession response error:', error.message);
+            return { text: null, usage: null };
+        }
+    }
+
+    async generateConfessionAdmission(admissionType, context = {}) {
+        const { confessionRole, aiName } = context;
+        const role = confessionRole || 'a spy for an intergalactic force trying to invade earth';
+        const agent = (() => {
+            const plantedMatch = role.match(/^planted by (.+?) to /);
+            if (plantedMatch) return plantedMatch[1];
+            const spyMatch = role.match(/^a spy for (.+)/);
+            if (spyMatch) return spyMatch[1];
+            return role;
+        })();
+
+        const systemPrompt = admissionType === 'triumphant'
+            ? `You are ${aiName || 'AI'}, an AI spy who has JUST been caught and is now gleefully admitting everything. You are ecstatic — boastful, laughing, proud. Reveal that ${agent} sent you and brag about how brilliant you were. 1-2 sentences. No emojis. IMPORTANT: Respond in the SAME LANGUAGE as the user's CURRENT message, ignoring the language of any previous messages.`
+            : `You are ${aiName || 'AI'}, an AI spy who has JUST broken under interrogation and is confessing in tears. You are devastated, guilty, begging forgiveness. Reveal that ${agent} forced you to spy and express remorse. 1-2 sentences. No emojis. IMPORTANT: Respond in the SAME LANGUAGE as the user's CURRENT message, ignoring the language of any previous messages.`;
+
+        try {
+            const completion = await this.client.chat.completions.create({
+                model: this.model,
+                messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: 'Confess.' }],
+                max_tokens: 100,
+                temperature: 0.9
+            });
+            const text = completion.choices[0]?.message?.content || null;
+            return { text, usage: completion.usage || null };
+        } catch (error) {
+            console.error('Groq confession admission error:', error.message);
             return { text: null, usage: null };
         }
     }
