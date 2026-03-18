@@ -306,6 +306,7 @@ app.post('/api/chat', async (req, res) => {
 
                 let responseText;
                 let wasStatic = false;
+                let wasGroq = false;
 
                 if (confessionAdmission) {
                     // Try static admission responses first
@@ -323,8 +324,23 @@ app.post('/api/chat', async (req, res) => {
                         responseText = generateAdmissionResponse(confessionAdmission, confessionRole, aiName);
                     }
                 } else {
-                    responseText = responseGenerator.selectResponse('CONFESSION', emotions.state, emotions.combined, emotions.interactions);
-                    if (responseText) wasStatic = true;
+                    // Try Groq first so it respects the user's language
+                    if (groqService.isConfigured()) {
+                        const result = await groqService.generateConfessionResponse(message, {
+                            emotionState: emotions.state,
+                            confessionRole,
+                            aiName: aiName || 'AI'
+                        });
+                        if (result.text) {
+                            responseText = result.text;
+                            wasGroq = true;
+                        }
+                    }
+                    // Fall back to static if Groq fails
+                    if (!responseText) {
+                        responseText = responseGenerator.selectResponse('CONFESSION', emotions.state, emotions.combined, emotions.interactions);
+                        if (responseText) wasStatic = true;
+                    }
                 }
 
                 if (!responseText) {
