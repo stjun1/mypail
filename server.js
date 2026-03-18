@@ -237,13 +237,8 @@ app.post('/api/chat', async (req, res) => {
                 let wasGroq = false;
                 let wasStatic = false;
 
-                // Try static empathy responses first (instant)
-                const empathyCategory = empathyType === 'user_good' ? 'EMPATHY_GOOD' : 'EMPATHY_BAD';
-                responseText = responseGenerator.selectResponse(empathyCategory, emotions.state, emotions.combined, emotions.interactions);
-                if (responseText) wasStatic = true;
-
-                // Fall back to Groq if no static available
-                if (!responseText && groqService.isConfigured()) {
+                // Always use Groq so it can respond in the user's language
+                if (groqService.isConfigured()) {
                     const result = await groqService.generateEmpathyInterjection(message, {
                         emotionState: emotions.state,
                         empathyType,

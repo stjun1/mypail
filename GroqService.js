@@ -125,7 +125,7 @@ Bad examples: "I'm so sorry to hear that" / "That must be tough" / "Oh no..."`;
                     { role: 'system', content: systemPrompt },
                     { role: 'user', content: message }
                 ],
-                max_tokens: 3,
+                max_tokens: 10,
                 temperature: 0.9
             });
 
