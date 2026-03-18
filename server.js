@@ -146,15 +146,68 @@ app.post('/api/chat', async (req, res) => {
             '|\\b' + escapedName + '\\s*$)',               // last word
             'i'
         );
-        // In empathy/confession mode, treat as emotion mode regardless of name detection
-        const emotionMode = empathyMode || confessionModeReq || (aiName && aiName.length > 0 && nameRegex.test(message));
+        const correctNameUsed = aiName && aiName.length > 0 && nameRegex.test(message);
+
+        // Detect wrong name: message starts with a different capitalized name
+        const COMMON_STARTERS = ['I', 'The', 'A', 'An', 'My', 'We', 'He', 'She', 'It', 'They', 'This', 'That', 'Oh', 'Hey', 'Hi', 'Hello'];
+        const wrongNameMatch = /^\s*([A-Z][a-zA-Z]{1,})\b/.exec(message);
+        const wrongNameUsed = !correctNameUsed && !!wrongNameMatch &&
+            !COMMON_STARTERS.includes(wrongNameMatch[1]) &&
+            wrongNameMatch[1] !== (aiName || '');
 
         // Always run: keeps emotion state accurate in background
         const session = emotionEngine.getSession(sessionId, aiName, schoolingLevels, personalityThresholds);
         const phoneEmotion = emotionEngine.calculatePhoneEmotion(deviceStatus, sessionId);
         const promptEmotion = emotionEngine.calculatePromptEmotion(sessionId);
 
-        if (emotionMode) {
+        // Command mode: handle /commands
+        if (message.startsWith('/')) {
+            const cmd = message.trim().toLowerCase();
+            const emotions = emotionEngine.getCombinedEmotion(sessionId);
+            const traits = emotionEngine.getTraits(sessionId);
+            const thresholds = emotionEngine.getThresholds(sessionId);
+
+            let responseText;
+
+            if (cmd === '/help') {
+                responseText = [
+                    '📋 Available commands:',
+                    '/help — show this list',
+                    '/show emotion — current emotion state and levels',
+                    '/show personality — personality traits and thresholds'
+                ].join('\n');
+            } else if (cmd === '/show emotion') {
+                responseText = [
+                    `🎭 Emotion State: ${emotions.state}`,
+                    `📊 Combined Level: ${Math.round(emotions.combined)}/100`,
+                    `📱 Phone Emotion: ${Math.round(emotions.phone)}`,
+                    `💬 Prompt Emotion: ${Math.round(emotions.prompt)}`
+                ].join('\n');
+            } else if (cmd === '/show personality') {
+                responseText = [
+                    `🤖 Name: ${aiName || 'AI'}`,
+                    `🍕 Favorite Food: ${traits?.favoriteFood || '?'}`,
+                    `🚫 Disliked Food: ${traits?.dislikedFood || '?'}`,
+                    `🎵 Favorite Music: ${traits?.favoriteMusic || '?'}`,
+                    `🌤 Favorite Weather: ${traits?.favoriteWeather || '?'}`,
+                    `🎨 Favorite Color: ${traits?.favoriteColor || '?'}`,
+                    `😱 Fear: ${traits?.fear || '?'}`,
+                    `📉 Thresholds — Very Bad: ${thresholds.VERY_BAD}, Bad: ${thresholds.BAD}, Good: ${thresholds.GOOD}`
+                ].join('\n');
+            } else {
+                responseText = `Unknown command: ${message.trim()}\nType /help to see available commands.`;
+            }
+
+            return res.json({
+                response: responseText,
+                avatarHint: emotions.state,
+                shouldSpeak: false,
+                emotionMode: true,
+                isCommand: true
+            });
+        }
+
+        {
             // Empathy mode: short interjections, skip category detection
             if (empathyMode && empathyType) {
                 emotionEngine.incrementInteractions(sessionId);
@@ -308,7 +361,9 @@ app.post('/api/chat', async (req, res) => {
             // Capture pre-boost state to limit state jumps
             const preBoostState = emotionEngine.getCombinedEmotion(sessionId).state;
 
-            const promptBoost = config.TRIGGERS[category] || 0;
+            let promptBoost = config.TRIGGERS[category] || 0;
+            if (correctNameUsed) promptBoost += 5;
+            else if (wrongNameUsed) promptBoost -= 5;
 
             if (promptBoost !== 0) {
                 emotionEngine.addPromptEmotion(sessionId, promptBoost, category);
@@ -354,7 +409,7 @@ app.post('/api/chat', async (req, res) => {
             // 1b. NAME_QUERY: dynamic response with AI's name
             if (category === 'NAME_QUERY') {
                 const name = aiName || 'AI';
-                const usedName = emotionMode && nameRegex.test(message);
+                const usedName = nameRegex.test(message);
                 const nameResponses = usedName ? {
                     VERY_BAD: `You just said it... ${name}. Why do you keep asking...`,
                     BAD: `You literally just called me ${name}...`,
@@ -453,57 +508,6 @@ app.post('/api/chat', async (req, res) => {
                     combined: emotions.combined,
                     state: emotions.state,
                     category: category
-                }
-            });
-        } else {
-            // Normal mode: plain assistant response, no emotion processing
-            let responseText;
-            let groqUsage = null;
-            let wasGroq = false;
-
-            if (groqService.isConfigured()) {
-                const result = await groqService.generatePlainResponse(message, aiName);
-                if (result.text) {
-                    responseText = result.text;
-                    groqUsage = result.usage;
-                    wasGroq = true;
-                } else if (!result.text && result.usage === null) {
-                    betaMetrics.track('groqError');
-                }
-            }
-
-            if (!responseText) {
-                responseText = "I'm not sure how to respond to that right now.";
-            }
-
-            betaMetrics.track('message', {
-                mode: 'plain',
-                usage: groqUsage,
-                wasGroq,
-                wasStatic: !wasGroq,
-                sessionId
-            });
-
-            emotionEngine.finalizeTurn(sessionId);
-
-            // Still check for empathy offers even in plain mode
-            const plainCategory = messageAnalyzer.detectCategory(message);
-            let empathyOffer = null;
-            if (plainCategory === 'USER_POSITIVE') empathyOffer = 'user_good';
-            else if (plainCategory === 'USER_NEGATIVE') empathyOffer = 'user_bad';
-
-            res.json({
-                response: responseText,
-                avatarHint: 'GOOD',
-                shouldSpeak: true,
-                emotionMode: false,
-                empathyOffer,
-                _debug: {
-                    phoneEmotion: phoneEmotion,
-                    promptEmotion: promptEmotion,
-                    combined: null,
-                    state: null,
-                    category: plainCategory
                 }
             });
         }

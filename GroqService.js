@@ -104,10 +104,11 @@ Respond naturally based on your emotional state, level, and personality. Keep re
 
         const tone = toneMatrix[empathyType]?.[emotionState] || 'supportive';
 
-        const systemPrompt = `Output ONLY 1-3 words. You are ${aiName || 'AI'} reacting to something ${empathyType === 'user_good' ? 'positive' : 'negative'}. Tone: ${tone}.
-RULES: Max 3 words. No full sentences. No advice. No questions. No emojis.
-Good: "Oh no..." / "Ugh..." / "That's rough..." / "Yikes..." / "Wow!" / "No way!"
-Bad: "I'm so sorry to hear that" / "That must be tough" / "I understand how you feel"`;
+        const systemPrompt = `Output ONLY a single exclamation word. You are ${aiName || 'AI'} reacting to something ${empathyType === 'user_good' ? 'positive' : 'negative'}. Tone: ${tone}.
+RULES: One word only. Must be an exclamation. No full sentences. No advice. No questions. No emojis.
+Good examples: "Wow!" / "Yes!" / "Woah!" / "Sweet!" / "Nice!"
+Bad examples: "I'm so sorry to hear that" / "That must be tough" / "Oh no..."`;
+
 
         try {
             const completion = await this.client.chat.completions.create({
@@ -116,7 +117,7 @@ Bad: "I'm so sorry to hear that" / "That must be tough" / "I understand how you 
                     { role: 'system', content: systemPrompt },
                     { role: 'user', content: message }
                 ],
-                max_tokens: 10,
+                max_tokens: 3,
                 temperature: 0.9
             });
 
