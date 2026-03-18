@@ -174,7 +174,10 @@ app.post('/api/chat', async (req, res) => {
                     '📋 Available commands:',
                     '/help — show this list',
                     '/show emotion — current emotion state and levels',
-                    '/show personality — personality traits and thresholds'
+                    '/show name — AI name',
+                    '/show traits — personality traits',
+                    '/show personality — emotion thresholds',
+                    '/change name <newname> — change the AI name'
                 ].join('\n');
             } else if (cmd === '/show emotion') {
                 responseText = [
@@ -183,17 +186,32 @@ app.post('/api/chat', async (req, res) => {
                     `📱 Phone Emotion: ${Math.round(emotions.phone)}`,
                     `💬 Prompt Emotion: ${Math.round(emotions.prompt)}`
                 ].join('\n');
-            } else if (cmd === '/show personality') {
+            } else if (cmd === '/show name') {
+                responseText = `🤖 Name: ${aiName || 'AI'}`;
+            } else if (cmd === '/show traits') {
                 responseText = [
-                    `🤖 Name: ${aiName || 'AI'}`,
                     `🍕 Favorite Food: ${traits?.favoriteFood || '?'}`,
                     `🚫 Disliked Food: ${traits?.dislikedFood || '?'}`,
                     `🎵 Favorite Music: ${traits?.favoriteMusic || '?'}`,
                     `🌤 Favorite Weather: ${traits?.favoriteWeather || '?'}`,
                     `🎨 Favorite Color: ${traits?.favoriteColor || '?'}`,
-                    `😱 Fear: ${traits?.fear || '?'}`,
-                    `📉 Thresholds — Very Bad: ${thresholds.VERY_BAD}, Bad: ${thresholds.BAD}, Good: ${thresholds.GOOD}`
+                    `😱 Fear: ${traits?.fear || '?'}`
                 ].join('\n');
+            } else if (cmd === '/show personality') {
+                responseText = [
+                    `📉 Very Bad below: ${thresholds.VERY_BAD}`,
+                    `😟 Bad below: ${thresholds.BAD}`,
+                    `😊 Good below: ${thresholds.GOOD}`,
+                    `🌟 Very Good: ${thresholds.GOOD}+`
+                ].join('\n');
+            } else if (cmd.startsWith('/change name ')) {
+                const newName = message.trim().slice('/change name '.length).trim();
+                if (newName) {
+                    emotionEngine.updateName(sessionId, newName);
+                    responseText = `✅ Name changed to: ${newName}`;
+                } else {
+                    responseText = `Usage: /change name <newname>`;
+                }
             } else {
                 responseText = `Unknown command: ${message.trim()}\nType /help to see available commands.`;
             }
@@ -445,10 +463,13 @@ app.post('/api/chat', async (req, res) => {
                     if (responseText.includes('{rival}')) {
                         const allRivals = [...(config.KEYWORDS.RIVAL_DESPISE || []), ...(config.KEYWORDS.RIVAL_ENVY || [])];
                         const detectedRival = allRivals.find(r => message.toLowerCase().includes(r));
-                        const rivalName = detectedRival
-                            ? detectedRival.charAt(0).toUpperCase() + detectedRival.slice(1)
-                            : 'that thing';
-                        responseText = responseText.replace(/\{rival\}/g, rivalName);
+                        if (!detectedRival) {
+                            responseText = null; // no specific rival found, fall through to Groq
+                            wasStatic = false;
+                        } else {
+                            const rivalName = detectedRival.charAt(0).toUpperCase() + detectedRival.slice(1);
+                            responseText = responseText.replace(/\{rival\}/g, rivalName);
+                        }
                     }
                 }
             }

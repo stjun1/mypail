@@ -309,6 +309,12 @@ class EmotionEngine {
         const session = this.getSession(sessionId);
         return session.traits;
     }
+
+    updateName(sessionId, newName) {
+        const session = this.getSession(sessionId);
+        session.aiName = newName;
+        this.sessionManager.savePersistent(sessionId, newName, session.traits, session.schoolingLevels);
+    }
 }
 
 module.exports = EmotionEngine;
