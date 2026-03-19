@@ -14,6 +14,8 @@ npm run cap:sync     # Build web + sync to Capacitor for mobile
 npm run build:apk    # Full Android APK build (requires Android SDK)
 ```
 
+> **IMPORTANT — Before ANY code change**: Describe what you plan to do and wait for user confirmation before making edits.
+
 > **IMPORTANT — AAB builds**: Always bump the version in ALL FOUR places before running `npm run build:aab`:
 > 1. `versionCode` and `versionName` in `android/app/build.gradle`
 > 2. `version` in `package.json`
