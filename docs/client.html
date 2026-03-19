@@ -2228,7 +2228,7 @@
                 <button class="decline-btn" onclick="this.parentElement.remove()">No</button>`;
             const chatBox = document.getElementById('chat-box');
             chatBox.appendChild(div);
-            chatBox.scrollTop = chatBox.scrollHeight;
+            setTimeout(() => div.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
         }
 
         function acceptEmpathyOffer(type, el) {
@@ -2244,7 +2244,7 @@
                 <button class="decline-btn" onclick="this.parentElement.remove()">Ignore</button>`;
             const chatBox = document.getElementById('chat-box');
             chatBox.appendChild(div);
-            chatBox.scrollTop = chatBox.scrollHeight;
+            setTimeout(() => div.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
         }
 
         function acceptConfessionOffer(el) {
