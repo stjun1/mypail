@@ -2429,38 +2429,6 @@
                 isSamsung = (info.manufacturer || '').toLowerCase().includes('samsung');
             } catch (e) {}
 
-            if (isSamsung && 'webkitSpeechRecognition' in window) {
-                // Request native permission first so Android grants RECORD_AUDIO to the WebView
-                try {
-                    const perm = await CapBridge.SpeechRecognition.requestPermissions();
-                    if (perm.speechRecognition !== 'granted') {
-                        console.warn('Speech permission denied');
-                        return;
-                    }
-                } catch (e) {}
-                isVoiceActive = true;
-                document.getElementById('voice-btn').classList.add('active');
-                document.getElementById('voice-btn').textContent = '🔴';
-                enableSpeaker();
-                const sr = new webkitSpeechRecognition();
-                sr.continuous = false;
-                sr.interimResults = false;
-                sr.lang = navigator.language || 'en-US';
-                // Safety timeout — reset button if onend never fires (Samsung WebView quirk)
-                const samsungTimeout = setTimeout(() => stopVoice(), 12000);
-                sr.onresult = (event) => {
-                    clearTimeout(samsungTimeout);
-                    const transcript = event.results[0][0].transcript;
-                    document.getElementById('message-input').value = transcript;
-                    stopVoice();
-                    sendMessage();
-                };
-                sr.onerror = (e) => { clearTimeout(samsungTimeout); stopVoice(); };
-                sr.onend = () => { clearTimeout(samsungTimeout); stopVoice(); };
-                sr.start();
-                return;
-            }
-
             try {
                 const perm = await CapBridge.SpeechRecognition.requestPermissions();
                 if (perm.speechRecognition !== 'granted') {
@@ -2479,10 +2447,11 @@
                     }
                 });
 
+                // Samsung: popup:true crashes on some devices; use popup:false with partialResults fallback
                 const result = await CapBridge.SpeechRecognition.start({
                     language: navigator.language || 'en-US',
-                    partialResults: true,
-                    popup: true,
+                    partialResults: !isSamsung,
+                    popup: !isSamsung,
                     maxDuration: 10
                 });
 
