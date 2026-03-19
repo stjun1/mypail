@@ -209,7 +209,7 @@ Speak in first person. Describe how you're currently feeling and specifically me
     async classifyMessage(message) {
         const VALID_CATEGORIES = [
             'CONFESSION_ENTER', 'DEATH_THREAT', 'JOKING', 'RIVAL_ENVY', 'RIVAL_DESPISE', 'DENIAL', 'PHONE_STATUS', 'AVATAR_STATE',
-            'GREETING', 'PRAISE', 'INSULT', 'USER_POSITIVE', 'USER_NEGATIVE'
+            'GREETING', 'PRAISE', 'INSULT'
         ];
 
         const systemPrompt = `You are a message classifier. Classify the user's message into exactly one category. Respond with JSON only: {"category": "CATEGORY_NAME"}
@@ -226,8 +226,6 @@ Categories:
 - GREETING: Hello, hi, hey, good morning, how are you, etc.
 - PRAISE: Complimenting the AI (beautiful, cute, amazing, love you, etc.)
 - INSULT: Insulting the AI (ugly, stupid, useless, hate you, etc.)
-- USER_POSITIVE: User expressing their own happiness, excitement, or good feelings
-- USER_NEGATIVE: User expressing their own sadness, stress, frustration, or bad feelings (NOT when the user is encouraging/comforting the AI — e.g. "cheer up", "don't be sad", "it'll be okay" are NOT USER_NEGATIVE)
 - NONE: Does not fit any category above
 
 Respond ONLY with valid JSON. No explanation.`;
