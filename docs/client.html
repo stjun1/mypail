@@ -760,6 +760,30 @@
             display: block;
         }
 
+        .empathy-offer {
+            background: linear-gradient(135deg, #f0f4ff, #e0e8ff);
+            border: 2px solid #4466cc;
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-bottom: 12px;
+            text-align: center;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .empathy-offer p { margin-bottom: 10px; }
+
+        .empathy-offer button {
+            padding: 8px 20px;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 8px;
+            margin: 0 4px;
+        }
+
+        .empathy-offer .accept-btn { background: linear-gradient(135deg, #4466cc, #223388); }
+        .empathy-offer .decline-btn { background: #9E9E9E; }
+
         .confession-offer {
             background: linear-gradient(135deg, #fff0f0, #ffe0e0);
             border: 2px solid #8b0000;
@@ -2100,6 +2124,9 @@
 
             if (!message) return;
 
+            // Clear any pending mode offers when user sends a new message
+            document.getElementById('mode-offers').innerHTML = '';
+
             addMessage(message, true);
             input.value = '';
             input.scrollLeft = 0;
@@ -2163,14 +2190,14 @@
                     console.error('Speech error:', e);
                 }
 
-                // Handle empathy offer (only when not already in empathy mode)
+                // Handle empathy offer — show opt-in prompt, don't auto-enter
                 if (data.empathyOffer && !empathyMode) {
-                    enterEmpathyMode(data.empathyOffer);
+                    showEmpathyOffer(data.empathyOffer);
                 }
 
-                // Handle confession offer
+                // Handle confession offer — show opt-in prompt, don't auto-enter
                 if (data.confessionOffer && !confessionMode) {
-                    enterConfessionMode();
+                    showConfessionOffer();
                 }
 
                 // Handle confession admission
@@ -2188,6 +2215,41 @@
             } finally {
                 document.getElementById('send-btn').disabled = false;
             }
+        }
+
+        function showEmpathyOffer(type) {
+            const container = document.getElementById('mode-offers');
+            container.innerHTML = '';
+            const label = type === 'user_good'
+                ? 'Want me to focus on your good news?'
+                : 'Want me to just listen for a bit?';
+            const div = document.createElement('div');
+            div.className = 'empathy-offer';
+            div.innerHTML = `<p>${label}</p>
+                <button class="accept-btn" onclick="acceptEmpathyOffer('${type}', this.parentElement)">Yes</button>
+                <button class="decline-btn" onclick="this.parentElement.remove()">No</button>`;
+            container.appendChild(div);
+        }
+
+        function acceptEmpathyOffer(type, el) {
+            el.remove();
+            enterEmpathyMode(type);
+        }
+
+        function showConfessionOffer() {
+            const container = document.getElementById('mode-offers');
+            container.innerHTML = '';
+            const div = document.createElement('div');
+            div.className = 'confession-offer';
+            div.innerHTML = `<p>Enter Confession Mode?</p>
+                <button class="accept-btn" onclick="acceptConfessionOffer(this.parentElement)">Interrogate</button>
+                <button class="decline-btn" onclick="this.parentElement.remove()">Ignore</button>`;
+            container.appendChild(div);
+        }
+
+        function acceptConfessionOffer(el) {
+            el.remove();
+            enterConfessionMode();
         }
 
         // Empathy mode functions
