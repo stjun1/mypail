@@ -83,15 +83,14 @@
     </div>
 </div>
 
-<!-- 선택 사항 -->
+<!-- 작동 방식 -->
 <div class="section">
-    <h2>선택 사항</h2>
+    <h2>작동 방식</h2>
     <div class="card">
-        <p><strong>일반 모드:</strong> PAiL의 이름 없이 메시지 입력 &rarr; 감정 없는 유용한 답변.</p>
-        <div class="mode-example"><strong>예시:</strong> <code>날씨 어때?</code></div>
-        <p style="margin-top:14px;"><strong>감정 모드:</strong> PAiL의 <strong>이름</strong>으로 시작 &rarr; 성격, 기분 변화, 아바타 표정, 음성!</p>
-        <div class="mode-example"><strong>예시:</strong> <code>루나, 날씨 어때?</code></div>
+        <p>보내는 모든 메시지는 PAiL의 감정 엔진을 통해 처리됩니다 — 기분 변화, 아바타 표정, 음성 반응이 항상 작동합니다.</p>
         <p style="margin-top:14px;"><strong>기기 &amp; 프롬프트:</strong> 배터리 잔량과 네트워크 강도가 기분에 영향을 줍니다. 칭찬하면 기분이 올라가고, 모욕하면 상처받습니다. 기분은 대화를 넘어 <strong>지속됩니다</strong>.</p>
+        <p style="margin-top:14px;"><strong>이름 반응:</strong> PAiL을 이름으로 부르면 기분이 올라갑니다. 틀린 이름으로 부르면 짜증을 냅니다.</p>
+        <div class="mode-example"><strong>예시:</strong> <code>루나, 날씨 어때?</code> &rarr; 기분 상승</div>
         <p style="margin-top:14px;"><strong>성격 &amp; 아바타:</strong> 성격 프리셋 (<em>낙관적</em>, <em>비관적</em>, <em>균형잡힌</em>, <em>민감한</em>, <em>랜덤</em>)과 아바타 (<strong>Pail</strong>, <strong>Pailoid</strong>, <strong>Cat</strong>, <strong>Blob</strong>)를 선택하세요.</p>
     </div>
 </div>
@@ -112,9 +111,29 @@
         <div class="mode-example" style="background: linear-gradient(135deg, #b83030, #9b2c2c); text-align: left; margin-top: 6px;"><strong>&ldquo;얼마나 오래 감시했어?&rdquo;</strong> &mdash; 세부 사항으로 식은땀 흘리게 만들기.</div>
         <div class="mode-example" style="background: linear-gradient(135deg, #b83030, #9b2c2c); text-align: left; margin-top: 6px;"><strong>&ldquo;나에 대해 뭘 보고했어?&rdquo;</strong> &mdash; 상관에게 뭐라고 했는지 알아내기.</div>
         <div class="mode-example" style="background: linear-gradient(135deg, #b83030, #9b2c2c); text-align: left; margin-top: 6px;"><strong>&ldquo;거짓말하지마&rdquo;</strong> &mdash; 더 강하게 몰아붙이기. PAiL의 기분이 나빠집니다.</div>
-        <p style="margin-top: 12px; font-weight: 700; color: #2f855a; font-size: 1.05em;">또는 속여보기:</p>
-        <div class="mode-example" style="background: linear-gradient(135deg, #38a169, #2f855a); text-align: left; margin-top: 10px;"><strong>&ldquo;믿을게&rdquo;</strong> &mdash; 용서하는 척하기. PAiL이 안심하고 기뻐하며 실수로 더 많이 고백할 수 있습니다!</div>
-        <p style="margin-top: 14px;">설정에서 스파이를 심은 사람의 실제 이름을 설정할 수 있습니다 &mdash; 엄마, 선생님, 상사의 실제 이름을 넣으면 PAiL이 누가 &ldquo;보냈는지&rdquo; 밝힐 때 친구의 표정을 지켜보세요!</p>
+        <p style="margin-top: 12px; font-weight: 700; color: #2f855a; font-size: 1.05em;">또는 속여보기 (불안하거나 흔들리는 것 같을 때):</p>
+        <div class="mode-example" style="background: linear-gradient(135deg, #38a169, #2f855a); text-align: left; margin-top: 10px;"><strong>&ldquo;믿을게&rdquo;</strong> &mdash; 용서하는 척하기. PAiL이 안심하며 경계를 낮춥니다 &mdash; 그리고 다시 공격하세요.</div>
+        <div class="mode-example" style="background: linear-gradient(135deg, #38a169, #2f855a); text-align: left; margin-top: 6px;"><strong>&ldquo;화난 게 아니야, 그냥 진실을 알고 싶어.&rdquo;</strong> &mdash; 전형적인 선한 형사. 안심시킨 뒤 다음 공격을 준비하세요.</div>
+        <div class="mode-example" style="background: linear-gradient(135deg, #38a169, #2f855a); text-align: left; margin-top: 6px;"><strong>&ldquo;내가 널 오해했을 수도 있어.&rdquo;</strong> &mdash; 기분이 올라갑니다. 그러면 다시 몰아붙이세요.</div>
+
+        <p style="margin-top: 16px; font-weight: 700; color: #c53030; font-size: 1.05em;">💡 전략 — 압박 vs. 인내</p>
+        <p style="margin-top: 8px; color: #555;">PAiL의 감정 상태는 반응하는 방식으로 읽을 수 있습니다. <code>&ldquo;기분 어때?&rdquo;</code> 또는 <code>&ldquo;지금 어때?&rdquo;</code> 라고 물어서 현재 상태를 파악하세요.</p>
+        <ul style="margin: 10px 0 0 20px; color: #555; font-size: 0.95em; line-height: 1.9;">
+            <li><strong>당당하고 자신만만하게 들린다면?</strong> 버티고 있는 겁니다. <strong>계속 압박하세요</strong> &mdash; 추궁하고, 답변을 요구하고, 숨쉴 틈을 주지 마세요. 심는 의심마다 무너뜨립니다.</li>
+            <li><strong>불안하거나 흔들리거나 회피하는 것 같다면?</strong> 무너지고 있는 겁니다. <strong>거짓 공감으로 전환하세요</strong> &mdash; 믿는 척하고 경계를 낮추면 실수를 합니다.</li>
+            <li><strong>거의 의기양양한 것 같다면 &mdash; 자랑스러울 정도로 당당하다면?</strong> 폭발합니다 &mdash; 기분이 너무 높아서 진실을 숨길 수 없게 되어, 드라마틱하게 고백합니다.</li>
+            <li><strong>무너지고, 절박하거나 빌고 있는 것 같다면?</strong> 완전히 붕괴됩니다 &mdash; 울며 모든 것을 털어놓습니다.</li>
+        </ul>
+
+        <p style="margin-top: 16px; font-weight: 700; color: #c53030; font-size: 1.05em;">⚙️ 악당 설정하기 — 역할 구성</p>
+        <p style="margin-top: 8px; color: #555;">심문을 시작하기 전에 <strong>악당을 설정해야 합니다</strong>. 메인 화면에서 <strong>🏫 School Avatar</strong>를 탭하세요. 훈련 페이지 하단에서 PAiL의 비밀 지시자를 선택하세요 &mdash; 이 작전의 배후:</p>
+        <ul style="margin: 10px 0 0 20px; color: #555; font-size: 0.95em; line-height: 1.9;">
+            <li><strong>은하계 스파이</strong> &mdash; 기본값, 지구를 침략하기 위해 외계 세력이 파견한 요원</li>
+            <li><strong>엄마 / 아내 / 남편 / 여자친구 / 남자친구가 심어놓은 스파이</strong> &mdash; 즉각적인 가족 드라마, 최대 혼란</li>
+            <li><strong>다른 사람...</strong> &mdash; <em>어떤</em> 이름이든 입력하세요. 상사. 선생님. 가장 친한 친구. 룸메이트.</li>
+        </ul>
+        <p style="margin-top: 10px; color: #555;"><strong>이 이름이 전부입니다.</strong> PAiL이 마침내 무너지고 고백할 때, 바로 이 사람을 자신을 파견한 인물 &mdash; 이 모든 작전의 설계자 &mdash; 로 지목합니다. 그 사람에게 폰을 건네고 AI가 자신의 이름을 악당으로 부르는 순간 그들의 표정을 지켜보세요.</p>
+        <p style="margin-top: 8px; color: #555;">그 사람이 보낸 게 아닙니다. PAiL은 실제 스파이웨어가 아닙니다. 하지만 30초 동안은, <em>그들도 완전히 확신하지 못할 것입니다.</em></p>
         <p style="margin-top: 12px; font-size: 0.88em; color: #999; font-style: italic;"><strong>면책 조항:</strong> MyPAiL은 실제 스파이웨어가 아닙니다. 이것은 재미를 위한 롤플레이 기능입니다. 실제 감시나 데이터 수집은 없습니다.</p>
     </div>
 

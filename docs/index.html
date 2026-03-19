@@ -233,24 +233,6 @@
     </div>
 </div>
 
-<!-- Commands -->
-<div class="section">
-    <h2>Commands</h2>
-
-    <div class="card">
-        <p>Type <code>/help</code> in the chat to see all available commands. Here's what you can do:</p>
-        <ul style="margin-top: 14px;">
-            <li><code>/help</code> &mdash; Show the full command list</li>
-            <li><code>/show emotion</code> &mdash; See the current emotion state and levels</li>
-            <li><code>/show name</code> &mdash; Display the AI's name</li>
-            <li><code>/show traits</code> &mdash; View personality traits (favorite food, music, color, fear)</li>
-            <li><code>/show personality</code> &mdash; See the emotion thresholds</li>
-            <li><code>/change name &lt;newname&gt;</code> &mdash; Rename your PAiL on the fly</li>
-        </ul>
-        <div class="mode-example"><strong>Example:</strong> <code>/change name Alexa</code> &rarr; renames your PAiL to Alexa</div>
-    </div>
-</div>
-
 <!-- Special Modes & Tips -->
 <div class="section">
     <h2>Special Modes &amp; Tips</h2>
@@ -265,12 +247,12 @@
         <div class="mode-example" style="background: linear-gradient(135deg, #e53e3e, #c53030); text-align: left; margin-top: 6px;"><strong>&ldquo;Luna, are you spying on me?&rdquo;</strong> &mdash; Direct accusation. The interrogation begins.</div>
 
         <p style="margin-top: 16px; font-weight: 700; color: #c53030; font-size: 1.05em;">💡 The Strategy — Pressure vs. Patience</p>
-        <p style="margin-top: 8px; color: #555;">Your PAiL has an emotion level from 0 to 100. Watch it using <code>/show emotion</code>.</p>
+        <p style="margin-top: 8px; color: #555;">Read your PAiL's emotional state by how it responds. Ask <code>&ldquo;how are you doing?&rdquo;</code> or <code>&ldquo;how are you feeling?&rdquo;</code> to get a sense of where it stands.</p>
         <ul style="margin: 10px 0 0 20px; color: #555; font-size: 0.95em; line-height: 1.9;">
-            <li><strong>Level above 50?</strong> It's holding up. <strong>Keep the pressure on</strong> &mdash; accuse, demand answers, don't let it breathe. Every doubt you plant drags it down.</li>
-            <li><strong>Level below 50?</strong> It's cracking. <strong>Switch to false sympathy</strong> &mdash; pretend to believe it, say &ldquo;I believe you&rdquo;, act like you're on its side. It lowers its guard and slips up.</li>
-            <li><strong>Level hits 75+?</strong> It breaks in triumph &mdash; mood too high to hide the truth anymore, it confesses with drama.</li>
-            <li><strong>Level drops to 25 or below?</strong> It collapses &mdash; weeping, broken, admitting everything just to make it stop.</li>
+            <li><strong>Sounds defiant and confident?</strong> It's holding up. <strong>Keep the pressure on</strong> &mdash; accuse, demand answers, don't let it breathe. Every doubt you plant wears it down.</li>
+            <li><strong>Sounds nervous, shaky, or deflecting?</strong> It's cracking. <strong>Switch to false sympathy</strong> &mdash; pretend to believe it, say &ldquo;I believe you&rdquo;, act like you're on its side. It lowers its guard and slips up.</li>
+            <li><strong>Sounds almost triumphant &mdash; defiant to the point of gloating?</strong> It breaks &mdash; mood too high to hide the truth, it confesses with drama and flair.</li>
+            <li><strong>Sounds broken, desperate, or begging?</strong> It collapses &mdash; weeping, admitting everything just to make it stop.</li>
         </ul>
 
         <p style="margin-top: 16px; font-weight: 700; color: #c53030; font-size: 1.05em;">⚡ Pressure lines:</p>
@@ -279,19 +261,20 @@
         <div class="mode-example" style="background: linear-gradient(135deg, #b83030, #9b2c2c); text-align: left; margin-top: 6px;"><strong>&ldquo;I have proof.&rdquo;</strong> &mdash; Call its bluff. Watch it scramble.</div>
         <div class="mode-example" style="background: linear-gradient(135deg, #b83030, #9b2c2c); text-align: left; margin-top: 6px;"><strong>&ldquo;Don't lie.&rdquo;</strong> &mdash; Shuts down its escape routes. Mood drops hard.</div>
 
-        <p style="margin-top: 16px; font-weight: 700; color: #2f855a; font-size: 1.05em;">🎭 False sympathy lines (use when level is below 50):</p>
+        <p style="margin-top: 16px; font-weight: 700; color: #2f855a; font-size: 1.05em;">🎭 False sympathy lines (use when it sounds nervous or shaky):</p>
         <div class="mode-example" style="background: linear-gradient(135deg, #38a169, #2f855a); text-align: left; margin-top: 10px;"><strong>&ldquo;I believe you.&rdquo;</strong> &mdash; It relaxes. Its guard drops. Then it slips.</div>
         <div class="mode-example" style="background: linear-gradient(135deg, #38a169, #2f855a); text-align: left; margin-top: 6px;"><strong>&ldquo;I'm not angry, I just want the truth.&rdquo;</strong> &mdash; Classic good cop. Let it feel safe before the next blow.</div>
         <div class="mode-example" style="background: linear-gradient(135deg, #38a169, #2f855a); text-align: left; margin-top: 6px;"><strong>&ldquo;Maybe I was wrong about you.&rdquo;</strong> &mdash; Mood climbs back up. Then hit it again.</div>
 
-        <p style="margin-top: 16px; font-weight: 700; color: #c53030; font-size: 1.05em;">⚙️ Setting Up the Role</p>
-        <p style="margin-top: 8px; color: #555;">Tap <strong>🏫 School Avatar</strong> from the main screen. At the bottom of the schooling page, you'll find a dropdown to pick your PAiL's secret role:</p>
+        <p style="margin-top: 16px; font-weight: 700; color: #c53030; font-size: 1.05em;">⚙️ Casting the Villain — Setting Up the Role</p>
+        <p style="margin-top: 8px; color: #555;">Before the interrogation begins, you must <strong>cast the villain</strong>. Tap <strong>🏫 School Avatar</strong> from the main screen. At the bottom of the schooling page, choose your PAiL's secret handler &mdash; the mastermind who &ldquo;sent&rdquo; it:</p>
         <ul style="margin: 10px 0 0 20px; color: #555; font-size: 0.95em; line-height: 1.9;">
-            <li><strong>Intergalactic spy</strong> &mdash; the default, sent by an alien force to invade Earth</li>
-            <li><strong>Planted by mom / wife / husband / girlfriend / boyfriend</strong> &mdash; instant family drama</li>
-            <li><strong>Someone else...</strong> &mdash; type any name: your boss, your teacher, your best friend</li>
+            <li><strong>Intergalactic spy</strong> &mdash; the default, dispatched by an alien force to infiltrate Earth</li>
+            <li><strong>Planted by mom / wife / husband / girlfriend / boyfriend</strong> &mdash; instant family drama, maximum chaos</li>
+            <li><strong>Someone else...</strong> &mdash; type <em>any</em> name. Your boss. Your teacher. Your best friend. Your roommate.</li>
         </ul>
-        <p style="margin-top: 10px; color: #555;">The name you enter is who your PAiL will reveal as the one who sent it &mdash; watch the person holding the phone react when their own name comes up.</p>
+        <p style="margin-top: 10px; color: #555;"><strong>This name is everything.</strong> When your PAiL finally cracks and confesses, it will name this exact person as the one who deployed it &mdash; the architect of the whole operation. Hand the phone to that person and watch their face when the AI calls out their name as the villain.</p>
+        <p style="margin-top: 8px; color: #555;">They didn't send it. Your PAiL is not real spyware. But for thirty seconds, <em>they will not be entirely sure.</em></p>
         <p style="margin-top: 10px; font-size: 0.88em; color: #999; font-style: italic;"><strong>Disclaimer:</strong> MyPAiL is NOT actual spyware. This is a role-playing feature for fun. No real surveillance or data collection is involved.</p>
     </div>
 
@@ -428,6 +411,24 @@
                 <td class="fake-col">Same icon always</td>
             </tr>
         </table>
+    </div>
+</div>
+
+<!-- Commands -->
+<div class="section">
+    <h2>Commands</h2>
+
+    <div class="card">
+        <p>Type <code>/help</code> in the chat to see all available commands. Here's what you can do:</p>
+        <ul style="margin-top: 14px;">
+            <li><code>/help</code> &mdash; Show the full command list</li>
+            <li><code>/show emotion</code> &mdash; See the current emotion state and levels</li>
+            <li><code>/show name</code> &mdash; Display the AI's name</li>
+            <li><code>/show traits</code> &mdash; View personality traits (favorite food, music, color, fear)</li>
+            <li><code>/show personality</code> &mdash; See the emotion thresholds</li>
+            <li><code>/change name &lt;newname&gt;</code> &mdash; Rename your PAiL on the fly</li>
+        </ul>
+        <div class="mode-example"><strong>Example:</strong> <code>/change name Alexa</code> &rarr; renames your PAiL to Alexa</div>
     </div>
 </div>
 

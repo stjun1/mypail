@@ -2214,6 +2214,7 @@
                 addMessage('Sorry, I had trouble connecting to the server. Make sure the server is running!', false, true);
             } finally {
                 document.getElementById('send-btn').disabled = false;
+                input.focus();
             }
         }
 
