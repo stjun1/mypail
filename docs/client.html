@@ -2227,8 +2227,8 @@
                 <button class="accept-btn" onclick="acceptEmpathyOffer('${type}', this.parentElement)">Yes</button>
                 <button class="decline-btn" onclick="this.parentElement.remove()">No</button>`;
             const chatBox = document.getElementById('chat-box');
-            chatBox.appendChild(div);
-            setTimeout(() => div.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+            chatBox.insertBefore(div, chatBox.firstChild);
+            chatBox.scrollTop = 0;
         }
 
         function acceptEmpathyOffer(type, el) {
@@ -2243,8 +2243,8 @@
                 <button class="accept-btn" onclick="acceptConfessionOffer(this.parentElement)">Interrogate</button>
                 <button class="decline-btn" onclick="this.parentElement.remove()">Ignore</button>`;
             const chatBox = document.getElementById('chat-box');
-            chatBox.appendChild(div);
-            setTimeout(() => div.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+            chatBox.insertBefore(div, chatBox.firstChild);
+            chatBox.scrollTop = 0;
         }
 
         function acceptConfessionOffer(el) {
