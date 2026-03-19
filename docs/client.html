@@ -2127,7 +2127,6 @@
             // Clear any pending mode offers from the chat when user sends a new message
             document.querySelectorAll('.empathy-offer, .confession-offer').forEach(el => el.remove());
 
-            addMessage(message, true);
             input.value = '';
             input.scrollLeft = 0;
             window.scrollTo(0, window.scrollY);
@@ -2164,6 +2163,7 @@
 
                 const data = await response.json();
                 addMessage(data.response, false);
+                addMessage(message, true);
 
                 // Update conversation history (skip commands)
                 if (!data.isCommand) {
@@ -2212,6 +2212,7 @@
             } catch (error) {
                 console.error('Error:', error);
                 addMessage('Sorry, I had trouble connecting to the server. Make sure the server is running!', false, true);
+                addMessage(message, true);
             } finally {
                 document.getElementById('send-btn').disabled = false;
                 input.focus();
