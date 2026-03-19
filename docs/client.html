@@ -2438,13 +2438,17 @@
                 sr.continuous = false;
                 sr.interimResults = false;
                 sr.lang = navigator.language || 'en-US';
+                // Safety timeout — reset button if onend never fires (Samsung WebView quirk)
+                const samsungTimeout = setTimeout(() => stopVoice(), 12000);
                 sr.onresult = (event) => {
+                    clearTimeout(samsungTimeout);
                     const transcript = event.results[0][0].transcript;
                     document.getElementById('message-input').value = transcript;
+                    stopVoice();
                     sendMessage();
                 };
-                sr.onerror = (e) => console.error('Samsung Web Speech error:', e.error);
-                sr.onend = () => stopVoice();
+                sr.onerror = (e) => { clearTimeout(samsungTimeout); stopVoice(); };
+                sr.onend = () => { clearTimeout(samsungTimeout); stopVoice(); };
                 sr.start();
                 return;
             }
