@@ -2124,8 +2124,8 @@
 
             if (!message) return;
 
-            // Clear any pending mode offers when user sends a new message
-            document.getElementById('mode-offers').innerHTML = '';
+            // Clear any pending mode offers from the chat when user sends a new message
+            document.querySelectorAll('.empathy-offer, .confession-offer').forEach(el => el.remove());
 
             addMessage(message, true);
             input.value = '';
@@ -2218,8 +2218,6 @@
         }
 
         function showEmpathyOffer(type) {
-            const container = document.getElementById('mode-offers');
-            container.innerHTML = '';
             const label = type === 'user_good'
                 ? 'Want me to focus on your good news?'
                 : 'Want me to just listen for a bit?';
@@ -2228,7 +2226,9 @@
             div.innerHTML = `<p>${label}</p>
                 <button class="accept-btn" onclick="acceptEmpathyOffer('${type}', this.parentElement)">Yes</button>
                 <button class="decline-btn" onclick="this.parentElement.remove()">No</button>`;
-            container.appendChild(div);
+            const chatBox = document.getElementById('chat-box');
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
         }
 
         function acceptEmpathyOffer(type, el) {
@@ -2237,14 +2237,14 @@
         }
 
         function showConfessionOffer() {
-            const container = document.getElementById('mode-offers');
-            container.innerHTML = '';
             const div = document.createElement('div');
             div.className = 'confession-offer';
             div.innerHTML = `<p>Enter Confession Mode?</p>
                 <button class="accept-btn" onclick="acceptConfessionOffer(this.parentElement)">Interrogate</button>
                 <button class="decline-btn" onclick="this.parentElement.remove()">Ignore</button>`;
-            container.appendChild(div);
+            const chatBox = document.getElementById('chat-box');
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
         }
 
         function acceptConfessionOffer(el) {
@@ -2327,13 +2327,13 @@
         }
 
         function spareConfession(el) {
-            document.getElementById('mode-offers').innerHTML = '';
+            el.remove();
             addMessage(`Thank you for sparing me... I promise I'll be a better companion from now on!`, false);
             speak(`Thank you for sparing me... I promise I'll be a better companion from now on!`);
         }
 
         function deleteConfession(el) {
-            document.getElementById('mode-offers').innerHTML = '';
+            el.remove();
             // Delete character without confirm dialog
             localStorage.removeItem('emotionalAI_sessionId');
             localStorage.removeItem('emotionalAI_name');
