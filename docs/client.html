@@ -2430,6 +2430,14 @@
             } catch (e) {}
 
             if (isSamsung && 'webkitSpeechRecognition' in window) {
+                // Request native permission first so Android grants RECORD_AUDIO to the WebView
+                try {
+                    const perm = await CapBridge.SpeechRecognition.requestPermissions();
+                    if (perm.speechRecognition !== 'granted') {
+                        console.warn('Speech permission denied');
+                        return;
+                    }
+                } catch (e) {}
                 isVoiceActive = true;
                 document.getElementById('voice-btn').classList.add('active');
                 document.getElementById('voice-btn').textContent = '🔴';
