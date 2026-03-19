@@ -14,7 +14,12 @@ npm run cap:sync     # Build web + sync to Capacitor for mobile
 npm run build:apk    # Full Android APK build (requires Android SDK)
 ```
 
-> **IMPORTANT — AAB builds**: Always bump `versionCode` and `versionName` in `android/app/build.gradle` AND `version` in `package.json` before running `npm run build:aab`. The Play Store rejects uploads with a duplicate version code, and Gradle caching can silently reuse old values. Run `gradlew clean` if the version does not change after a bump.
+> **IMPORTANT — AAB builds**: Always bump the version in ALL FOUR places before running `npm run build:aab`:
+> 1. `versionCode` and `versionName` in `android/app/build.gradle`
+> 2. `version` in `package.json`
+> 3. Version display on the start screen in `docs/client.html` (search `v0.2.`)
+>
+> The Play Store rejects duplicate version codes. Run `gradlew clean` if the version does not change after a bump.
 
 Run a single test file:
 ```bash
