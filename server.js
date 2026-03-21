@@ -180,7 +180,8 @@ app.post('/api/chat', async (req, res) => {
                     '/change name <newname> — change the AI name',
                     '/change very_bad ## — set very bad threshold (must be 1–(bad-1))',
                     '/change bad ## — set bad threshold (must be (very_bad+1)–(good-1))',
-                    '/change good ## — set good threshold (must be (bad+1)–98)'
+                    '/change good ## — set good threshold (must be (bad+1)–98)',
+                    '/change character <name> — switch to another character'
                 ].join('\n');
             } else if (cmd === '/show emotion') {
                 responseText = [

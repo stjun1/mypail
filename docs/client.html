@@ -418,6 +418,52 @@
             background: #d32f2f;
         }
 
+        /* Character Switcher */
+        #character-switcher {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+
+        .char-slot {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 14px;
+            border-radius: 20px;
+            border: 2px solid #ddd;
+            background: #f8f8f8;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.2s ease;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+        .char-slot:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .char-slot.active {
+            border-color: #667eea;
+            background: rgba(102,126,234,0.1);
+            color: #667eea;
+        }
+
+        .char-slot.add-slot {
+            border-style: dashed;
+            color: #aaa;
+        }
+
+        .char-slot.add-slot:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
         /* Schooling Screen */
         #schooling-screen {
             min-height: 100vh;
@@ -1069,6 +1115,7 @@
 
     <!-- MAIN APP -->
     <div id="main-app" class="container hidden">
+        <div id="character-switcher"></div>
         <div class="ai-info">
             <h2 id="ai-name-display">Luna</h2>
             <button onclick="startSchoolingFromMain()" style="background: linear-gradient(135deg, #f59e0b, #d97706); margin-bottom: 8px;">🏫 School Avatar</button>
@@ -1151,6 +1198,9 @@
         // Confession mode state
         let confessionMode = false;
         let confessionRole = localStorage.getItem('emotionalAI_confessionRole') || 'a spy for intergalactical force trying to invade earth';
+        let characters = loadCharacters();
+        let activeCharacterIndex = parseInt(localStorage.getItem('emotionalAI_activeCharacter') || '0');
+        let creatingSlot = 0;
         let sessionId = localStorage.getItem('emotionalAI_sessionId');
         let aiName = localStorage.getItem('emotionalAI_name');
         let selectedAvatar = localStorage.getItem('emotionalAI_avatar');
@@ -1978,6 +2028,7 @@
                 document.getElementById('main-app').classList.remove('hidden');
                 document.getElementById('ai-name-display').textContent = aiName;
                 renderMainAvatar('GOOD');
+                renderCharacterSwitcher();
                 addMessage(`👋 Welcome back! I'm ${aiName}, your AI companion!`, false, true);
             }
         }
@@ -2012,27 +2063,152 @@
             localStorage.setItem('emotionalAI_personality', selectedPersonality);
             localStorage.setItem('emotionalAI_thresholds', JSON.stringify(personalityThresholds));
 
+            // Save to characters array
+            const chars = JSON.parse(localStorage.getItem('emotionalAI_characters') || '[null,null]');
+            chars[creatingSlot] = {
+                sessionId,
+                name: aiName,
+                avatar: selectedAvatar,
+                schoolingLevels: JSON.parse(JSON.stringify(schoolingLevels)),
+                personality: selectedPersonality,
+                thresholds: personalityThresholds,
+                confessionRole: null,
+                conversationHistory: []
+            };
+            localStorage.setItem('emotionalAI_characters', JSON.stringify(chars));
+            activeCharacterIndex = creatingSlot;
+            localStorage.setItem('emotionalAI_activeCharacter', String(creatingSlot));
+
             document.getElementById('setup-screen').classList.add('hidden');
             document.getElementById('main-app').classList.remove('hidden');
             document.getElementById('ai-name-display').textContent = aiName;
             renderMainAvatar('GOOD');
+            renderCharacterSwitcher();
 
             addMessage(`🎉 Hi! I'm ${aiName}, YOUR personal AI companion! Let's start this journey together!`, false, true);
         }
 
         function resetAI() {
-            if (!confirm(`Are you sure you want to delete ${aiName} and start over?`)) {
+            const chars = JSON.parse(localStorage.getItem('emotionalAI_characters') || '[null,null]');
+            const otherIndex = activeCharacterIndex === 0 ? 1 : 0;
+            if (chars[otherIndex]) {
+                if (!confirm(`Delete ${aiName}? You'll switch to ${chars[otherIndex].name}.`)) return;
+                chars[activeCharacterIndex] = null;
+                localStorage.setItem('emotionalAI_characters', JSON.stringify(chars));
+                const target = chars[otherIndex];
+                localStorage.setItem('emotionalAI_sessionId', target.sessionId);
+                localStorage.setItem('emotionalAI_name', target.name);
+                localStorage.setItem('emotionalAI_avatar', target.avatar);
+                localStorage.setItem('emotionalAI_schoolingLevels', JSON.stringify(target.schoolingLevels));
+                localStorage.setItem('emotionalAI_personality', target.personality || 'random');
+                if (target.thresholds) localStorage.setItem('emotionalAI_thresholds', JSON.stringify(target.thresholds));
+                if (target.confessionRole) localStorage.setItem('emotionalAI_confessionRole', target.confessionRole);
+                localStorage.setItem('emotionalAI_activeCharacter', String(otherIndex));
+            } else {
+                if (!confirm(`Delete ${aiName} and start over?`)) return;
+                localStorage.removeItem('emotionalAI_sessionId');
+                localStorage.removeItem('emotionalAI_name');
+                localStorage.removeItem('emotionalAI_avatar');
+                localStorage.removeItem('emotionalAI_schoolingLevels');
+                localStorage.removeItem('emotionalAI_personality');
+                localStorage.removeItem('emotionalAI_thresholds');
+                localStorage.removeItem('emotionalAI_confessionRole');
+                localStorage.removeItem('emotionalAI_characters');
+                localStorage.removeItem('emotionalAI_activeCharacter');
+            }
+            location.reload();
+        }
+
+        function loadCharacters() {
+            const stored = localStorage.getItem('emotionalAI_characters');
+            if (stored) return JSON.parse(stored);
+            // Migrate from old flat keys
+            const sid = localStorage.getItem('emotionalAI_sessionId');
+            if (sid) {
+                const chars = [
+                    {
+                        sessionId: sid,
+                        name: localStorage.getItem('emotionalAI_name'),
+                        avatar: localStorage.getItem('emotionalAI_avatar'),
+                        schoolingLevels: JSON.parse(localStorage.getItem('emotionalAI_schoolingLevels') || 'null'),
+                        personality: localStorage.getItem('emotionalAI_personality') || 'random',
+                        thresholds: JSON.parse(localStorage.getItem('emotionalAI_thresholds') || 'null'),
+                        confessionRole: localStorage.getItem('emotionalAI_confessionRole') || null,
+                        conversationHistory: []
+                    },
+                    null
+                ];
+                localStorage.setItem('emotionalAI_characters', JSON.stringify(chars));
+                localStorage.setItem('emotionalAI_activeCharacter', '0');
+                return chars;
+            }
+            return [null, null];
+        }
+
+        function saveCurrentCharacter() {
+            const chars = JSON.parse(localStorage.getItem('emotionalAI_characters') || '[null,null]');
+            if (chars[activeCharacterIndex]) {
+                chars[activeCharacterIndex].conversationHistory = conversationHistory.slice(-20);
+                const sl = localStorage.getItem('emotionalAI_schoolingLevels');
+                if (sl) chars[activeCharacterIndex].schoolingLevels = JSON.parse(sl);
+                localStorage.setItem('emotionalAI_characters', JSON.stringify(chars));
+            }
+        }
+
+        function switchCharacter(index) {
+            if (index === activeCharacterIndex) return;
+            const chars = JSON.parse(localStorage.getItem('emotionalAI_characters') || '[null,null]');
+            if (!chars[index]) {
+                startAddingCharacter(index);
                 return;
             }
-
-            localStorage.removeItem('emotionalAI_sessionId');
-            localStorage.removeItem('emotionalAI_name');
-            localStorage.removeItem('emotionalAI_avatar');
-            localStorage.removeItem('emotionalAI_schoolingLevels');
-            localStorage.removeItem('emotionalAI_personality');
-            localStorage.removeItem('emotionalAI_thresholds');
-            localStorage.removeItem('emotionalAI_confessionRole');
+            saveCurrentCharacter();
+            const target = chars[index];
+            localStorage.setItem('emotionalAI_sessionId', target.sessionId);
+            localStorage.setItem('emotionalAI_name', target.name);
+            localStorage.setItem('emotionalAI_avatar', target.avatar);
+            localStorage.setItem('emotionalAI_schoolingLevels', JSON.stringify(target.schoolingLevels));
+            localStorage.setItem('emotionalAI_personality', target.personality || 'random');
+            if (target.thresholds) localStorage.setItem('emotionalAI_thresholds', JSON.stringify(target.thresholds));
+            if (target.confessionRole) localStorage.setItem('emotionalAI_confessionRole', target.confessionRole);
+            localStorage.setItem('emotionalAI_activeCharacter', String(index));
             location.reload();
+        }
+
+        function startAddingCharacter(slot) {
+            const chars = JSON.parse(localStorage.getItem('emotionalAI_characters') || '[null,null]');
+            if (chars[slot]) {
+                addMessage(`Slot ${slot + 1} is already taken. Delete that character first.`, false, true);
+                return;
+            }
+            saveCurrentCharacter();
+            creatingSlot = slot;
+            document.getElementById('main-app').classList.add('hidden');
+            document.getElementById('setup-screen').classList.remove('hidden');
+            document.getElementById('ai-name-input')?.focus();
+        }
+
+        function renderCharacterSwitcher() {
+            const el = document.getElementById('character-switcher');
+            if (!el) return;
+            const chars = JSON.parse(localStorage.getItem('emotionalAI_characters') || '[null,null]');
+            const avatarEmoji = { pail: '🪣', robot: '🤖', cat: '🐱', blob: '🫧' };
+            el.innerHTML = '';
+            for (let i = 0; i < 2; i++) {
+                const div = document.createElement('div');
+                if (chars[i]) {
+                    div.className = 'char-slot' + (i === activeCharacterIndex ? ' active' : '');
+                    div.title = i === activeCharacterIndex ? 'Current character' : `Switch to ${chars[i].name}`;
+                    div.innerHTML = `<span>${avatarEmoji[chars[i].avatar] || '🤖'}</span><span>${chars[i].name}</span>`;
+                    div.onclick = () => switchCharacter(i);
+                } else {
+                    div.className = 'char-slot add-slot';
+                    div.title = 'Add a second character (beta: max 2)';
+                    div.innerHTML = '<span>+</span><span>Add</span>';
+                    div.onclick = () => startAddingCharacter(i);
+                }
+                el.appendChild(div);
+            }
         }
 
         function renderMainAvatar(state) {
@@ -2123,6 +2299,26 @@
             const message = input.value.trim();
 
             if (!message) return;
+
+            // Client-side command: /change character <name>
+            const charCmdMatch = message.trim().match(/^\/change character\s+(.+)$/i);
+            if (charCmdMatch) {
+                input.value = '';
+                const targetName = charCmdMatch[1].trim();
+                const chars = JSON.parse(localStorage.getItem('emotionalAI_characters') || '[null,null]');
+                const names = chars.filter(Boolean).map(c => c.name);
+                const idx = chars.findIndex(c => c && c.name.toLowerCase() === targetName.toLowerCase());
+                if (idx === -1) {
+                    addMessage(`No character named "${targetName}". You have: ${names.join(', ')}.`, false, true);
+                } else if (idx === activeCharacterIndex) {
+                    addMessage(`Already talking to ${aiName}.`, false, true);
+                } else {
+                    addMessage(`Switching to ${chars[idx].name}...`, false, true);
+                    switchCharacter(idx);
+                }
+                input.focus();
+                return;
+            }
 
             // Clear any pending mode offers from the chat when user sends a new message
             document.querySelectorAll('.empathy-offer, .confession-offer').forEach(el => el.remove());
