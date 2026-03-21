@@ -418,52 +418,6 @@
             background: #d32f2f;
         }
 
-        /* Character Switcher */
-        #character-switcher {
-            display: flex;
-            gap: 8px;
-            justify-content: center;
-            margin-bottom: 12px;
-        }
-
-        .char-slot {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            padding: 5px 14px;
-            border-radius: 20px;
-            border: 2px solid #ddd;
-            background: #f8f8f8;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            color: #666;
-            transition: all 0.2s ease;
-            user-select: none;
-            white-space: nowrap;
-        }
-
-        .char-slot:hover {
-            border-color: #667eea;
-            color: #667eea;
-        }
-
-        .char-slot.active {
-            border-color: #667eea;
-            background: rgba(102,126,234,0.1);
-            color: #667eea;
-        }
-
-        .char-slot.add-slot {
-            border-style: dashed;
-            color: #aaa;
-        }
-
-        .char-slot.add-slot:hover {
-            border-color: #667eea;
-            color: #667eea;
-        }
-
         /* Schooling Screen */
         #schooling-screen {
             min-height: 100vh;
@@ -1115,11 +1069,11 @@
 
     <!-- MAIN APP -->
     <div id="main-app" class="container hidden">
-        <div id="character-switcher"></div>
         <div class="ai-info">
             <h2 id="ai-name-display">Luna</h2>
             <button onclick="startSchoolingFromMain()" style="background: linear-gradient(135deg, #f59e0b, #d97706); margin-bottom: 8px;">🏫 School Avatar</button>
-            <button class="reset-btn" onclick="resetAI()">🗑️ Delete & Start Over</button>
+            <button onclick="startAddingCharacter(activeCharacterIndex === 0 ? 1 : 0)" style="background: linear-gradient(135deg, #667eea, #764ba2); margin-bottom: 8px;" id="switch-character-btn">👤 Switch Character</button>
+            <button class="reset-btn" onclick="resetAI()">🗑️ Delete</button>
         </div>
 
         <!-- Avatar -->
@@ -2189,25 +2143,20 @@
         }
 
         function renderCharacterSwitcher() {
-            const el = document.getElementById('character-switcher');
-            if (!el) return;
+            const btn = document.getElementById('switch-character-btn');
+            if (!btn) return;
             const chars = JSON.parse(localStorage.getItem('emotionalAI_characters') || '[null,null]');
+            const otherIndex = activeCharacterIndex === 0 ? 1 : 0;
             const avatarEmoji = { pail: '🪣', robot: '🤖', cat: '🐱', blob: '🫧' };
-            el.innerHTML = '';
-            for (let i = 0; i < 2; i++) {
-                const div = document.createElement('div');
-                if (chars[i]) {
-                    div.className = 'char-slot' + (i === activeCharacterIndex ? ' active' : '');
-                    div.title = i === activeCharacterIndex ? 'Current character' : `Switch to ${chars[i].name}`;
-                    div.innerHTML = `<span>${avatarEmoji[chars[i].avatar] || '🤖'}</span><span>${chars[i].name}</span>`;
-                    div.onclick = () => switchCharacter(i);
-                } else {
-                    div.className = 'char-slot add-slot';
-                    div.title = 'Add a second character (beta: max 2)';
-                    div.innerHTML = '<span>+</span><span>Add</span>';
-                    div.onclick = () => startAddingCharacter(i);
-                }
-                el.appendChild(div);
+            if (chars[otherIndex]) {
+                const other = chars[otherIndex];
+                btn.textContent = `${avatarEmoji[other.avatar] || '👤'} ${other.name}`;
+                btn.title = `Switch to ${other.name}`;
+                btn.onclick = () => switchCharacter(otherIndex);
+            } else {
+                btn.textContent = '👤 Add Character';
+                btn.title = 'Add a second character (beta: max 2)';
+                btn.onclick = () => startAddingCharacter(otherIndex);
             }
         }
 
