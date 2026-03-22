@@ -93,7 +93,30 @@
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 12px;
-            margin: 20px 0;
+            margin: 20px 0 8px;
+        }
+
+        .avatar-upload-row {
+            margin-bottom: 12px;
+        }
+
+        .avatar-option.upload-option {
+            width: 100%;
+            flex-direction: row;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 16px;
+            font-size: 13px;
+            color: #667eea;
+            border-color: #667eea;
+            border-style: dashed;
+        }
+
+        .avatar-option.upload-option .upload-preview {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            object-fit: cover;
         }
 
         .avatar-option {
@@ -974,6 +997,13 @@
 
             <label style="font-weight: 600; color: #555;">Choose an avatar</label>
             <div class="avatar-picker" id="avatar-picker"></div>
+            <div class="avatar-upload-row">
+                <div class="avatar-option upload-option" id="upload-avatar-option" onclick="document.getElementById('avatar-file-input').click()">
+                    <span id="upload-avatar-preview-wrap">📷</span>
+                    <span id="upload-avatar-label">Upload your own image</span>
+                </div>
+                <input type="file" id="avatar-file-input" accept="image/*" style="display:none" onchange="handleAvatarUpload(this)">
+            </div>
 
             <label style="font-weight: 600; color: #555; margin-top: 16px;">Choose a personality</label>
             <div class="personality-picker" id="personality-picker"></div>
@@ -1158,6 +1188,7 @@
         let sessionId = localStorage.getItem('emotionalAI_sessionId');
         let aiName = localStorage.getItem('emotionalAI_name');
         let selectedAvatar = localStorage.getItem('emotionalAI_avatar');
+        let customAvatarData = localStorage.getItem('emotionalAI_customAvatar') || null;
 
         // ==================== SVG AVATAR RENDERERS ====================
 
@@ -1668,6 +1699,7 @@
 
         function renderSchoolingAvatar(state) {
             const el = document.getElementById('schooling-avatar');
+            if (selectedAvatar === 'custom') { renderCustomAvatar(el); return; }
             const renderFn = { pail: renderPail, robot: renderRobot, cat: renderCat, blob: renderBlob }[selectedAvatar];
             if (renderFn) el.innerHTML = renderFn(state);
         }
@@ -1814,7 +1846,43 @@
             document.querySelectorAll('.avatar-option').forEach(el => {
                 el.classList.toggle('selected', el.dataset.avatar === id);
             });
+            document.getElementById('upload-avatar-option')?.classList.toggle('selected', id === 'custom');
             enableCreateButton();
+        }
+
+        function compressImage(file, maxSize, quality, callback) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    let w = img.width, h = img.height;
+                    if (w > maxSize || h > maxSize) {
+                        if (w > h) { h = Math.round(h * maxSize / w); w = maxSize; }
+                        else { w = Math.round(w * maxSize / h); h = maxSize; }
+                    }
+                    canvas.width = w;
+                    canvas.height = h;
+                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                    callback(canvas.toDataURL('image/jpeg', quality));
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function handleAvatarUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+            compressImage(file, 300, 0.8, function(dataUrl) {
+                customAvatarData = dataUrl;
+                // Update upload option UI to show preview
+                const wrap = document.getElementById('upload-avatar-preview-wrap');
+                const label = document.getElementById('upload-avatar-label');
+                if (wrap) wrap.innerHTML = `<img src="${dataUrl}" class="upload-preview">`;
+                if (label) label.textContent = 'Image selected ✓';
+                selectAvatar('custom');
+            });
         }
 
         function canCreate() {
@@ -2016,6 +2084,11 @@
             localStorage.setItem('emotionalAI_schoolingLevels', JSON.stringify(schoolingLevels));
             localStorage.setItem('emotionalAI_personality', selectedPersonality);
             localStorage.setItem('emotionalAI_thresholds', JSON.stringify(personalityThresholds));
+            if (selectedAvatar === 'custom' && customAvatarData) {
+                localStorage.setItem('emotionalAI_customAvatar', customAvatarData);
+            } else {
+                localStorage.removeItem('emotionalAI_customAvatar');
+            }
 
             // Save to characters array
             const chars = JSON.parse(localStorage.getItem('emotionalAI_characters') || '[null,null]');
@@ -2023,6 +2096,7 @@
                 sessionId,
                 name: aiName,
                 avatar: selectedAvatar,
+                customAvatarData: selectedAvatar === 'custom' ? customAvatarData : null,
                 schoolingLevels: JSON.parse(JSON.stringify(schoolingLevels)),
                 personality: selectedPersonality,
                 thresholds: personalityThresholds,
@@ -2067,6 +2141,7 @@
                 localStorage.removeItem('emotionalAI_personality');
                 localStorage.removeItem('emotionalAI_thresholds');
                 localStorage.removeItem('emotionalAI_confessionRole');
+                localStorage.removeItem('emotionalAI_customAvatar');
                 localStorage.removeItem('emotionalAI_characters');
                 localStorage.removeItem('emotionalAI_activeCharacter');
             }
@@ -2084,6 +2159,7 @@
                         sessionId: sid,
                         name: localStorage.getItem('emotionalAI_name'),
                         avatar: localStorage.getItem('emotionalAI_avatar'),
+                        customAvatarData: localStorage.getItem('emotionalAI_customAvatar') || null,
                         schoolingLevels: JSON.parse(localStorage.getItem('emotionalAI_schoolingLevels') || 'null'),
                         personality: localStorage.getItem('emotionalAI_personality') || 'random',
                         thresholds: JSON.parse(localStorage.getItem('emotionalAI_thresholds') || 'null'),
@@ -2105,6 +2181,7 @@
                 chars[activeCharacterIndex].conversationHistory = conversationHistory.slice(-20);
                 const sl = localStorage.getItem('emotionalAI_schoolingLevels');
                 if (sl) chars[activeCharacterIndex].schoolingLevels = JSON.parse(sl);
+                chars[activeCharacterIndex].customAvatarData = localStorage.getItem('emotionalAI_customAvatar') || null;
                 localStorage.setItem('emotionalAI_characters', JSON.stringify(chars));
             }
         }
@@ -2125,6 +2202,8 @@
             localStorage.setItem('emotionalAI_personality', target.personality || 'random');
             if (target.thresholds) localStorage.setItem('emotionalAI_thresholds', JSON.stringify(target.thresholds));
             if (target.confessionRole) localStorage.setItem('emotionalAI_confessionRole', target.confessionRole);
+            if (target.customAvatarData) localStorage.setItem('emotionalAI_customAvatar', target.customAvatarData);
+            else localStorage.removeItem('emotionalAI_customAvatar');
             localStorage.setItem('emotionalAI_activeCharacter', String(index));
             location.reload();
         }
@@ -2147,7 +2226,7 @@
             if (!btn) return;
             const chars = JSON.parse(localStorage.getItem('emotionalAI_characters') || '[null,null]');
             const otherIndex = activeCharacterIndex === 0 ? 1 : 0;
-            const avatarEmoji = { pail: '🪣', robot: '🤖', cat: '🐱', blob: '🫧' };
+            const avatarEmoji = { pail: '🪣', robot: '🤖', cat: '🐱', blob: '🫧', custom: '📸' };
             if (chars[otherIndex]) {
                 const other = chars[otherIndex];
                 btn.textContent = `${avatarEmoji[other.avatar] || '👤'} ${other.name}`;
@@ -2160,8 +2239,15 @@
             }
         }
 
+        function renderCustomAvatar(el) {
+            if (customAvatarData) {
+                el.innerHTML = `<img src="${customAvatarData}" alt="Custom avatar" style="width:100%;height:100%;object-fit:contain;border-radius:12px;filter:drop-shadow(0 8px 20px rgba(0,0,0,0.2))"/>`;
+            }
+        }
+
         function renderMainAvatar(state) {
             const avatar = document.getElementById('avatar');
+            if (selectedAvatar === 'custom') { renderCustomAvatar(avatar); return; }
             const renderFn = { pail: renderPail, robot: renderRobot, cat: renderCat, blob: renderBlob }[selectedAvatar];
             if (renderFn) {
                 avatar.innerHTML = renderFn(state);
@@ -2171,6 +2257,7 @@
         function renderEmpathyAvatar(type) {
             const avatar = document.getElementById('avatar');
             if (!avatar) return;
+            if (selectedAvatar === 'custom') { renderCustomAvatar(avatar); return; }
             const empathyImages = {
                 pail: { user_good: 'avatars/pail_good.png', user_bad: 'avatars/pail_very_bad.png' }
             };
