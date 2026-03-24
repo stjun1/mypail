@@ -2138,6 +2138,12 @@
                 alert('Please select an avatar');
                 return;
             }
+            // Prevent duplicate names
+            const existingChars = JSON.parse(localStorage.getItem('emotionalAI_characters') || '[null,null]');
+            if (existingChars.some(c => c && c.name && c.name.toLowerCase() === name.toLowerCase())) {
+                alert(`You already have a character named "${name}". Please choose a different name.`);
+                return;
+            }
 
             sessionId = 'user_' + Date.now() + '_' + Math.random().toString(36).substring(7);
             aiName = name;
@@ -2288,6 +2294,12 @@
             }
             saveCurrentCharacter();
             creatingSlot = slot;
+            // Clear the name input and reset avatar selection for the new character
+            const nameInput = document.getElementById('ai-name-input');
+            if (nameInput) nameInput.value = '';
+            selectedAvatar = null;
+            document.querySelectorAll('.avatar-option').forEach(el => el.classList.remove('selected'));
+            enableCreateButton();
             document.getElementById('main-app').classList.add('hidden');
             document.getElementById('setup-screen').classList.remove('hidden');
             document.getElementById('ai-name-input')?.focus();
