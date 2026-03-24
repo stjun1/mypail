@@ -1107,6 +1107,17 @@
                         <input type="text" id="user-name-custom" maxlength="30" placeholder="Enter your name" oninput="updateUserNameCustom()" style="width: 100%; padding: 10px; font-size: 14px; border: 2px solid #667eea; border-radius: 8px; box-sizing: border-box;">
                     </div>
                 </div>
+
+                <!-- Voice Style -->
+                <div style="margin-top: 20px; text-align: left;">
+                    <label style="font-weight: 600; color: #555; display: block; margin-bottom: 8px;">Voice style:</label>
+                    <select id="voice-style-select" style="width: 100%; padding: 10px; font-size: 14px; border: 2px solid #667eea; border-radius: 8px;">
+                        <option value="girl">👧 Girl</option>
+                        <option value="boy">👦 Boy</option>
+                        <option value="robotic">🤖 Robotic</option>
+                        <option value="childish">🧒 Childish</option>
+                    </select>
+                </div>
             </div>
         </div>
     </div>
@@ -1197,6 +1208,7 @@
         let confessionMode = false;
         let confessionRole = localStorage.getItem('emotionalAI_confessionRole') || 'a spy for intergalactical force trying to invade earth';
         let userName = localStorage.getItem('emotionalAI_userName') || 'Master';
+        let voiceStyle = localStorage.getItem('emotionalAI_voiceStyle') || 'girl';
         let characters = loadCharacters();
         let activeCharacterIndex = parseInt(localStorage.getItem('emotionalAI_activeCharacter') || '0');
         let creatingSlot = 0;
@@ -1703,6 +1715,11 @@
                 customWrapper.classList.add('hidden');
             }
 
+            // Load saved voice style into dropdown
+            const savedVoiceStyle = localStorage.getItem('emotionalAI_voiceStyle') || 'girl';
+            const voiceStyleSelect = document.getElementById('voice-style-select');
+            if (voiceStyleSelect) voiceStyleSelect.value = savedVoiceStyle;
+
             // Load saved user name into dropdown
             const savedUserName = localStorage.getItem('emotionalAI_userName') || 'Master';
             const nameSelect = document.getElementById('user-name-select');
@@ -1854,6 +1871,14 @@
             } else {
                 localStorage.removeItem('emotionalAI_confessionRole');
                 confessionRole = null;
+            }
+
+            // Save voice style
+            const voiceStyleEl = document.getElementById('voice-style-select');
+            if (voiceStyleEl) {
+                voiceStyle = voiceStyleEl.value;
+                localStorage.setItem('emotionalAI_voiceStyle', voiceStyle);
+                _selectedVoice = pickBestVoice(voiceStyle);
             }
 
             // Save user name
@@ -2697,25 +2722,36 @@
 
         let _selectedVoice = null;
 
-        function pickBestVoice() {
+        function pickBestVoice(style) {
             const voices = speechSynthesis.getVoices();
             if (!voices.length) return null;
             const en = voices.filter(v => v.lang && v.lang.startsWith('en'));
+            const s = style || voiceStyle || 'girl';
 
-            // Ordered priority: best neural/online voices first
+            // Gender-specific filtering for girl/boy/childish
+            if (s === 'girl' || s === 'childish') {
+                const femalePattern = /samantha|victoria|karen|moira|fiona|tessa|zira|hazel|susan|kate|lucy|emily|female|woman|girl/i;
+                const female = en.find(v => femalePattern.test(v.name));
+                if (female) return female;
+            } else if (s === 'boy') {
+                const malePattern = /daniel|alex|fred|tom|james|david|mark|george|arthur|lee|rishi|male|man|boy|guy/i;
+                const male = en.find(v => malePattern.test(v.name));
+                if (male) return male;
+            }
+
+            // Fallback: best quality available
             const tests = [
-                v => /natural/i.test(v.name),                                          // Edge Neural (e.g. "Microsoft Guy Natural")
-                v => /microsoft/i.test(v.name) && /online/i.test(v.name),             // Microsoft Online
-                v => /google/i.test(v.name) && v.lang === 'en-US',                    // Google US Neural
-                v => /google/i.test(v.name) && v.lang.startsWith('en'),               // Google any English
-                v => /(enhanced|premium)/i.test(v.name),                               // Apple Enhanced
-                v => /\b(siri)\b/i.test(v.name),                                       // Siri
-                v => v.localService === false && v.lang === 'en-US',                   // Any cloud en-US
-                v => v.localService === false && v.lang.startsWith('en'),              // Any cloud English
-                v => v.lang === 'en-US',                                               // Local en-US fallback
-                v => v.lang.startsWith('en'),                                          // Any local English
+                v => /natural/i.test(v.name),
+                v => /microsoft/i.test(v.name) && /online/i.test(v.name),
+                v => /google/i.test(v.name) && v.lang === 'en-US',
+                v => /google/i.test(v.name) && v.lang.startsWith('en'),
+                v => /(enhanced|premium)/i.test(v.name),
+                v => /\b(siri)\b/i.test(v.name),
+                v => v.localService === false && v.lang === 'en-US',
+                v => v.localService === false && v.lang.startsWith('en'),
+                v => v.lang === 'en-US',
+                v => v.lang.startsWith('en'),
             ];
-
             for (const test of tests) {
                 const match = en.find(test) || voices.find(test);
                 if (match) return match;
@@ -2729,16 +2765,26 @@
             });
         }
 
-        function getVoiceParams(emotionState, emotionLevel) {
+        function getVoiceParams(emotionState, emotionLevel, style) {
             const lvl = Math.max(0, Math.min(100, emotionLevel ?? 50));
-            // Rate: slow when very bad, faster toward very good (0→0.78, 50→0.93, 100→1.15)
+            const s = style || voiceStyle || 'girl';
+
+            // Robotic: flat, mechanical
+            if (s === 'robotic') {
+                return { rate: 0.95, pitch: 0.5 };
+            }
+
+            // Base emotion-driven rate and pitch
             const rate = 0.78 + (lvl / 100) * 0.37;
-            // Pitch: U-curve — high at distress, normal at middle, high at excitement
             let pitch;
-            if      (emotionState === 'VERY_BAD')  pitch = 1.15 + (1 - lvl / 25)         * 0.15;  // 1.15–1.30
-            else if (emotionState === 'BAD')        pitch = 1.03 + (1 - (lvl - 25) / 25)  * 0.12;  // 1.03–1.15
+            if      (emotionState === 'VERY_BAD')  pitch = 1.15 + (1 - lvl / 25)        * 0.15;
+            else if (emotionState === 'BAD')        pitch = 1.03 + (1 - (lvl - 25) / 25) * 0.12;
             else if (emotionState === 'GOOD')       pitch = 1.0;
-            else                                    pitch = 1.0  + ((lvl - 75) / 25)       * 0.28;  // 1.00–1.28
+            else                                    pitch = 1.0  + ((lvl - 75) / 25)      * 0.28;
+
+            if (s === 'boy')      pitch = Math.max(0.6, pitch - 0.3);
+            if (s === 'childish') pitch = Math.min(2.0, pitch + 0.7);
+
             return { rate: Math.round(rate * 100) / 100, pitch: Math.round(pitch * 100) / 100 };
         }
 
@@ -2764,7 +2810,7 @@
 
         function speak(text, emotionState, emotionLevel) {
             if (!speakerEnabled) return;
-            const { rate, pitch } = getVoiceParams(emotionState, emotionLevel);
+            const { rate, pitch } = getVoiceParams(emotionState, emotionLevel, voiceStyle);
             if (isCapacitor && window.CapBridge && window.CapBridge.TextToSpeech) {
                 CapBridge.TextToSpeech.speak({ text: preprocessTTS(text), rate, pitch })
                     .catch(e => console.error('Native TTS error:', e));
@@ -2772,10 +2818,10 @@
             }
             if (typeof speechSynthesis === 'undefined') return;
             speechSynthesis.cancel();
-            const voice = _selectedVoice || pickBestVoice();
+            const voice = _selectedVoice || pickBestVoice(voiceStyle);
             const processed = preprocessTTS(text);
-            // VERY_BAD: chunk on punctuation and pause between for sobbing rhythm
-            const chunks = emotionState === 'VERY_BAD'
+            // VERY_BAD + non-robotic: chunk on punctuation for sobbing rhythm
+            const chunks = emotionState === 'VERY_BAD' && voiceStyle !== 'robotic'
                 ? processed.split(/(?<=[,!?])\s+/).filter(s => s.trim())
                 : [processed];
             speakChunks(chunks, rate, pitch, voice);
