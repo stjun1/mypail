@@ -839,22 +839,18 @@
         }
 
         .confession-admission {
-            background: linear-gradient(135deg, #fff0f0, #ffe0e0);
-            border: 2px solid #8b0000;
-            border-radius: 12px;
-            padding: 14px 18px;
-            margin-bottom: 12px;
+            background: linear-gradient(135deg, #fff0f0, #ffe0e0) !important;
+            border: 2px solid #8b0000 !important;
             text-align: center;
-            font-size: 14px;
-            color: #333;
         }
 
         .confession-admission button {
-            padding: 10px 24px;
-            font-size: 14px;
+            padding: 8px 20px;
+            font-size: 13px;
             font-weight: 600;
             border-radius: 8px;
-            margin: 6px 4px;
+            margin: 6px 4px 2px;
+            display: inline-block;
         }
 
         .confession-admission .spare-btn {
@@ -2550,14 +2546,15 @@
 
         function showConfessionAdmission(admissionType) {
             endConfessionMode();
-            const container = document.getElementById('mode-offers');
-            container.innerHTML = '';
-            const admDiv = document.createElement('div');
-            admDiv.className = 'confession-admission';
-            admDiv.innerHTML = `<p>${admissionType === 'triumphant' ? '😏 The truth is out!' : '😢 They broke down...'} What will you do?</p>` +
-                `<button class="spare-btn" onclick="spareConfession(this.parentElement)">🙏 Spare Life</button>` +
-                `<button class="delete-btn" onclick="deleteConfession(this.parentElement)">🗑️ Delete Character</button>`;
-            container.appendChild(admDiv);
+            const chatBox = document.getElementById('chat-box');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'message ai confession-admission';
+            const label = admissionType === 'triumphant' ? '😏 The truth is out!' : '😢 They broke down...';
+            msgDiv.innerHTML = `<div style="margin-bottom:10px;">${label} What will you do?</div>` +
+                `<button class="spare-btn" onclick="spareConfession(this.closest('.confession-admission'))">🙏 Spare Life</button>` +
+                `<button class="delete-btn" onclick="deleteConfession(this.closest('.confession-admission'))">🗑️ Delete Character</button>`;
+            chatBox.prepend(msgDiv);
+            chatBox.scrollTop = 0;
         }
 
         function spareConfession(el) {
