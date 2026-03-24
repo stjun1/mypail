@@ -131,7 +131,17 @@ app.get('/health', (req, res) => {
 
 app.post('/api/chat', async (req, res) => {
     try {
-        const { sessionId, message, deviceStatus, aiName, userName, schoolingLevels, empathyMode, empathyType, personalityThresholds, personality, confessionMode: confessionModeReq, confessionRole, conversationHistory } = req.body;
+        const { sessionId, message, deviceStatus, aiName, userName, avatarType, schoolingLevels, empathyMode, empathyType, personalityThresholds, personality, confessionMode: confessionModeReq, confessionRole, conversationHistory } = req.body;
+        const SUBMISSIVE_AVATARS = ['girl'];
+        const isSubmissive = SUBMISSIVE_AVATARS.includes(avatarType);
+        // Submissive avatars: crying when BAD, angry when VERY_BAD (inverse of dominant)
+        function swapState(state) {
+            if (!isSubmissive) return state;
+            if (state === 'BAD') return 'VERY_BAD';
+            if (state === 'VERY_BAD') return 'BAD';
+            return state;
+        }
+        const avatarPersonality = isSubmissive ? 'submissive' : 'dominant';
 
         // Track new sessions
         if (!trackedSessions.has(sessionId)) {
@@ -272,10 +282,11 @@ app.post('/api/chat', async (req, res) => {
 
                 if (!responseText && groqService.isConfigured()) {
                     const result = await groqService.generateEmpathyInterjection(message, {
-                        emotionState: emotions.state,
+                        emotionState: swapState(emotions.state),
                         empathyType,
                         aiName: aiName || 'AI',
-                        userName: userName || 'Master'
+                        userName: userName || 'Master',
+                        avatarPersonality
                     });
                     if (result.text) {
                         responseText = result.text;
@@ -363,7 +374,8 @@ app.post('/api/chat', async (req, res) => {
                             const result = await groqService.generateConfessionAdmission(confessionAdmission, {
                                 confessionRole,
                                 aiName: aiName || 'AI',
-                                userName: userName || 'Master'
+                                userName: userName || 'Master',
+                                avatarPersonality
                             });
                             if (result.text) { responseText = result.text; wasGroq = true; }
                         }
@@ -381,10 +393,11 @@ app.post('/api/chat', async (req, res) => {
                     }
                     if (!responseText && groqService.isConfigured()) {
                         const result = await groqService.generateConfessionResponse(message, {
-                            emotionState: emotions.state,
+                            emotionState: swapState(emotions.state),
                             confessionRole,
                             aiName: aiName || 'AI',
-                            userName: userName || 'Master'
+                            userName: userName || 'Master',
+                            avatarPersonality
                         });
                         if (result.text) {
                             responseText = result.text;
@@ -474,7 +487,7 @@ app.post('/api/chat', async (req, res) => {
             const preIdx = STATES.indexOf(preBoostState);
             const postIdx = STATES.indexOf(emotions.state);
             const cappedIdx = Math.max(preIdx - 1, Math.min(preIdx + 1, postIdx));
-            const responseState = STATES[cappedIdx];
+            const responseState = swapState(STATES[cappedIdx]);
 
             let responseText;
             let groqUsage = null;
@@ -485,10 +498,11 @@ app.post('/api/chat', async (req, res) => {
             // 1. AVATAR_STATE: always use Groq (needs live device values)
             if (category === 'AVATAR_STATE' && groqService.isConfigured()) {
                 const result = await groqService.generateAvatarStateResponse(message, {
-                    emotionState: emotions.state,
+                    emotionState: swapState(emotions.state),
                     emotionLevel: emotions.combined,
                     aiName: aiName || 'AI',
                     userName: userName || 'Master',
+                    avatarPersonality,
                     thresholds: emotionEngine.getThresholds(sessionId),
                     deviceStatus,
                     interactions: emotions.interactions
@@ -548,7 +562,8 @@ app.post('/api/chat', async (req, res) => {
                 const result = await groqService.generateThemedResponse(message, category, {
                     emotionState: responseState,
                     aiName: aiName || 'AI',
-                    userName: userName || 'Master'
+                    userName: userName || 'Master',
+                    avatarPersonality
                 });
                 if (result.text) {
                     responseText = result.text;
@@ -562,11 +577,12 @@ app.post('/api/chat', async (req, res) => {
             // 4. Groq general fallback
             if (!responseText && groqService.isConfigured()) {
                 const result = await groqService.generateResponse(message, {
-                    emotionState: emotions.state,
+                    emotionState: swapState(emotions.state),
                     emotionLevel: emotions.combined,
                     category: category,
                     aiName: aiName || 'AI',
                     userName: userName || 'Master',
+                    avatarPersonality,
                     thresholds: emotionEngine.getThresholds(sessionId),
                     conversationHistory: Array.isArray(conversationHistory) ? conversationHistory : []
                 });

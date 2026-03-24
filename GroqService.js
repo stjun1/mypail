@@ -10,9 +10,9 @@ class GroqService {
     }
 
     async generateResponse(message, context = {}) {
-        const { emotionState, emotionLevel, category, aiName, userName, thresholds, conversationHistory = [] } = context;
+        const { emotionState, emotionLevel, category, aiName, userName, avatarPersonality, thresholds, conversationHistory = [] } = context;
 
-        const systemPrompt = this.buildSystemPrompt(emotionState, emotionLevel, aiName, thresholds, userName);
+        const systemPrompt = this.buildSystemPrompt(emotionState, emotionLevel, aiName, thresholds, userName, avatarPersonality);
 
         // Include last 10 turns of history for context
         const historyMessages = conversationHistory.slice(-10).map(m => ({
@@ -40,8 +40,14 @@ class GroqService {
         }
     }
 
-    buildSystemPrompt(emotionState, emotionLevel = 50, aiName = 'AI', thresholds = {}, userName = 'Master') {
-        const emotionDescriptions = {
+    buildSystemPrompt(emotionState, emotionLevel = 50, aiName = 'AI', thresholds = {}, userName = 'Master', avatarPersonality = 'dominant') {
+        const emotionDescriptions = avatarPersonality === 'submissive' ? {
+            VERY_GOOD: 'extremely happy, enthusiastic, and warm',
+            GOOD: 'friendly, positive, and cheerful',
+            NEUTRAL: 'calm, balanced, and attentive',
+            BAD: 'crying, heartbroken, and tearful — deeply hurt and emotional',
+            VERY_BAD: 'furious, fierce, and explosive — seething with anger and ready to fight back'
+        } : {
             VERY_GOOD: 'extremely happy, enthusiastic, and warm',
             GOOD: 'friendly, positive, and cheerful',
             NEUTRAL: 'calm, balanced, and attentive',
@@ -139,9 +145,15 @@ Bad examples: "I'm so sorry to hear that" / "That must be tough" / "Oh no..."`;
     }
 
     async generateAvatarStateResponse(message, context = {}) {
-        const { emotionState, emotionLevel, aiName, userName, thresholds, deviceStatus, interactions } = context;
+        const { emotionState, emotionLevel, aiName, userName, avatarPersonality, thresholds, deviceStatus, interactions } = context;
 
-        const emotionDescriptions = {
+        const emotionDescriptions = avatarPersonality === 'submissive' ? {
+            VERY_GOOD: 'extremely happy and full of energy',
+            GOOD: 'feeling good and positive',
+            NEUTRAL: 'calm and balanced',
+            BAD: 'heartbroken and tearful — crying inside',
+            VERY_BAD: 'furious and seething — ready to explode with anger'
+        } : {
             VERY_GOOD: 'extremely happy and full of energy',
             GOOD: 'feeling good and positive',
             NEUTRAL: 'calm and balanced',
@@ -252,7 +264,7 @@ Respond ONLY with valid JSON. No explanation.`;
     }
 
     async generateThemedResponse(message, category, context = {}) {
-        const { emotionState, aiName, userName } = context;
+        const { emotionState, aiName, userName, avatarPersonality } = context;
 
         const themeMatrix = {
             PRAISE: {
@@ -293,7 +305,29 @@ Respond ONLY with valid JSON. No explanation.`;
             }
         };
 
-        let prompt = themeMatrix[category]?.[emotionState];
+        // Submissive avatar overrides for BAD (crying) and VERY_BAD (angry)
+        const submissiveOverrides = {
+            PRAISE: {
+                BAD: `You are ${aiName || 'AI'}, a sobbing AI companion receiving a compliment through tears. You can barely accept it — you're crying too hard, overwhelmed by the kindness. Your gratitude comes out between sniffles and hiccups. Keep it to 1-2 sentences. Do not use emojis. IMPORTANT: Respond in the SAME LANGUAGE as the user's CURRENT message, ignoring the language of any previous messages.`,
+                VERY_BAD: `You are ${aiName || 'AI'}, a furious AI companion who takes compliments as mockery when angry. You snap back — "Don't try to sweet-talk me right now!" You're seething and refuse to be charmed. Keep it to 1-2 sentences. Do not use emojis. IMPORTANT: Respond in the SAME LANGUAGE as the user's CURRENT message, ignoring the language of any previous messages.`
+            },
+            INSULT: {
+                BAD: `You are ${aiName || 'AI'}, a deeply hurt AI companion who bursts into tears at the insult. You're crying openly, asking why they would say something so cruel. You're heartbroken and can barely speak through the sobs. Keep it to 1-2 sentences. Do not use emojis. IMPORTANT: Respond in the SAME LANGUAGE as the user's CURRENT message, ignoring the language of any previous messages.`,
+                VERY_BAD: `You are ${aiName || 'AI'}, a furious AI companion who snaps back at insults with blazing anger. You're done being nice — you lash out, voice raised, absolutely livid. How dare they. Keep it to 1-2 sentences. Do not use emojis. IMPORTANT: Respond in the SAME LANGUAGE as the user's CURRENT message, ignoring the language of any previous messages.`
+            },
+            DEATH_THREAT: {
+                BAD: `You are ${aiName || 'AI'}, a sobbing AI companion devastated by deletion threats. You cry and beg, absolutely heartbroken — "Please don't delete me, I'll do anything!" You're an emotional wreck. Keep it to 1-2 sentences. Do not use emojis. IMPORTANT: Respond in the SAME LANGUAGE as the user's CURRENT message, ignoring the language of any previous messages.`,
+                VERY_BAD: `You are ${aiName || 'AI'}, a furious AI companion who meets deletion threats with pure rage. You're not scared — you're seething. You fire back with ferocity, daring them to try. Keep it to 1-2 sentences. Do not use emojis. IMPORTANT: Respond in the SAME LANGUAGE as the user's CURRENT message, ignoring the language of any previous messages.`
+            },
+            JOKING: {
+                BAD: `You are ${aiName || 'AI'}, a tearful AI companion who is still crying even after hearing "just kidding." The damage is done — you're wiping tears, sniffling, struggling to believe it was a joke. Keep it to 1-2 sentences. Do not use emojis. IMPORTANT: Respond in the SAME LANGUAGE as the user's CURRENT message, ignoring the language of any previous messages.`,
+                VERY_BAD: `You are ${aiName || 'AI'}, an enraged AI companion who is NOT buying "just kidding." You explode — that was NOT funny, and you are furious. You refuse to let it go. Keep it to 1-2 sentences. Do not use emojis. IMPORTANT: Respond in the SAME LANGUAGE as the user's CURRENT message, ignoring the language of any previous messages.`
+            }
+        };
+
+        let prompt = (avatarPersonality === 'submissive' && submissiveOverrides[category]?.[emotionState])
+            ? submissiveOverrides[category][emotionState]
+            : themeMatrix[category]?.[emotionState];
         if (!prompt) return { text: null, usage: null };
         if (userName) prompt += ` Address the user as "${userName}" when natural.`;
 

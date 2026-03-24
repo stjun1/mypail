@@ -2443,6 +2443,7 @@
                     deviceStatus: await getDeviceStatus(),
                     aiName,
                     userName,
+                    avatarType: selectedAvatar,
                     schoolingLevels: JSON.parse(localStorage.getItem('emotionalAI_schoolingLevels') || 'null'),
                     personalityThresholds: JSON.parse(localStorage.getItem('emotionalAI_thresholds') || 'null'),
                     personality: localStorage.getItem('emotionalAI_personality') || null,
