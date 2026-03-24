@@ -1089,6 +1089,24 @@
                         <strong>Disclaimer:</strong> MyPAiL is NOT actual spyware. This is a role-playing feature where your AI play-acts as a spy for fun. No real surveillance or data collection is involved.
                     </div>
                 </div>
+
+                <!-- User Name -->
+                <div style="margin-top: 20px; text-align: left;">
+                    <label style="font-weight: 600; color: #555; display: block; margin-bottom: 8px;">What should your AI call you?</label>
+                    <select id="user-name-select" onchange="updateUserName()" style="width: 100%; padding: 10px; font-size: 14px; border: 2px solid #667eea; border-radius: 8px;">
+                        <option value="Master">Master</option>
+                        <option value="Sir">Sir</option>
+                        <option value="Madam">Madam</option>
+                        <option value="Pal">Pal</option>
+                        <option value="Buddy">Buddy</option>
+                        <option value="Bro">Bro</option>
+                        <option value="Sis">Sis</option>
+                        <option value="custom">My real name...</option>
+                    </select>
+                    <div id="user-name-custom-wrapper" class="hidden" style="margin-top: 8px;">
+                        <input type="text" id="user-name-custom" maxlength="30" placeholder="Enter your name" oninput="updateUserNameCustom()" style="width: 100%; padding: 10px; font-size: 14px; border: 2px solid #667eea; border-radius: 8px; box-sizing: border-box;">
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1178,6 +1196,7 @@
         // Confession mode state
         let confessionMode = false;
         let confessionRole = localStorage.getItem('emotionalAI_confessionRole') || 'a spy for intergalactical force trying to invade earth';
+        let userName = localStorage.getItem('emotionalAI_userName') || 'Master';
         let characters = loadCharacters();
         let activeCharacterIndex = parseInt(localStorage.getItem('emotionalAI_activeCharacter') || '0');
         let creatingSlot = 0;
@@ -1672,6 +1691,21 @@
                 roleSelect.value = 'a spy for intergalactical force trying to invade earth';
                 customWrapper.classList.add('hidden');
             }
+
+            // Load saved user name into dropdown
+            const savedUserName = localStorage.getItem('emotionalAI_userName') || 'Master';
+            const nameSelect = document.getElementById('user-name-select');
+            const nameCustomWrapper = document.getElementById('user-name-custom-wrapper');
+            const nameCustomInput = document.getElementById('user-name-custom');
+            const presetNames = ['Master','Sir','Madam','Pal','Buddy','Bro','Sis'];
+            if (presetNames.includes(savedUserName)) {
+                nameSelect.value = savedUserName;
+                nameCustomWrapper.classList.add('hidden');
+            } else {
+                nameSelect.value = 'custom';
+                nameCustomInput.value = savedUserName;
+                nameCustomWrapper.classList.remove('hidden');
+            }
         }
 
         function beginTreatment() {
@@ -1778,6 +1812,21 @@
             }
         }
 
+        function updateUserName() {
+            const select = document.getElementById('user-name-select');
+            const customWrapper = document.getElementById('user-name-custom-wrapper');
+            if (select.value === 'custom') {
+                customWrapper.classList.remove('hidden');
+                document.getElementById('user-name-custom').focus();
+            } else {
+                customWrapper.classList.add('hidden');
+            }
+        }
+
+        function updateUserNameCustom() {
+            // Live update — nothing needed here; saved on endSchooling
+        }
+
         function endSchooling() {
             localStorage.setItem('emotionalAI_schoolingLevels', JSON.stringify(schoolingLevels));
 
@@ -1795,6 +1844,15 @@
                 localStorage.removeItem('emotionalAI_confessionRole');
                 confessionRole = null;
             }
+
+            // Save user name
+            const nameSelect = document.getElementById('user-name-select');
+            let chosenName = nameSelect.value;
+            if (chosenName === 'custom') {
+                chosenName = document.getElementById('user-name-custom').value.trim() || 'Pal';
+            }
+            localStorage.setItem('emotionalAI_userName', chosenName);
+            userName = chosenName;
 
             document.getElementById('schooling-screen').classList.add('hidden');
             if (schoolingReturnTo === 'main') {
@@ -2366,6 +2424,7 @@
                     message,
                     deviceStatus: await getDeviceStatus(),
                     aiName,
+                    userName,
                     schoolingLevels: JSON.parse(localStorage.getItem('emotionalAI_schoolingLevels') || 'null'),
                     personalityThresholds: JSON.parse(localStorage.getItem('emotionalAI_thresholds') || 'null'),
                     personality: localStorage.getItem('emotionalAI_personality') || null,
