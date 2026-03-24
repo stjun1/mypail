@@ -1,6 +1,6 @@
 {
   "name": "mypail",
-  "version": "0.2.30",
+  "version": "0.2.31",
   "description": "Emotional AI Agent - Clean Build",
   "main": "server.js",
   "scripts": {
