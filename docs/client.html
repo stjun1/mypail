@@ -40,8 +40,10 @@
         #setup-screen {
             min-height: 100vh;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
+            overflow-y: auto;
+            padding: 20px 0;
         }
 
         .setup-card {
@@ -91,7 +93,7 @@
         /* Avatar Picker */
         .avatar-picker {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 12px;
             margin: 20px 0 8px;
         }
@@ -2812,7 +2814,7 @@
             if (!speakerEnabled) return;
             const { rate, pitch } = getVoiceParams(emotionState, emotionLevel, voiceStyle);
             if (isCapacitor && window.CapBridge && window.CapBridge.TextToSpeech) {
-                CapBridge.TextToSpeech.speak({ text: preprocessTTS(text), rate, pitch })
+                CapBridge.TextToSpeech.speak({ text: preprocessTTS(text), speechRate: rate, pitchRate: pitch, locale: 'en-US' })
                     .catch(e => console.error('Native TTS error:', e));
                 return;
             }
