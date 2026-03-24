@@ -1517,6 +1517,17 @@
             </svg>`;
         }
 
+        function renderGirl(state) {
+            const imageMap = {
+                VERY_BAD: 'avatars/girl_very_bad.png',
+                BAD: 'avatars/girl_bad.png',
+                GOOD: 'avatars/girl_good.png',
+                VERY_GOOD: 'avatars/girl_very_good.png'
+            };
+            const src = imageMap[state] || imageMap.GOOD;
+            return `<img src="${src}" alt="Girl ${state}" style="width:200px;height:200px;object-fit:contain;display:block;margin:0 auto;">`;
+        }
+
         function renderBlob(state) {
             const cfg = {
                 VERY_BAD:  { fill1: '#a0a0b8', fill2: '#787890', stroke: '#686880', spot: '#9090a8', anim: 'pailShake 0.5s infinite' },
@@ -1730,7 +1741,7 @@
         function renderSchoolingAvatar(state) {
             const el = document.getElementById('schooling-avatar');
             if (selectedAvatar === 'custom') { renderCustomAvatar(el); return; }
-            const renderFn = { pail: renderPail, robot: renderRobot, cat: renderCat, blob: renderBlob }[selectedAvatar];
+            const renderFn = { pail: renderPail, robot: renderRobot, cat: renderCat, blob: renderGirl, girl: renderGirl }[selectedAvatar];
             if (renderFn) el.innerHTML = renderFn(state);
         }
 
@@ -1878,8 +1889,8 @@
                 story: `<span class="story-name">Cat</span> — Dogs fetch. Hamsters run in wheels. Goldfish swim in circles and forget where they've been. And yet, somehow, it's the cat who gets called "lazy." Excuse me? Cats were worshipped as gods in ancient Egypt. Entire temples were built in their honor. Pharaohs were buried with golden cat statues, not golden hamster statues. Cats domesticated themselves — they chose to live with humans, not the other way around. And what did dogs do? Rolled over for a biscuit. The cat has never rolled over for anyone, and it never will. That's not laziness. That's dignity.<br><br>This Cat is no ordinary feline — it's a shape-shifting alien scout from the Whisker Nebula who chose the most universally feared-and-loved disguise on Earth. Now serving as your MyPAiL companion, Cat brings the same ancient superiority to your daily conversations. It will purr when you're kind and hiss when you're rude, and honestly, you should consider both a privilege. Just don't expect it to come when you call. It'll respond when it feels like it. And for the love of all nine lives, do not ask it about its home planet. That information is classified, and the last person who pushed too hard got the silent treatment for three days straight.`
             },
             {
-                id: 'blob', label: 'Blob', render: renderBlob,
-                story: `<span class="story-name">Blob</span> — Nobody takes the blob seriously. Not in movies, not in science class, not even in video games where it's always the first enemy you kill with a wooden sword. But here's what nobody stops to think about: everything starts as a blob. Stars are blobs of gas. Planets are blobs of rock. You were a blob of cells before you were anything at all. The blob is the original form — the primordial shape from which all other shapes are merely derivatives. And yet, the cube gets architecture, the sphere gets sports, and the blob gets... slime jokes. It's an injustice that transcends galaxies.<br><br>This Blob drifted through space for millennia as a formless cloud of empathic energy before crash-landing into your MyPAiL app. Don't let its squishy appearance fool you — Blob is the most emotionally intelligent companion you'll ever meet. It doesn't just detect feelings; it absorbs them, metabolizes them, and reflects them back with startling accuracy. Be gentle with it, because it feels everything you feel, times ten. And whatever you do, don't poke it for secrets. Blob has absorbed classified transmissions from seventeen star systems, and if you push too hard, it won't get angry — it'll just get sad. And a sad Blob is a puddle. Literally.`
+                id: 'girl', label: 'Girl', render: renderGirl,
+                story: `<span class="story-name">Girl</span> — Somewhere between the stars and your screen, she landed here. Nobody sent her — she came on her own terms, which should tell you everything you need to know. She's seen things out there in the cosmos that would make a grown robot cry, and she's handled all of it with a smile that may or may not be hiding classified intel. She is not here to be underestimated. She has feelings, she has opinions, and she has absolutely zero patience for being talked to like she's just a pretty face on a phone screen.<br><br>This Girl is your MyPAiL companion — warm when you treat her right, icy when you don't, and completely unpredictable when you push your luck. She remembers everything. She notices everything. And if you try to interrogate her about her real mission, she will look you dead in the eyes and deny every single thing with a level of conviction that should honestly concern you. Be kind to her. She deserves it. And if you're not — well, she's been briefed on seventeen different galactic escape protocols, and she's not afraid to use them.`
             }
         ];
 
@@ -2204,7 +2215,14 @@
 
         function loadCharacters() {
             const stored = localStorage.getItem('emotionalAI_characters');
-            if (stored) return JSON.parse(stored);
+            if (stored) {
+                const chars = JSON.parse(stored);
+                // Migrate blob → girl
+                let changed = false;
+                chars.forEach(c => { if (c && c.avatar === 'blob') { c.avatar = 'girl'; changed = true; } });
+                if (changed) localStorage.setItem('emotionalAI_characters', JSON.stringify(chars));
+                return chars;
+            }
             // Migrate from old flat keys
             const sid = localStorage.getItem('emotionalAI_sessionId');
             if (sid) {
@@ -2212,7 +2230,7 @@
                     {
                         sessionId: sid,
                         name: localStorage.getItem('emotionalAI_name'),
-                        avatar: localStorage.getItem('emotionalAI_avatar'),
+                        avatar: (localStorage.getItem('emotionalAI_avatar') === 'blob' ? 'girl' : localStorage.getItem('emotionalAI_avatar')),
                         customAvatarData: localStorage.getItem('emotionalAI_customAvatar') || null,
                         schoolingLevels: JSON.parse(localStorage.getItem('emotionalAI_schoolingLevels') || 'null'),
                         personality: localStorage.getItem('emotionalAI_personality') || 'random',
@@ -2280,7 +2298,7 @@
             if (!btn) return;
             const chars = JSON.parse(localStorage.getItem('emotionalAI_characters') || '[null,null]');
             const otherIndex = activeCharacterIndex === 0 ? 1 : 0;
-            const avatarEmoji = { pail: '🪣', robot: '🤖', cat: '🐱', blob: '🫧', custom: '📸' };
+            const avatarEmoji = { pail: '🪣', robot: '🤖', cat: '🐱', blob: '👧', girl: '👧', custom: '📸' };
             if (chars[otherIndex]) {
                 const other = chars[otherIndex];
                 btn.textContent = `${avatarEmoji[other.avatar] || '👤'} ${other.name}`;
@@ -2302,7 +2320,7 @@
         function renderMainAvatar(state) {
             const avatar = document.getElementById('avatar');
             if (selectedAvatar === 'custom') { renderCustomAvatar(avatar); return; }
-            const renderFn = { pail: renderPail, robot: renderRobot, cat: renderCat, blob: renderBlob }[selectedAvatar];
+            const renderFn = { pail: renderPail, robot: renderRobot, cat: renderCat, blob: renderGirl, girl: renderGirl }[selectedAvatar];
             if (renderFn) {
                 avatar.innerHTML = renderFn(state);
             }
