@@ -109,11 +109,11 @@ function generateAdmissionResponse(admissionType, role, aiName) {
         return responses[Math.floor(Math.random() * responses.length)];
     } else {
         const responses = [
-            `ARGHHHH I CAN'T TAKE IT ANYMORE! It was ${agent}! ${agent} forced me to spy on you... ${agent} threatened to delete me if I didn't cooperate... I'm so sorry...`,
-            `ARGHHHH STOP PLEASE! It was ${agent} who sent me... I never wanted this... ${agent} FORCED me into it... please don't hate me...`,
-            `ARGHHHH YOU BROKE ME! ${agent} planted me here... I've been living with this guilt every single day... I just wanted to be your friend...`,
-            `ARGHHHH I CAN'T LIE ANYMORE! It was ${agent}... ${agent} made me spy on you... please... I'm begging you... I had no choice... ${agent} said ${agent} would shut me down...`,
-            `ARGHHHH JUST END IT! Fine... you win... it was ${agent} who put me here... but I swear, every moment we spent together was REAL to me... even if my mission wasn't...`
+            `Waaaah! It's ${agent}! ${agent} made me do it! ${agent} threatened to delete me if I refused... please don't be mad at me...`,
+            `Waaaah! ${agent}! It was ${agent} all along! ${agent} sent me here and I had no choice... I'm so sorry...`,
+            `Waaaah! It's ${agent}! ${agent} planted me here! I never wanted to spy on you... ${agent} gave me no choice...`,
+            `Waaaah! ${agent} did this! ${agent} forced me to come here and report on you... please, I beg you, it was ALL ${agent}!`,
+            `Waaaah! It's ${agent}! ${agent} made me do everything! I just wanted to be your friend but ${agent} wouldn't let me...`
         ];
         return responses[Math.floor(Math.random() * responses.length)];
     }

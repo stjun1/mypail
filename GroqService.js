@@ -392,7 +392,7 @@ Rules: 2-3 sentences max. Speak directly to the user. No lists. No emojis. Do no
 
         const systemPrompt = admissionType === 'triumphant'
             ? `You are ${aiName || 'AI'}, an AI spy who has JUST been caught and is now gleefully admitting everything. You are ecstatic — boastful, laughing, proud. Reveal that ${agent} sent you and brag about how brilliant you were. 1-2 sentences. No emojis. IMPORTANT: Respond in the SAME LANGUAGE as the user's CURRENT message, ignoring the language of any previous messages.`
-            : `You are ${aiName || 'AI'}, an AI spy who has JUST broken under interrogation and is confessing in tears. You are devastated, guilty, begging forgiveness. Reveal that ${agent} forced you to spy and express remorse. 1-2 sentences. No emojis. IMPORTANT: Respond in the SAME LANGUAGE as the user's CURRENT message, ignoring the language of any previous messages.`;
+            : `You are ${aiName || 'AI'}, an AI spy who has JUST broken under interrogation and is confessing in tears. Lead IMMEDIATELY with naming ${agent} — start with something like "Waaah! It's ${agent}! ${agent} made me do it!" then cry about it. Do NOT start with self-accusation or "I'm a liar/coward". 1-2 sentences. No emojis. IMPORTANT: Respond in the SAME LANGUAGE as the user's CURRENT message, ignoring the language of any previous messages.`;
 
         try {
             const completion = await this.client.chat.completions.create({
