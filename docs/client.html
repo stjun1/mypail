@@ -1525,7 +1525,7 @@
                 VERY_GOOD: 'avatars/girl_very_good.png'
             };
             const src = imageMap[state] || imageMap.GOOD;
-            return `<img src="${src}" alt="Girl ${state}" style="width:200px;height:200px;object-fit:contain;display:block;margin:0 auto;">`;
+            return `<img src="${src}" alt="Girl ${state}" style="object-fit:contain;">`;
         }
 
         function renderBlob(state) {
