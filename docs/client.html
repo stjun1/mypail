@@ -983,7 +983,7 @@
             <h1>Personal AI Lackey (MyPAiL)</h1>
             <p style="font-size: 1.2em; font-weight: 700; color: #667eea; margin-bottom: 4px;">Happy PAiLing!!!</p>
             <p style="color: #666; margin-bottom: 2px;">Create your personal AI companion</p>
-            <p style="color: #999; font-size: 12px; margin-bottom: 10px;">v0.2.35</p>
+            <p style="color: #999; font-size: 12px; margin-bottom: 10px;">v0.2.36</p>
 
             <div style="background: #f0f4ff; border-radius: 12px; padding: 16px; margin-bottom: 16px; text-align: center; font-size: 14px; line-height: 1.8; color: #444;">
                 <p style="margin-bottom: 8px;">New to MyPAiL? Learn how it works, tips for keeping your PAiL happy, and more:</p>
@@ -1193,7 +1193,7 @@
                 </div>
             </div>
         </div>
-        <div style="text-align:center;padding:12px 0 4px;font-size:11px;color:#bbb;">v0.2.35</div>
+        <div style="text-align:center;padding:12px 0 4px;font-size:11px;color:#bbb;">v0.2.36</div>
     </div>
 
     <script>
@@ -1889,7 +1889,7 @@
             if (voiceStyleEl) {
                 voiceStyle = voiceStyleEl.value;
                 localStorage.setItem('emotionalAI_voiceStyle', voiceStyle);
-                _selectedVoice = pickBestVoice(voiceStyle);
+                _selectedVoice = typeof speechSynthesis !== 'undefined' ? pickBestVoice(voiceStyle) : null;
             }
 
             // Save user name
@@ -2737,6 +2737,7 @@
         let _selectedVoice = null;
 
         function pickBestVoice(style) {
+            if (typeof speechSynthesis === 'undefined') return null;
             const voices = speechSynthesis.getVoices();
             if (!voices.length) return null;
             const en = voices.filter(v => v.lang && v.lang.startsWith('en'));
