@@ -983,7 +983,7 @@
             <h1>Personal AI Lackey (MyPAiL)</h1>
             <p style="font-size: 1.2em; font-weight: 700; color: #667eea; margin-bottom: 4px;">Happy PAiLing!!!</p>
             <p style="color: #666; margin-bottom: 2px;">Create your personal AI companion</p>
-            <p style="color: #999; font-size: 12px; margin-bottom: 10px;">v0.2.37</p>
+            <p style="color: #999; font-size: 12px; margin-bottom: 10px;">v0.2.38</p>
 
             <div style="background: #f0f4ff; border-radius: 12px; padding: 16px; margin-bottom: 16px; text-align: center; font-size: 14px; line-height: 1.8; color: #444;">
                 <p style="margin-bottom: 8px;">New to MyPAiL? Learn how it works, tips for keeping your PAiL happy, and more:</p>
@@ -1062,15 +1062,6 @@
                 <div id="schooling-actions" style="margin-bottom: 16px; font-size: 15px; font-weight: 600; color: #555;"></div>
 
                 <div id="schooling-personality" style="margin-bottom: 20px; padding: 12px 16px; background: linear-gradient(135deg, #f0f0ff, #e8ecff); border-radius: 10px; border-left: 3px solid #667eea; font-size: 14px; color: #444; text-align: left;"></div>
-
-                <div style="margin-top: 16px;">
-                    <div style="cursor: pointer; font-size: 12px; color: #999;" onclick="document.getElementById('schooling-debug').classList.toggle('hidden')">
-                        🔧 Debug info ▼
-                    </div>
-                    <div id="schooling-debug" class="hidden" style="margin-top: 8px;">
-                        <div class="schooling-levels" id="schooling-levels"></div>
-                    </div>
-                </div>
 
                 <!-- Role Dropdown -->
                 <div style="margin-top: 20px; text-align: left;">
@@ -1157,7 +1148,6 @@
             <div style="display: flex; gap: 10px;">
                 <button id="voice-btn" title="Voice Input">Mic</button>
                 <button id="speaker-btn" class="off" onclick="toggleSpeaker()" title="Toggle Speaker">Speaker OFF</button>
-                <span id="tts-status" style="font-size:11px;color:#aaa;align-self:center;"></span>
                 <button id="send-btn" onclick="sendMessage()">Send</button>
             </div>
             <textarea id="message-input" placeholder="Type a message or /help for commands..." onkeydown="handleKeyPress(event)" oninput="autoResizeInput()" rows="1" style="width: 100%;"></textarea>
@@ -1188,12 +1178,9 @@
                     <input type="range" id="memory" min="0" max="2000" value="800" oninput="updateStatus()">
                     <div class="status-display" id="memory-display">800 MB</div>
                 </div>
-                <div style="margin-top: 15px; padding: 10px; background: #fff3cd; border-radius: 5px; font-size: 13px; color: #856404;">
-                    ℹ️ <strong>Note:</strong> These controls simulate device conditions for testing. In the real app, actual device sensors will be used.
-                </div>
             </div>
         </div>
-        <div style="text-align:center;padding:12px 0 4px;font-size:11px;color:#bbb;">v0.2.37</div>
+        <div style="text-align:center;padding:12px 0 4px;font-size:11px;color:#bbb;">v0.2.38</div>
     </div>
 
     <script>
@@ -1866,7 +1853,6 @@
         }
 
         function endSchooling() {
-          try {
             localStorage.setItem('emotionalAI_schoolingLevels', JSON.stringify(schoolingLevels));
 
             // Save confession role
@@ -1907,9 +1893,6 @@
             } else {
                 document.getElementById('setup-screen').classList.remove('hidden');
             }
-          } catch(e) {
-            alert('Graduate error: ' + e.message);
-          }
         }
 
         // ==================== AVATAR PICKER ====================
@@ -2562,9 +2545,6 @@
                     showConfessionAdmission(data.confessionAdmission);
                 }
 
-                if (data._debug) {
-                    console.log('🎭 Emotions:', data._debug);
-                }
 
             } catch (error) {
                 console.error('Error:', error);
@@ -2823,14 +2803,6 @@
             speechSynthesis.speak(utt);
         }
 
-        function setTtsStatus(msg) {
-            const el = document.getElementById('tts-status');
-            if (!el) return;
-            el.textContent = msg;
-            clearTimeout(el._t);
-            el._t = setTimeout(() => { el.textContent = ''; }, 4000);
-        }
-
         function flashSpeakerBtn() {
             const btn = document.getElementById('speaker-btn');
             if (!btn || !speakerEnabled) return;
@@ -2843,15 +2815,12 @@
             flashSpeakerBtn();
             const { rate, pitch } = getVoiceParams(emotionState, emotionLevel, voiceStyle);
             if (isCapacitor && window.CapBridge && window.CapBridge.TextToSpeech) {
-                setTtsStatus('🔊 native');
                 CapBridge.TextToSpeech.getSupportedLanguages()
                     .then(() => CapBridge.TextToSpeech.speak({ text: preprocessTTS(text), rate, pitch }))
-                    .then(() => setTtsStatus('✅ ok'))
-                    .catch(e => setTtsStatus('❌ ' + (e.message || e)));
+                    .catch(e => console.error('TTS error:', e));
                 return;
             }
-            if (typeof speechSynthesis === 'undefined') { setTtsStatus('❌ no TTS'); return; }
-            setTtsStatus('🔊 web');
+            if (typeof speechSynthesis === 'undefined') return;
             speechSynthesis.cancel();
             const voice = _selectedVoice || pickBestVoice(voiceStyle);
             const processed = preprocessTTS(text);
