@@ -38,7 +38,7 @@
 
         /* Setup Screen */
         #setup-screen {
-            min-height: 100vh;
+            height: 100vh;
             display: flex;
             align-items: flex-start;
             justify-content: center;
@@ -450,7 +450,7 @@
 
         /* Training Screen */
         #schooling-screen {
-            min-height: 100vh;
+            height: 100vh;
             display: flex;
             align-items: flex-start;
             justify-content: center;
@@ -983,7 +983,7 @@
             <h1>Personal AI Lackey (MyPAiL)</h1>
             <p style="font-size: 1.2em; font-weight: 700; color: #667eea; margin-bottom: 4px;">Happy PAiLing!!!</p>
             <p style="color: #666; margin-bottom: 2px;">Create your personal AI companion</p>
-            <p style="color: #999; font-size: 12px; margin-bottom: 10px;">v0.2.32</p>
+            <p style="color: #999; font-size: 12px; margin-bottom: 10px;">v0.2.33</p>
 
             <div style="background: #f0f4ff; border-radius: 12px; padding: 16px; margin-bottom: 16px; text-align: center; font-size: 14px; line-height: 1.8; color: #444;">
                 <p style="margin-bottom: 8px;">New to MyPAiL? Learn how it works, tips for keeping your PAiL happy, and more:</p>
@@ -1157,6 +1157,7 @@
             <div style="display: flex; gap: 10px;">
                 <button id="voice-btn" title="Voice Input">Mic</button>
                 <button id="speaker-btn" class="off" onclick="toggleSpeaker()" title="Toggle Speaker">Speaker OFF</button>
+                <span id="tts-status" style="font-size:11px;color:#aaa;align-self:center;"></span>
                 <button id="send-btn" onclick="sendMessage()">Send</button>
             </div>
             <textarea id="message-input" placeholder="Type a message or /help for commands..." onkeydown="handleKeyPress(event)" oninput="autoResizeInput()" rows="1" style="width: 100%;"></textarea>
@@ -1192,7 +1193,7 @@
                 </div>
             </div>
         </div>
-        <div style="text-align:center;padding:12px 0 4px;font-size:11px;color:#bbb;">v0.2.32</div>
+        <div style="text-align:center;padding:12px 0 4px;font-size:11px;color:#bbb;">v0.2.33</div>
     </div>
 
     <script>
@@ -2849,6 +2850,14 @@
             speechSynthesis.speak(utt);
         }
 
+        function setTtsStatus(msg) {
+            const el = document.getElementById('tts-status');
+            if (!el) return;
+            el.textContent = msg;
+            clearTimeout(el._t);
+            el._t = setTimeout(() => { el.textContent = ''; }, 4000);
+        }
+
         function flashSpeakerBtn() {
             const btn = document.getElementById('speaker-btn');
             if (!btn || !speakerEnabled) return;
@@ -2863,10 +2872,12 @@
             if (isCapacitor && window.CapBridge && window.CapBridge.TextToSpeech) {
                 const ttsOpts = { text: preprocessTTS(text), rate, pitch, volume: 1.0, lang: 'en-US' };
                 if (_nativeVoiceIndex >= 0) ttsOpts.voice = _nativeVoiceIndex;
+                setTtsStatus('🔊 native');
                 CapBridge.TextToSpeech.speak(ttsOpts)
                     .catch(e => {
-                        console.error('Native TTS error:', e);
+                        setTtsStatus('❌ ' + (e.message || e));
                         if (typeof speechSynthesis !== 'undefined') {
+                            setTtsStatus('🔊 web fallback');
                             const utt = new SpeechSynthesisUtterance(preprocessTTS(text));
                             utt.rate = rate; utt.pitch = pitch;
                             speechSynthesis.speak(utt);
@@ -2874,7 +2885,8 @@
                     });
                 return;
             }
-            if (typeof speechSynthesis === 'undefined') return;
+            if (typeof speechSynthesis === 'undefined') { setTtsStatus('❌ no TTS'); return; }
+            setTtsStatus('🔊 web');
             speechSynthesis.cancel();
             const voice = _selectedVoice || pickBestVoice(voiceStyle);
             const processed = preprocessTTS(text);
