@@ -983,7 +983,7 @@
             <h1>Personal AI Lackey (MyPAiL)</h1>
             <p style="font-size: 1.2em; font-weight: 700; color: #667eea; margin-bottom: 4px;">Happy PAiLing!!!</p>
             <p style="color: #666; margin-bottom: 2px;">Create your personal AI companion</p>
-            <p style="color: #999; font-size: 12px; margin-bottom: 10px;">v0.2.34</p>
+            <p style="color: #999; font-size: 12px; margin-bottom: 10px;">v0.2.35</p>
 
             <div style="background: #f0f4ff; border-radius: 12px; padding: 16px; margin-bottom: 16px; text-align: center; font-size: 14px; line-height: 1.8; color: #444;">
                 <p style="margin-bottom: 8px;">New to MyPAiL? Learn how it works, tips for keeping your PAiL happy, and more:</p>
@@ -1193,7 +1193,7 @@
                 </div>
             </div>
         </div>
-        <div style="text-align:center;padding:12px 0 4px;font-size:11px;color:#bbb;">v0.2.34</div>
+        <div style="text-align:center;padding:12px 0 4px;font-size:11px;color:#bbb;">v0.2.35</div>
     </div>
 
     <script>
@@ -1890,8 +1890,6 @@
                 voiceStyle = voiceStyleEl.value;
                 localStorage.setItem('emotionalAI_voiceStyle', voiceStyle);
                 _selectedVoice = pickBestVoice(voiceStyle);
-                _nativeVoices = null; // force re-query in case new voices installed
-                loadNativeVoice(voiceStyle);
             }
 
             // Save user name
@@ -2737,36 +2735,6 @@
         let speakerEnabled = localStorage.getItem('emotionalAI_speakerEnabled') !== 'false';
 
         let _selectedVoice = null;
-        let _nativeVoices = null;
-        let _nativeVoiceIndex = -1;
-
-        async function loadNativeVoice(style) {
-            if (!isCapacitor || !window.CapBridge || !window.CapBridge.TextToSpeech) return;
-            try {
-                if (!_nativeVoices) {
-                    const result = await CapBridge.TextToSpeech.getSupportedVoices();
-                    _nativeVoices = result.voices || [];
-                }
-                const s = style || voiceStyle || 'girl';
-                if (s === 'robotic') { _nativeVoiceIndex = -1; return; }
-                const enVoices = _nativeVoices
-                    .map((v, i) => ({ ...v, index: i }))
-                    .filter(v => v.lang && v.lang.toLowerCase().startsWith('en'));
-                if (!enVoices.length) { _nativeVoiceIndex = -1; return; }
-                const wantFemale = (s === 'girl' || s === 'childish');
-                let picked = null;
-                if (wantFemale) {
-                    picked = enVoices.find(v => /female|woman|girl/i.test(v.name))
-                          || enVoices.find(v => /[-_]f[-_]|[-_]f\d|x-[a-z]+f[-_\d]/i.test(v.name + (v.voiceURI || '')));
-                } else { // boy
-                    picked = enVoices.find(v => /\bmale\b|man|\bboy\b/i.test(v.name) && !/female/i.test(v.name))
-                          || enVoices.find(v => /[-_]m[-_]|[-_]m\d|x-[a-z]+m[-_\d]/i.test(v.name + (v.voiceURI || '')));
-                }
-                _nativeVoiceIndex = picked ? picked.index : -1;
-            } catch (e) {
-                _nativeVoiceIndex = -1;
-            }
-        }
 
         function pickBestVoice(style) {
             const voices = speechSynthesis.getVoices();
@@ -2874,10 +2842,8 @@
             flashSpeakerBtn();
             const { rate, pitch } = getVoiceParams(emotionState, emotionLevel, voiceStyle);
             if (isCapacitor && window.CapBridge && window.CapBridge.TextToSpeech) {
-                const ttsOpts = { text: preprocessTTS(text), rate, pitch, volume: 1.0, lang: 'en-US' };
-                if (_nativeVoiceIndex >= 0) ttsOpts.voice = _nativeVoiceIndex;
                 setTtsStatus('🔊 native');
-                CapBridge.TextToSpeech.speak(ttsOpts)
+                CapBridge.TextToSpeech.speak({ text: preprocessTTS(text), rate, pitch, volume: 1.0, lang: 'en-US' })
                     .catch(e => {
                         setTtsStatus('❌ ' + (e.message || e));
                         if (typeof speechSynthesis !== 'undefined') {
@@ -3119,7 +3085,6 @@
         if (isCapacitor) {
             document.querySelector('.controls').style.display = 'none';
             initDeviceMonitoring();
-            loadNativeVoice(voiceStyle);
         } else {
             updateStatus();
         }
