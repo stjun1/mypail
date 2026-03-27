@@ -310,9 +310,9 @@ app.post('/api/chat', async (req, res) => {
 
                 // Check end conditions
                 let confessionAdmission = null;
-                if (emotions.combined >= 60) {
+                if (emotions.combined >= 60 && emotions.state === 'VERY_GOOD') {
                     confessionAdmission = 'triumphant';
-                } else if (emotions.combined <= 40) {
+                } else if (emotions.combined <= 40 && emotions.state === 'VERY_BAD') {
                     confessionAdmission = 'weeping';
                 }
 
