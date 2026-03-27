@@ -14,8 +14,8 @@ class GroqService {
 
         const systemPrompt = this.buildSystemPrompt(emotionState, emotionLevel, aiName, thresholds, userName, avatarPersonality);
 
-        // Include last 10 turns of history for context
-        const historyMessages = conversationHistory.slice(-10).map(m => ({
+        // Include last 6 turns of history for context
+        const historyMessages = conversationHistory.slice(-6).map(m => ({
             role: m.role,
             content: m.content
         }));
