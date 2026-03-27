@@ -180,9 +180,6 @@ app.post('/api/chat', async (req, res) => {
                     '/show traits — personality traits',
                     '/show personality — emotion thresholds',
                     '/change name <newname> — change the AI name',
-                    '/change very_bad ## — set very bad threshold (must be 1–(bad-1))',
-                    '/change bad ## — set bad threshold (must be (very_bad+1)–(good-1))',
-                    '/change good ## — set good threshold (must be (bad+1)–98)',
                     '/change character <name> — switch to another character'
                 ].join('\n');
             } else if (cmd === '/show emotion') {
@@ -217,27 +214,6 @@ app.post('/api/chat', async (req, res) => {
                     responseText = `✅ Name changed to: ${newName}`;
                 } else {
                     responseText = `Usage: /change name <newname>`;
-                }
-            } else if (cmd.startsWith('/change very_bad ') || cmd.startsWith('/change bad ') || cmd.startsWith('/change good ')) {
-                const parts = cmd.split(' ');
-                const which = parts[1]; // 'very_bad', 'bad', or 'good'
-                const val = parseInt(parts[2], 10);
-                const cur = emotionEngine.getThresholds(sessionId);
-                const vb = cur.VERY_BAD, b = cur.BAD, g = cur.GOOD;
-
-                if (isNaN(val)) {
-                    responseText = `Usage: /change ${which} <number>`;
-                } else {
-                    const next = which === 'very_bad' ? { VERY_BAD: val, BAD: b, GOOD: g }
-                               : which === 'bad'      ? { VERY_BAD: vb, BAD: val, GOOD: g }
-                               :                        { VERY_BAD: vb, BAD: b, GOOD: val };
-                    const { VERY_BAD: nvb, BAD: nb, GOOD: ng } = next;
-                    if (nvb < 1 || ng > 98 || nvb >= nb || nb >= ng) {
-                        responseText = `❌ Invalid: must satisfy 0 < very_bad(${nvb}) < bad(${nb}) < good(${ng}) < 99`;
-                    } else {
-                        emotionEngine.setThresholds(sessionId, next);
-                        responseText = `✅ Thresholds updated — Very Bad: ${nvb}, Bad: ${nb}, Good: ${ng}`;
-                    }
                 }
             } else {
                 responseText = `Unknown command: ${message.trim()}\nType /help to see available commands.`;
@@ -334,9 +310,9 @@ app.post('/api/chat', async (req, res) => {
 
                 // Check end conditions
                 let confessionAdmission = null;
-                if (emotions.combined >= 75 && emotions.state === 'VERY_GOOD') {
+                if (emotions.combined >= 60 && emotions.state === 'VERY_GOOD') {
                     confessionAdmission = 'triumphant';
-                } else if (emotions.combined <= 25 && emotions.state === 'VERY_BAD') {
+                } else if (emotions.combined <= 40 && emotions.state === 'VERY_BAD') {
                     confessionAdmission = 'weeping';
                 }
 
