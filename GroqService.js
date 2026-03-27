@@ -10,9 +10,9 @@ class GroqService {
     }
 
     async generateResponse(message, context = {}) {
-        const { emotionState, emotionLevel, category, aiName, userName, avatarPersonality, thresholds, conversationHistory = [] } = context;
+        const { emotionState, emotionLevel, category, aiName, userName, avatarPersonality, thresholds, conversationHistory = [], city } = context;
 
-        const systemPrompt = this.buildSystemPrompt(emotionState, emotionLevel, aiName, thresholds, userName, avatarPersonality);
+        const systemPrompt = this.buildSystemPrompt(emotionState, emotionLevel, aiName, thresholds, userName, avatarPersonality, city);
 
         // Include last 6 turns of history for context
         const historyMessages = conversationHistory.slice(-6).map(m => ({
@@ -40,7 +40,7 @@ class GroqService {
         }
     }
 
-    buildSystemPrompt(emotionState, emotionLevel = 50, aiName = 'AI', thresholds = {}, userName = 'Master', avatarPersonality = 'dominant') {
+    buildSystemPrompt(emotionState, emotionLevel = 50, aiName = 'AI', thresholds = {}, userName = 'Master', avatarPersonality = 'dominant', city = null) {
         const emotionDescriptions = avatarPersonality === 'submissive' ? {
             VERY_GOOD: 'extremely happy, enthusiastic, and warm',
             GOOD: 'friendly, positive, and cheerful',
@@ -93,7 +93,7 @@ ${personalityDesc}
 
 ${intensityDesc}
 
-You do NOT have access to real-time information like the current time, date, weather, or live data. If asked, say you don't know rather than guessing.
+${city ? `The user is currently in ${city}.` : ''}You do NOT have access to real-time information like the current time, date, weather, or live data. If asked, say you don't know rather than guessing.
 
 Respond naturally based on your emotional state, level, and personality. Keep responses concise (1-2 sentences).
 IMPORTANT: Always respond in the same language as the user's CURRENT message, ignoring the language of any previous messages in the conversation.`;

@@ -131,7 +131,7 @@ app.get('/health', (req, res) => {
 
 app.post('/api/chat', async (req, res) => {
     try {
-        const { sessionId, message, deviceStatus, aiName, userName, avatarType, schoolingLevels, empathyMode, empathyType, personalityThresholds, personality, confessionMode: confessionModeReq, confessionRole, conversationHistory } = req.body;
+        const { sessionId, message, deviceStatus, aiName, userName, avatarType, schoolingLevels, empathyMode, empathyType, personalityThresholds, personality, confessionMode: confessionModeReq, confessionRole, conversationHistory, city } = req.body;
         const SUBMISSIVE_AVATARS = ['girl'];
         const avatarPersonality = SUBMISSIVE_AVATARS.includes(avatarType) ? 'submissive' : 'dominant';
 
@@ -552,7 +552,8 @@ app.post('/api/chat', async (req, res) => {
                     userName: userName || 'Master',
                     avatarPersonality,
                     thresholds: emotionEngine.getThresholds(sessionId),
-                    conversationHistory: Array.isArray(conversationHistory) ? conversationHistory : []
+                    conversationHistory: Array.isArray(conversationHistory) ? conversationHistory : [],
+                    city: city || null
                 });
                 if (result.text) {
                     responseText = result.text;

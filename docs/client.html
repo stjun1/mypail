@@ -1192,6 +1192,21 @@
             : 'https://mypail-production.up.railway.app';
         const isCapacitor = window.CapBridge && window.CapBridge.isNative;
         let deviceReadings = { battery: 75, network: -60, memory: 800 };
+        let userCity = null;
+
+        async function fetchCity() {
+            if (!navigator.geolocation) return;
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                try {
+                    const { latitude, longitude } = pos.coords;
+                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`, {
+                        headers: { 'Accept-Language': 'en' }
+                    });
+                    const data = await res.json();
+                    userCity = data.address?.city || data.address?.town || data.address?.village || null;
+                } catch (e) { /* silent */ }
+            }, () => { /* permission denied — stay null */ });
+        }
 
         // Conversation history for multi-turn context (last 10 exchanges)
         let conversationHistory = [];
@@ -2481,7 +2496,8 @@
                     schoolingLevels: JSON.parse(localStorage.getItem('emotionalAI_schoolingLevels') || 'null'),
                     personalityThresholds: JSON.parse(localStorage.getItem('emotionalAI_thresholds') || 'null'),
                     personality: localStorage.getItem('emotionalAI_personality') || null,
-                    conversationHistory: conversationHistory.slice(-10)
+                    conversationHistory: conversationHistory.slice(-10),
+                    city: userCity
                 };
 
                 if (empathyMode && empathyType) {
@@ -3046,6 +3062,7 @@
                 btn.classList.add('off');
             }
         })();
+        fetchCity();
         if (isCapacitor) {
             document.querySelector('.controls').style.display = 'none';
             initDeviceMonitoring();
