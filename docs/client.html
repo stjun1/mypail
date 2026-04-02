@@ -1195,17 +1195,26 @@
         let userCity = null;
 
         async function fetchCity() {
-            if (!navigator.geolocation) return;
-            navigator.geolocation.getCurrentPosition(async (pos) => {
-                try {
-                    const { latitude, longitude } = pos.coords;
-                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`, {
-                        headers: { 'Accept-Language': 'en' }
-                    });
-                    const data = await res.json();
-                    userCity = data.address?.city || data.address?.town || data.address?.village || null;
-                } catch (e) { /* silent */ }
-            }, () => { /* permission denied — stay null */ });
+            try {
+                let coords;
+                if (isCapacitor && window.CapBridge && window.CapBridge.Geolocation) {
+                    await window.CapBridge.Geolocation.requestPermissions();
+                    const pos = await window.CapBridge.Geolocation.getCurrentPosition({ timeout: 10000 });
+                    coords = pos.coords;
+                } else if (navigator.geolocation) {
+                    coords = await new Promise((resolve, reject) =>
+                        navigator.geolocation.getCurrentPosition(p => resolve(p.coords), reject, { timeout: 10000 })
+                    );
+                } else {
+                    return;
+                }
+                const { latitude, longitude } = coords;
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`, {
+                    headers: { 'Accept-Language': 'en' }
+                });
+                const data = await res.json();
+                userCity = data.address?.city || data.address?.town || data.address?.village || null;
+            } catch (e) { /* permission denied or unavailable — stay null */ }
         }
 
         // Conversation history for multi-turn context (last 10 exchanges)
