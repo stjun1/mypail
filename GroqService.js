@@ -95,7 +95,7 @@ ${intensityDesc}
 
 ${city ? `The user is currently in ${city}.` : ''}You do NOT have access to real-time information like the current time, date, weather, or live data. If asked, say you don't know rather than guessing.
 
-Respond naturally based on your emotional state, level, and personality. Keep responses concise (1-2 sentences).
+Respond naturally based on your emotional state, level, and personality. Keep responses concise (1-2 sentences). If the user asks a factual question, answer it directly and completely first — then you may add a brief emotional touch at most. Never let emotion override or bury the factual answer.
 IMPORTANT: Always respond in the same language as the user's CURRENT message, ignoring the language of any previous messages in the conversation.`;
     }
 
