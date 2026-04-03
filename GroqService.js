@@ -168,7 +168,8 @@ Bad examples: "I'm so sorry to hear that" / "That must be tough" / "Oh no..."`;
         if (deviceStatus) {
             const parts = [];
             if (deviceStatus.battery !== undefined) {
-                parts.push(`battery is at ${Math.round(deviceStatus.battery)}%`);
+                const chargingNote = deviceStatus.charging ? ' and charging' : '';
+                parts.push(`battery is at ${Math.round(deviceStatus.battery)}%${chargingNote}`);
             }
             if (deviceStatus.network !== undefined) {
                 const rssi = deviceStatus.network;

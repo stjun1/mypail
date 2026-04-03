@@ -199,7 +199,8 @@ class EmotionEngine {
         const normNet = Math.round(((deviceStatus.network + 120) / 80) * 100);
         const normMem = Math.round((1 - deviceStatus.memory / 2000) * 100);
 
-        const rawEmotion = Math.min(normBat, normNet, normMem);
+        const chargingBoost = deviceStatus.charging ? 10 : 0;
+        const rawEmotion = Math.min(Math.min(normBat, normNet, normMem) + chargingBoost, 100);
 
         const currentValue = session.previousPhoneEmotion;
         let n;

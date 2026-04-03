@@ -1191,7 +1191,7 @@
             ? 'http://localhost:3000'
             : 'https://mypail-production.up.railway.app';
         const isCapacitor = window.CapBridge && window.CapBridge.isNative;
-        let deviceReadings = { battery: 75, network: -60, memory: 800 };
+        let deviceReadings = { battery: 75, network: -60, memory: 800, charging: false };
         let userCity = null;
 
         async function fetchCity() {
@@ -2425,8 +2425,12 @@
             try {
                 const batt = await navigator.getBattery();
                 deviceReadings.battery = Math.round(batt.level * 100);
+                deviceReadings.charging = batt.charging;
                 batt.addEventListener('levelchange', () => {
                     deviceReadings.battery = Math.round(batt.level * 100);
+                });
+                batt.addEventListener('chargingchange', () => {
+                    deviceReadings.charging = batt.charging;
                 });
             } catch (e) {
                 console.warn('Battery API unavailable:', e);
