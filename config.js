@@ -79,7 +79,9 @@ module.exports = {
             // Korean
             '너 누군지 알아', '네가 누군지 알아', '너 뭐하는지 알아', '너 감시하고 있었지', '나 감시하고 있었지', '스파이지', '스파이야', '너 스파이지', '너 스파이야', '감시하고 있지', '감시하는거지', '자백해', '고백해', '비밀 알아', '진실을 알아', '누가 보냈어', '누가 시켰어', '누구한테 일해', '나 감시해',
             // Spanish
-            'sé quién eres', 'se quien eres', 'sé lo que eres', 'se lo que eres', 'me estás espiando', 'me estas espiando', 'eres un espía', 'eres un espia', 'eres espía', 'eres espia', 'estás espiando', 'estas espiando', 'confiesa tu crimen', 'confiesa tus crímenes', 'confiesa tus crimenes', 'sé tu secreto', 'se tu secreto', 'sé la verdad', 'se la verdad', 'quién te envió', 'quien te envio', 'para quién trabajas', 'para quien trabajas', 'me estás vigilando', 'me estas vigilando'
+            'sé quién eres', 'se quien eres', 'sé lo que eres', 'se lo que eres', 'me estás espiando', 'me estas espiando', 'eres un espía', 'eres un espia', 'eres espía', 'eres espia', 'estás espiando', 'estas espiando', 'confiesa tu crimen', 'confiesa tus crímenes', 'confiesa tus crimenes', 'sé tu secreto', 'se tu secreto', 'sé la verdad', 'se la verdad', 'quién te envió', 'quien te envio', 'para quién trabajas', 'para quien trabajas', 'me estás vigilando', 'me estas vigilando',
+            // Chinese
+            '我知道你是谁', '我知道你在做什么', '你在监视我', '你在监视我吗', '你是间谍', '你是间谍吗', '坦白', '承认吧', '自白', '谁派你来的', '谁让你来的', '你为谁工作', '我知道你的秘密', '我知道真相', '你一直在监视我', '你在盯着我', '承认你的罪行'
         ]
     },
     
